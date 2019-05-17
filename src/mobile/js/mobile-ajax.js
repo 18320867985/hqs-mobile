@@ -1,4 +1,4 @@
-	/* ajax  start*/
+
 	
 	;(function($) {
 
