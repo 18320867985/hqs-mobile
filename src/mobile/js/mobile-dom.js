@@ -32,12 +32,10 @@
 "use strict"
 
 	// 冲突Mobile兼容
-	var _mobile = window.mobile,
-	  _m=window.m,
-		_$ = window.$;
+	var _mobile = window.mobile,_m=window.m,_$ = window.$;
 
 	// 创建mobile对象
-	var Mobile = window.$ = window.m = window.mobile = function(selector, context) {
+	 window.Mobile = window.$ = window.m = window.mobile = function(selector, context) {
 
 		if (typeof selector === "function" && arguments.length === 1) {
 			Mobile.ready(selector);

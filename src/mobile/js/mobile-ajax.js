@@ -1,522 +1,240 @@
+// init xhr
+var _xhrCORS;
 
-/* ajax  start*/
-	
-;(function($) {
-
-	var isString = function(obj) {
-		return typeof obj == 'string'
-	};
-
-	function returnTrue() {
-		return true;
+// ajax type
+function _ajaxFun(url, type, data, _arguments) {
+	var success;
+	var error;
+	var progress;
+	if (typeof data === "object" && _arguments.length > 2) {
+		success = _arguments[2];
+		if (_arguments.length >= 3) {
+			error = _arguments[3];
+			progress = _arguments[4] || null;
+		}
+	} else if (typeof data === "function") {
+		success = data;
+		if (_arguments.length > 2) {
+			error = _arguments[2];
+			progress = _arguments[3] || null;
+		}
 	}
 
-	function returnFalse() {
-		return false;
-	}
-	
-	function isArraylike(obj) {
-			var length = obj.length,
-				type = Mobile.type(obj);
-	
-			if (type === "function" || Mobile.isWindow(obj)) {
-				return false;
-			}
-	
-			if (obj.nodeType === 1 && length) {
-				return true;
-			}
-	
-			return type === "array" || length === 0 ||
-				typeof length === "number" && length > 0 && (length - 1) in obj;
-		};
-		
-	var specialEvents = {};
-	
-	$.Event = function(type, props) {
-		if (!isString(type)) props = type, type = props.type
-		var event = document.createEvent(specialEvents[type] || 'Events'),
-			bubbles = true
-		if (props)
-			for (var name in props)(name == 'bubbles') ? (bubbles = !!props[name]) : (event[name] = props[name])
-		event.initEvent(type, bubbles, true)
-		return compatible(event)
-	};
+	Mobile.ajax({
+		type: type,
+		url: url,
+		data: typeof data === "object" ? data : null,
+		success: success,
+		error: error,
+		progress: progress
+	});
 
-	$.eachObj = function(obj, callback, args) {
-		var value,
-			i = 0,
-			length = obj.length,
-			isArray = isArraylike(obj);
+}
 
-		if (args) {
-			if (isArray) {
-				for (; i < length; i++) {
-					value = callback.apply(obj[i], args);
+// 链接ajax发送的参数数据
+function _JoinParams(data) {
 
-					if (value === false) {
-						break;
-					}
+	// 参数data对象字符
+	var params = [];
+
+	for (var key in data) {
+
+		if (typeof data[key] === "object") {
+			var data2 = data[key];
+			// object
+			if (data[key].constructor !== Array) {
+				for (var key2 in data2) {
+					var _key = key + "[" + key2 + "]";
+					var _value = data2[key2];
+					params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
 				}
 			} else {
-				for (i in obj) {
-					value = callback.apply(obj[i], args);
+				for (var key2 in data2) {
 
-					if (value === false) {
-						break;
-					}
-				}
-			}
+					var data3 = data2[key2];
+					if (typeof data3 === "object" && data3.constructor !== Array) {
+						for (var key3 in data3) {
+							var _key = key + "[" + key2 + "]" + "[" + key3 + "]";
+							var _value = data3[key3];
+							params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
 
-			// A special, fast, case for the most common use of each
-		} else {
-			if (isArray) {
-				for (; i < length; i++) {
-					value = callback.call(obj[i], i, obj[i]);
-
-					if (value === false) {
-						break;
-					}
-				}
-			} else {
-				for (i in obj) {
-					value = callback.call(obj[i], i, obj[i]);
-
-					if (value === false) {
-						break;
-					}
-				}
-			}
-		}
-
-		return obj;
-	};
-
-	function compatible(event, source) {
-		if (source || !event.isDefaultPrevented) {
-			source || (source = event)
-
-			$.eachObj(eventMethods, function(name, predicate) {
-				var sourceMethod = source[name]
-				event[name] = function() {
-					this[predicate] = returnTrue
-					return sourceMethod && sourceMethod.apply(source, arguments)
-				}
-				event[predicate] = returnFalse
-			})
-
-			event.timeStamp || (event.timeStamp = Date.now())
-
-			if (source.defaultPrevented !== undefined ? source.defaultPrevented :
-				'returnValue' in source ? source.returnValue === false :
-				source.getPreventDefault && source.getPreventDefault())
-				event.isDefaultPrevented = returnTrue
-		}
-		return event;
-	};
-
-	var eventMethods = {
-		preventDefault: 'isDefaultPrevented',
-		stopImmediatePropagation: 'isImmediatePropagationStopped',
-		stopPropagation: 'isPropagationStopped'
-	};
-
-	var jsonpID = +new Date(),
-		document = window.document,
-		key,
-		name,
-		rscript = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-		scriptTypeRE = /^(?:text|application)\/javascript/i,
-		xmlTypeRE = /^(?:text|application)\/xml/i,
-		jsonType = 'application/json',
-		htmlType = 'text/html',
-		blankRE = /^\s*$/,
-		originAnchor = document.createElement('a');
-		originAnchor.href = window.location.href;
-
-	// trigger a custom event and return false if it was cancelled
-	function triggerAndReturn(context, eventName, data) {
-		var event = $.Event(eventName)
-		$(context).trigger(event, data);
-		return !event.isDefaultPrevented()
-	}
-
-	// trigger an Ajax "global" event
-	function triggerGlobal(settings, context, eventName, data) {
-		if (settings.global) return triggerAndReturn(context || document, eventName, data)
-	}
-
-	// Number of active Ajax requests
-	$.active = 0
-
-	function ajaxStart(settings) {
-		if (settings.global && $.active++ === 0) triggerGlobal(settings, null, 'ajaxStart')
-	}
-
-	function ajaxStop(settings) {
-		if (settings.global && !(--$.active)) triggerGlobal(settings, null, 'ajaxStop')
-	}
-
-	// triggers an extra global event "ajaxBeforeSend" that's like "ajaxSend" but cancelable
-	function ajaxBeforeSend(xhr, settings) {
-		var context = settings.context
-		if (settings.beforeSend.call(context, xhr, settings) === false ||
-			triggerGlobal(settings, context, 'ajaxBeforeSend', [xhr, settings]) === false)
-			return false
-
-		triggerGlobal(settings, context, 'ajaxSend', [xhr, settings])
-	}
-
-	function ajaxSuccess(data, xhr, settings, deferred) {
-		var context = settings.context,
-			status = 'success'
-		settings.success.call(context, data, status, xhr)
-		if (deferred) deferred.resolveWith(context, [data, status, xhr])
-		triggerGlobal(settings, context, 'ajaxSuccess', [xhr, settings, data])
-		ajaxComplete(status, xhr, settings)
-	}
-	// type: "timeout", "error", "abort", "parsererror"
-	function ajaxError(error, type, xhr, settings, deferred) {
-		var context = settings.context
-		settings.error.call(context, xhr, type, error)
-		if (deferred) deferred.rejectWith(context, [xhr, type, error])
-		triggerGlobal(settings, context, 'ajaxError', [xhr, settings, error || type])
-		ajaxComplete(type, xhr, settings)
-	}
-	// status: "success", "notmodified", "error", "timeout", "abort", "parsererror"
-	function ajaxComplete(status, xhr, settings) {
-		var context = settings.context
-		settings.complete.call(context, xhr, status)
-		triggerGlobal(settings, context, 'ajaxComplete', [xhr, settings])
-		ajaxStop(settings)
-	}
-
-	function ajaxDataFilter(data, type, settings) {
-		if (settings.dataFilter == empty) return data
-		var context = settings.context
-		return settings.dataFilter.call(context, data, type)
-	}
-
-	// Empty function, used as default callback
-	function empty() {}
-
-	$.ajaxJSONP = function(options, deferred) {
-		if (!('type' in options)) return $.ajax(options)
-
-		var _callbackName = options.jsonpCallback,
-			callbackName = ($.isFunction(_callbackName) ?
-				_callbackName() : _callbackName) || ('Mobile' + (jsonpID++)),
-			script = document.createElement('script'),
-			originalCallback = window[callbackName],
-			responseData,
-			abort = function(errorType) {
-				$(script).triggerHandler('error', errorType || 'abort')
-			},
-			xhr = {
-				abort: abort
-			},
-			abortTimeout
-
-		if (deferred) deferred.promise(xhr)
-
-		$(script).on('load error', function(e, errorType) {
-			clearTimeout(abortTimeout)
-			$(script).off().remove()
-
-			if (e.type == 'error' || !responseData) {
-				ajaxError(null, errorType || 'error', xhr, options, deferred)
-			} else {
-				ajaxSuccess(responseData[0], xhr, options, deferred)
-			}
-
-			window[callbackName] = originalCallback
-			if (responseData && $.isFunction(originalCallback))
-				originalCallback(responseData[0])
-
-			originalCallback = responseData = undefined
-		})
-
-		if (ajaxBeforeSend(xhr, options) === false) {
-			abort('abort')
-			return xhr
-		}
-
-		window[callbackName] = function() {
-			responseData = arguments
-		}
-
-		script.src = options.url.replace(/\?(.+)=\?/, '?$1=' + callbackName)
-		document.head.appendChild(script)
-
-		if (options.timeout > 0) abortTimeout = setTimeout(function() {
-			abort('timeout')
-		}, options.timeout)
-
-		return xhr
-	}
-
-	$.ajaxSettings = {
-		// Default type of request
-		type: 'GET',
-		// Callback that is executed before request
-		beforeSend: empty,
-		// Callback that is executed if the request succeeds
-		success: empty,
-		// Callback that is executed the the server drops error
-		error: empty,
-		// Callback that is executed on request complete (both: error and success)
-		complete: empty,
-		// The context for the callbacks
-		context: null,
-		// Whether to trigger "global" Ajax events
-		global: true,
-		// Transport
-		xhr: function() {
-			return new window.XMLHttpRequest()
-		},
-		// MIME types mapping
-		// IIS returns Javascript as "application/x-javascript"
-		accepts: {
-			script: 'text/javascript, application/javascript, application/x-javascript',
-			json: jsonType,
-			xml: 'application/xml, text/xml',
-			html: htmlType,
-			text: 'text/plain'
-		},
-		// Whether the request is to another domain
-		crossDomain: false,
-		// Default timeout
-		timeout: 0,
-		// Whether data should be serialized to string
-		processData: true,
-		// Whether the browser should be allowed to cache GET responses
-		cache: true,
-		//Used to handle the raw response data of XMLHttpRequest.
-		//This is a pre-filtering function to sanitize the response.
-		//The sanitized response should be returned
-		dataFilter: empty
-	}
-
-	function mimeToDataType(mime) {
-		if (mime) mime = mime.split(';', 2)[0]
-		return mime && (mime == htmlType ? 'html' :
-			mime == jsonType ? 'json' :
-			scriptTypeRE.test(mime) ? 'script' :
-			xmlTypeRE.test(mime) && 'xml') || 'text'
-	}
-
-	function appendQuery(url, query) {
-		if (query == '') return url
-		return (url + '&' + query).replace(/[&?]{1,2}/, '?')
-	}
-
-	// serialize payload and append it to the URL for GET requests
-	function serializeData(options) {
-		if (options.processData && options.data && $.type(options.data) != "string")
-			options.data = $.param(options.data, options.traditional)
-		if (options.data && (!options.type || options.type.toUpperCase() == 'GET' || 'jsonp' == options.dataType))
-			options.url = appendQuery(options.url, options.data), options.data = undefined
-	}
-
-	$.ajax = function(options) {
-		var settings = $.extend({}, options || {}),
-			deferred = $.Deferred && $.Deferred(),
-			urlAnchor, hashIndex
-		for (key in $.ajaxSettings)
-			if (settings[key] === undefined) settings[key] = $.ajaxSettings[key]
-
-		ajaxStart(settings)
-
-		if (!settings.crossDomain) {
-			urlAnchor = document.createElement('a')
-			urlAnchor.href = settings.url
-			// cleans up URL for .href (IE only), see https://github.com/madrobby/Mobile/pull/1049
-			urlAnchor.href = urlAnchor.href
-			settings.crossDomain = (originAnchor.protocol + '//' + originAnchor.host) !== (urlAnchor.protocol + '//' +
-				urlAnchor.host)
-		}
-
-		if (!settings.url) settings.url = window.location.toString()
-		if ((hashIndex = settings.url.indexOf('#')) > -1) settings.url = settings.url.slice(0, hashIndex)
-		serializeData(settings)
-
-		var dataType = settings.dataType,
-			hasPlaceholder = /\?.+=\?/.test(settings.url)
-		if (hasPlaceholder) dataType = 'jsonp'
-
-		if (settings.cache === false || (
-				(!options || options.cache !== true) &&
-				('script' == dataType || 'jsonp' == dataType)
-			))
-			settings.url = appendQuery(settings.url, '_=' + Date.now())
-
-		if ('jsonp' == dataType) {
-			if (!hasPlaceholder)
-				settings.url = appendQuery(settings.url,
-					settings.jsonp ? (settings.jsonp + '=?') : settings.jsonp === false ? '' : 'callback=?')
-			return $.ajaxJSONP(settings, deferred)
-		}
-
-		var mime = settings.accepts[dataType],
-			headers = {},
-			setHeader = function(name, value) {
-				headers[name.toLowerCase()] = [name, value]
-			},
-			protocol = /^([\w-]+:)\/\//.test(settings.url) ? RegExp.$1 : window.location.protocol,
-			xhr = settings.xhr(),
-			nativeSetHeader = xhr.setRequestHeader,
-			abortTimeout
-
-		if (deferred) deferred.promise(xhr)
-
-		if (!settings.crossDomain) setHeader('X-Requested-With', 'XMLHttpRequest')
-		setHeader('Accept', mime || '*/*')
-		if (mime = settings.mimeType || mime) {
-			if (mime.indexOf(',') > -1) mime = mime.split(',', 2)[0]
-			xhr.overrideMimeType && xhr.overrideMimeType(mime)
-		}
-		if (settings.contentType || (settings.contentType !== false && settings.data && settings.type.toUpperCase() !=
-				'GET'))
-			setHeader('Content-Type', settings.contentType || 'application/x-www-form-urlencoded')
-
-		if (settings.headers)
-			for (name in settings.headers) setHeader(name, settings.headers[name])
-		xhr.setRequestHeader = setHeader
-
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4) {
-				xhr.onreadystatechange = empty
-				clearTimeout(abortTimeout)
-				var result, error = false
-				if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304 || (xhr.status == 0 && protocol == 'file:')) {
-					dataType = dataType || mimeToDataType(settings.mimeType || xhr.getResponseHeader('content-type'))
-
-					if (xhr.responseType == 'arraybuffer' || xhr.responseType == 'blob')
-						result = xhr.response
-					else {
-						result = xhr.responseText
-
-						try {
-							// http://perfectionkills.com/global-eval-what-are-the-options/
-							// sanitize response accordingly if data filter callback provided
-							result = ajaxDataFilter(result, dataType, settings)
-							if (dataType == 'script')(1, eval)(result)
-							else if (dataType == 'xml') result = xhr.responseXML
-							else if (dataType == 'json') result = blankRE.test(result) ? null : JSON.parse(result)
-
-						} catch (e) {
-							error = e
 						}
-
-						if (error) return ajaxError(error, 'parsererror', xhr, settings, deferred)
 					}
 
-					ajaxSuccess(result, xhr, settings, deferred)
-				} else {
-					ajaxError(xhr.statusText || null, xhr.status ? 'error' : 'abort', xhr, settings, deferred)
 				}
+			}
+		} else {
+			params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+		}
+
+	}
+
+	return params.join("&") || "";
+
+}
+
+Mobile.extend({
+
+	// create XHR Object
+	createXHR: function() {
+
+		if (window.XMLHttpRequest) {
+
+			//IE7+、Firefox、Opera、Chrome 和Safari
+			return new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+
+			//IE6 及以下
+			var versions = ['MSXML2.XMLHttp', 'Microsoft.XMLHTTP'];
+			for (var i = 0, len = versions.length; i < len; i++) {
+				try {
+					return new ActiveXObject(version[i]);
+					break;
+				} catch (e) {
+					//跳过
+				}
+			}
+		} else {
+			throw new Error('浏览器不支持XHR对象！');
+		}
+
+	},
+
+	/* 封装ajax函数
+		 @param {string}opt.type http连接的方式，包括POST和GET两种方式
+		 @param {string}opt.url 发送请求的url
+		 @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
+		 @param {object}opt.data 发送的参数，格式为对象类型
+		 @param {function}opt.contentType   内容类型
+		@param {function}opt.success ajax发送并接收成功调用的回调函数
+		 @param {function}opt.error ajax发送并接收error调用的回调函数
+		 @param {function}opt.getXHR 获取xhr对象
+		 @param {number}opt.timeout // 超时
+	 */
+	ajax: function(opt) {
+
+		// 参数object对象
+		opt = opt || {};
+		opt.type = typeof opt.type === "string" ? opt.type.toUpperCase() : "GET";
+		opt.url = typeof opt.url === "string" ? opt.url : '';
+		opt.async = typeof opt.async === "boolean" ? opt.async : true;
+		opt.data = typeof opt.data === "object" ? opt.data : {};
+		opt.success = opt.success || function() {};
+		opt.error = opt.error || function() {};
+		opt.contentType = opt.contentType || "application/x-www-form-urlencoded;charset=utf-8";
+		opt.timeout = typeof opt.timeout === "number" ? opt.timeout : 10000;
+		opt.progress = opt.progress || {};
+
+		var xhr = Mobile.createXHR();
+		xhr.timeout = opt.timeout;
+		xhr.xhrFields = opt.xhrFields || {};
+
+		// 连接参数
+		var postData = _JoinParams(opt.data); // params.join('&');
+
+		if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {
+			opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() : opt.url + "&_=" + Math.random();
+
+			xhr.open(opt.type, opt.url, opt.async);
+			xhr.setRequestHeader('Content-Type', opt.contentType);
+			xhr.send(postData);
+		} else if (opt.type.toUpperCase() === 'GET') {
+			if (postData.length > 0) {
+				postData = "&" + postData;
+			}
+			opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() + postData : opt.url + "&_=" +
+				Math.random() + postData;
+
+			xhr.open(opt.type, opt.url, opt.async);
+			xhr.send(null);
+		}
+		xhr.onreadystatechange = function() {
+
+			if (xhr.readyState === 4) {
+				if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+					if (typeof opt.success === "function") {
+						try {
+							opt.success(JSON.parse(xhr.responseText), xhr.status, xhr.statusText);
+						} catch (e) {
+							// handle the exception
+							opt.success(xhr.responseText, xhr.status, xhr.statusText);
+						}
+					}
+				} else {
+					if (typeof opt.error === "function") {
+						opt.error(xhr.status, xhr.statusText);
+					}
+				}
+
+			}
+		};
+
+	},
+
+	// get
+	get: function(url, data) {
+		_ajaxFun(url, "get", data, arguments);
+	},
+
+	// post
+	post: function(url, data) {
+		_ajaxFun(url, "post", data, arguments);
+	},
+
+	// put
+	put: function(url, data) {
+		_ajaxFun(url, "put", data, arguments);
+	},
+
+	// delete
+	delete: function(url, data) {
+		_ajaxFun(url, "delete", data, arguments);
+	},
+
+	// jsonp
+	jsonp: function(url, data) {
+
+		var callback;
+		if (typeof data === "function") {
+			callback = data;
+		} else if (arguments.length >= 3) {
+			callback = arguments[2];
+		}
+
+		// 创建一个几乎唯一的id
+		var callbackName = "mobile" + (new Date()).getTime().toString().trim();
+		window[callbackName] = function(result) {
+
+			// 创建一个全局回调处理函数
+			if (typeof callback === "function") {
+				callback(result);
 			}
 		}
 
-		if (ajaxBeforeSend(xhr, settings) === false) {
-			xhr.abort()
-			ajaxError(null, 'abort', xhr, settings, deferred)
-			return xhr
+		// 参数data对象字符
+		var params = [];
+		var postData = "";
+		if (typeof data === "object") {
+			//				for(var key in data) {
+			//					params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+			//				}
+			//				postData = params && params.join('&');
+			postData = _JoinParams(data)
 		}
 
-		var async = 'async' in settings ? settings.async : true
-		xhr.open(settings.type, settings.url, async, settings.username, settings.password)
-
-		if (settings.xhrFields)
-			for (name in settings.xhrFields) xhr[name] = settings.xhrFields[name]
-
-		for (name in headers) nativeSetHeader.apply(xhr, headers[name])
-
-		if (settings.timeout > 0) abortTimeout = setTimeout(function() {
-			xhr.onreadystatechange = empty
-			xhr.abort()
-			ajaxError(null, 'timeout', xhr, settings, deferred)
-		}, settings.timeout)
-
-		// avoid sending empty string (#319)
-		xhr.send(settings.data ? settings.data : null)
-		return xhr
-	}
-
-	// handle optional data/success arguments
-	function parseArguments(url, data, success, dataType) {
-		if ($.isFunction(data)) dataType = success, success = data, data = undefined
-		if (!$.isFunction(success)) dataType = success, success = undefined
-		return {
-			url: url,
-			data: data,
-			success: success,
-			dataType: dataType
+		if (postData.length > 0) {
+			postData = "&" + postData;
 		}
-	}
+		url = url.indexOf("?") === -1 ? url + "?" + "callback=" + callbackName + postData : url + "&callback=" +
+			callbackName + postData;
 
-	$.get = function( /* url, data, success, dataType */ ) {
-		return $.ajax(parseArguments.apply(null, arguments))
-	}
+		// 创建Script标签并执行window[id]函数
+		var script = document.createElement("script");
+		script.setAttribute("id", callbackName);
+		script.setAttribute("src", url);
+		script.setAttribute("type", "text/javascript");
+		document.body.appendChild(script);
 
-	$.post = function( /* url, data, success, dataType */ ) {
-		var options = parseArguments.apply(null, arguments)
-		options.type = 'POST'
-		return $.ajax(options)
-	}
+	},
 
-	$.getJSON = function( /* url, data, success */ ) {
-		var options = parseArguments.apply(null, arguments)
-		options.dataType = 'json'
-		return $.ajax(options)
-	}
-
-	$.fn.load = function(url, data, success) {
-		if (!this.length) return this
-		var self = this,
-			parts = url.split(/\s/),
-			selector,
-			options = parseArguments(url, data, success),
-			callback = options.success
-		if (parts.length > 1) options.url = parts[0], selector = parts[1]
-		options.success = function(response) {
-			self.html(selector ?
-				$('<div>').html(response.replace(rscript, "")).find(selector) :
-				response)
-			callback && callback.apply(self, arguments)
-		}
-		$.ajax(options)
-		return this
-	}
-
-	var escape = encodeURIComponent
-
-	function serialize(params, obj, traditional, scope) {
-		var type, array = $.isArray(obj),
-			hash = $.isPlainObject(obj)
-		$.eachObj(obj, function(key, value) {
-			type = $.type(value)
-			if (scope) key = traditional ? scope :
-				scope + '[' + (hash || type == 'object' || type == 'array' ? key : '') + ']'
-			// handle data in serializeArray() format
-			if (!scope && array) params.add(value.name, value.value)
-			// recurse into nested objects
-			else if (type == "array" || (!traditional && type == "object"))
-				serialize(params, value, traditional, key)
-			else params.add(key, value)
-		})
-	}
-
-	$.param = function(obj, traditional) {
-		var params = []
-		params.add = function(key, value) {
-			if ($.isFunction(value)) value = value()
-			if (value == null) value = ""
-			this.push(escape(key) + '=' + escape(value))
-		}
-		serialize(params, obj, traditional)
-		return params.join('&').replace(/%20/g, '+')
-	}
-})($);
-
-/*ajax-end*/
+});
