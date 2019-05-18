@@ -37,7 +37,6 @@ var less = require("gulp-less");
 
 
 
-
 /* 1. =======================================gulp-rollup 使用单页和多页应用 =================================== */
 
 /***  打包修改的配置 ***/
@@ -343,6 +342,8 @@ function rollupBuild(isBuild, name, dir) {
 
 
 
+
+
 /* 2. ============================================== rollup 单项编译===================================================*/
 
 /* 
@@ -355,8 +356,8 @@ function rollupBuild(isBuild, name, dir) {
 
 var rollupName = "umd";
 var rollupOutputFormat = "iife";  
-var rollupDir ="mobile";
-var outputFileName="mobile";
+var rollupDir ="rollupJsFile";
+var outputFileName="all";
 
 var rollup_url = `./src/${rollupDir}/js/app.js`;
 var rollup_url_dev = `./src/${rollupDir}/${outputFileName}.js`;
@@ -433,6 +434,79 @@ gulp.task("rollup-watch", ["connect"], function () {
 
 gulp.task("rollup-html", function () {
 	gulp.src(`./src/${rollupDir}/**/*.html`).pipe(connect.reload());
+});
+
+
+
+
+
+/* 3. ======================================= gulp  单项编译=================================== */
+
+var gulpJsFile = [
+	"./src/mobile/js/mobile-dom.js",
+	"./src/mobile/js/mobile-ajax.js",
+
+];
+
+var outputDir="mobile"
+var outputFileName="mobile.js";
+
+var isgulpMinJs = true;
+var gulpMinJs = isgulpMinJs ? minJs : function () { };
+
+gulp.task("gulp-build", function () {
+
+	gulp.src(gulpJsFile)
+		.pipe(gulpbabel({
+			presets: ['es2015']
+		})) // es6编译
+		.pipe(concat(outputFileName))
+		.pipe(gulpMinJs()) //压缩js文件
+		.pipe(gulp.dest(`./dist/${outputDir}/`));
+
+	gulp.src([`./src/${outputDir}/**/*.html`]).pipe(gulp.dest(`./dist/${outputDir}/`)); //复制html
+
+})
+
+gulp.task("gulp-dev", function () {
+
+	return gulp.src(gulpJsFile)
+		.pipe(gulpbabel({
+			presets: ['es2015']
+		})) // es6编译
+		.pipe(concat(outputFileName))
+		.pipe(gulp.dest(`./src/${outputDir}`));
+
+})
+
+gulp.task("gulp-dev-watch", function () {
+
+	gulp.src(gulpJsFile)
+		.pipe(gulpbabel({
+			presets: ['es2015']
+		})) // es6编译
+		.pipe(concat(outputFileName))
+		.pipe(gulp.dest(`./src/${outputDir}`)).pipe(connect.reload());
+
+})
+
+gulp.task("gulp-watch", ["gulp-dev","connect"], function () {
+
+	watch(gulpJsFile, function () {
+		gulp.start("gulp-dev-watch")
+	});
+
+
+	//监听html
+	watch(`./src/${outputDir}/**/*.html`, function () {
+		gulp.start("gulp-html");
+	});
+
+
+})
+
+gulp.task("gulp-html", function () {
+	gulp.src(`./src/${outputDir}/**/*.html`).pipe(connect.reload());
 });
 
 
