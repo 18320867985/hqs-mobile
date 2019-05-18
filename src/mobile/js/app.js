@@ -1,6 +1,7 @@
 
 import   "./mobile-dom.js"; 
 
-//import   "./mobile-ajax.js"; 
+import   "./mobile-ajax"; 
 
-//export {} from "";
+
+

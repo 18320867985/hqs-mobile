@@ -1,3 +1,7 @@
+/* 
+ajax
+*/
+(function(Mobile){
 // init xhr
 var _xhrCORS;
 
@@ -238,3 +242,5 @@ Mobile.extend({
 	},
 
 });
+
+})(Mobile)

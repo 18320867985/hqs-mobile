@@ -122,9 +122,11 @@
 					textEnd: "没有更多数据",
 					textClick: "点击加载更多",
 					callback: function(el, op) { // 回调函数
-						
+			
 						var value=op.data;  // 查询数据
 						$.get("./scroll.json", function(data) {
+
+				
 
 							var list = document.createDocumentFragment();
 							for(var i = 0; i < data.length; i++) {
