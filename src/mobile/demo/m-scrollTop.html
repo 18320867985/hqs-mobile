@@ -146,15 +146,17 @@
 	<script src="../mobile.js" type="text/javascript" charset="utf-8"></script>
 	<!--	<script src="js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>-->
 		<script type="text/javascript">
-			
+				m(document).scroll(function(){
+					console.log(m(window).windowTop())
+				})
 			m(".btn:nth-of-type(1)").click(function() {
-				m(window).windowTop(200,200);
+				m(window).windowTop(200,2000);
 				
 			});
 
 			m(".btn2").click(function() {
 				//alert($(this).offset().top)
-				m(document).scrollTop($(this).offset().top,400);
+				m(window).windowTop($(this).offset().top,500);
 				
 			});
 			

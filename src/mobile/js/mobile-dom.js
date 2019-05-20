@@ -50,7 +50,6 @@
 	// 可计算值 的列表
 	Mobile.numberList = ["left", "top", "right", "bottom", "width", "height"];
 
-	// 私有函数
 	var _block = ["body", "div", "p", "table", "tr", "thead", "tbody", "tfoot", "h1", "h2", "h3", "h4", "h5", "h6",
 		"article",
 		"aside", "details", "figcaption", "figure", "footer", "header", "hgroup", "main", "menu", "nav", "section",
@@ -1553,6 +1552,7 @@
 			var fx = 20;
 			var speed = 20;
 			Mobile.each(this, function() {
+
 				this.clearTimeId = this.clearTimeId || 0;
 				clearInterval(this.clearTimeId);
 
@@ -1596,7 +1596,7 @@
 		},
 
 		//  scrollTop
-		scrollTop: function(size) {
+		scrollTop: function(y) {
 
 			// get
 			if (arguments.length === 0) {
@@ -1613,10 +1613,10 @@
 			} else {
 				Mobile.each(this, function() {
 					if (this === window || this === document) {
-						window.scrollTo(0, parseFloat(size));
+						window.scrollTo(0, parseFloat(y));
 
 					} else {
-						this.scrollTop = parseFloat(size);
+						this.scrollTop = parseFloat(y);
 					}
 				});
 
