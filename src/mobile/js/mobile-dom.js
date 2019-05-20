@@ -29,7 +29,7 @@
 
 })(typeof window !== "undefined" ? window : this, function(window) {
 
-"use strict"
+	"use strict"
 
 	// 冲突Mobile兼容
 	var _mobile = window.mobile,_m=window.m,_$ = window.$;
@@ -2220,7 +2220,7 @@
 		},
 	});
 
-	/***添加自定义事件的函数***/
+	// 自定义事件的函数
 	Mobile.extend({
 		events: {
 			props: {},

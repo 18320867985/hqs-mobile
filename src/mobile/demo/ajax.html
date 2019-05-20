@@ -91,52 +91,54 @@
 	<body>
 		<div class="abc" data-id>
 			<button class="btn abc" type="button">ajax</button>
+			<button class="btn  get" type="button">get</button>
+			<button class="btn  post" type="button">post</button>
+			<button class="btn   put" type="button">put</button>
+			<button class="btn  delete" type="button">delete</button>
 
 		</div>
 
 	<script src="../mobile.js" type="text/javascript" charset="utf-8"></script>
 		<!-- <script src="js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script> -->
 		<script type="text/javascript">
-			mobile(".btn").click(function() {
-					
-					m.post("http://localhost:4015/api/values", function(data) {
-						alert(JSON.stringify(data));
-					},function(){},function(xhr){
-						console.log(xhr)
-					});
-					
-//					var xhr=new XMLHttpRequest();
-//					if(typeof xhr.withCredentials==="undefined"){
-//						alert("no supper")
-//					} else{
-//						alert("ok")
-//					}
-					});
+			var url="http://localhost:3000/admin/user/data-dtl/5c7350aede745a12d89ce1b6"
+			$(".btn").click(function() {
+					$.get(url,{
+						name:"12345",
+						null:null,
+						undefined:undefined,
+						temp:"",
+						dt:new Date(),
+						obj:{
+							a:1,
+							age:20,
 
-//$.ajax({
-//              type: "POST",
-//              url: "http://localhost:4015/api/values",
-//              dataType: "json",
-//              contentType: "application/json; charset=utf-8",
-//              cache: false,
-//              success: function (persons) {
-//                  $.each(persons, function (index, person) {
-//                      var html = "<li><ul>";
-//                      html += "<li>Name: " + person.Name + "</li>";
-//                      html += "<li>Age:" + person.Age + "</li>";
-//                      html += "<li>Gender: " + person.Gender + "</li>";
-//                      html += "</ul>";
-//                      $("#person").append($(html));
-//                  });
-//              }
-//          });
-//
-//				}
-//
-//			);
-			//function callback(data) {
-			//    alert(JSON.stringify( data))
-			//}
+							obj2:{
+								c:11,
+								age:22,
+								null:null,
+						undefined:undefined,
+							},
+							
+						},
+						arrs:[
+								{
+									c:1,age:22
+								},
+								{
+									c:222,
+									age:222,
+								
+								},
+							],
+							arrs2:[1,2,4,{pp:"99"},[1,2,5]]
+					},function(data){
+						console.log("data",data.data)
+					})
+			
+			});
+					
+
 			function jsonp(url, data) {
 				
 					var callback;

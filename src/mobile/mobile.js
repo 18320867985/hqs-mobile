@@ -2119,7 +2119,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	});
 
-	/***添加自定义事件的函数***/
+	// 自定义事件的函数
 	Mobile.extend({
 		events: {
 			props: {},
@@ -2326,37 +2326,82 @@ ajax
 
 		// 参数data对象字符
 		var params = [];
+		if (data instanceof Object) {
+			_compilerparams(params, data, "");
+		}
+		return params.join("&") || "";
+	}
+
+	function _compilerparams(params, data, preKey) {
+		preKey = preKey || "";
 
 		for (var key in data) {
-
-			if (_typeof(data[key]) === "object") {
-				var data2 = data[key];
-				// object
-				if (data[key].constructor !== Array) {
+			var data2 = data[key];
+			if (data2 === null || data2 === undefined) {}
+			// object
+			else if (data2.constructor === Object) {
 					for (var key2 in data2) {
-						var _key = key + "[" + key2 + "]";
+						//var _key =preKey+ key + "[" + key2 + "]";
+
+						var _key = "";
+						var _key2 = "[" + key2 + "]";
+						if (preKey == "") {
+							_key = preKey + key + _key2;
+						} else {
+							_key = preKey + "[" + key + "]" + _key2;
+						}
+
 						var _value = data2[key2];
-						params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
-					}
-				} else {
-					for (var key2 in data2) {
 
-						var data3 = data2[key2];
-						if ((typeof data3 === "undefined" ? "undefined" : _typeof(data3)) === "object" && data3.constructor !== Array) {
-							for (var key3 in data3) {
-								var _key = key + "[" + key2 + "]" + "[" + key3 + "]";
-								var _value = data3[key3];
-								params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
-							}
+						if (_value.constructor === Array || _value.constructor === Object) {
+							//console.log(_key)
+							_compilerparams(params, _value, _key);
+						} else {
+							params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
 						}
 					}
-				}
-			} else {
-				params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
-			}
-		}
+				} else if (data2.constructor === Array) {
 
-		return params.join("&") || "";
+					for (var key2 in data2) {
+						var data3 = data2[key2];
+						if ((typeof data3 === "undefined" ? "undefined" : _typeof(data3)) === "object") {
+							for (var key3 in data3) {
+								//var _key = preKey+key + "[" + key2 + "]" + "[" + key3 + "]";
+
+								var _key = "";
+								var _key2 = "[" + key2 + "]" + "[" + key3 + "]";
+								if (preKey == "") {
+									_key = preKey + key + _key2;
+								} else {
+									_key = preKey + "[" + key + "]" + _key2;
+								}
+
+								var _value = data3[key3];
+
+								if (_value.constructor === Array || _value.constructor === Object) {
+									//console.log(_key)
+									_compilerparams(params, _value, _key);
+								} else {
+									params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
+								}
+							}
+						} else {
+							var _key = preKey + key + "[]";
+							var _value = data3;
+							params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
+						}
+					}
+				} else {
+					var _key = "";
+					if (preKey == "") {
+						_key = preKey + key;
+					} else {
+						_key = preKey + "[" + key + "]";
+					}
+
+					params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(data[key]));
+				}
+		}
 	}
 
 	Mobile.extend({
@@ -2364,17 +2409,21 @@ ajax
 		// create XHR Object
 		createXHR: function createXHR() {
 
+			if (_xhrCORS) {
+				return _xhrCORS;
+			}
+
 			if (window.XMLHttpRequest) {
 
 				//IE7+、Firefox、Opera、Chrome 和Safari
-				return new XMLHttpRequest();
+				return _xhrCORS = new XMLHttpRequest();
 			} else if (window.ActiveXObject) {
 
 				//IE6 及以下
 				var versions = ['MSXML2.XMLHttp', 'Microsoft.XMLHTTP'];
 				for (var i = 0, len = versions.length; i < len; i++) {
 					try {
-						return new ActiveXObject(version[i]);
+						return _xhrCORS = new ActiveXObject(version[i]);
 						break;
 					} catch (e) {
 						//跳过
@@ -2385,16 +2434,20 @@ ajax
 			}
 		},
 
+		getXhr: function getXhr() {
+			return this.createXHR();
+		},
+
 		/* 封装ajax函数
-  	 @param {string}opt.type http连接的方式，包括POST和GET两种方式
-  	 @param {string}opt.url 发送请求的url
-  	 @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
-  	 @param {object}opt.data 发送的参数，格式为对象类型
-  	 @param {function}opt.contentType   内容类型
-  	@param {function}opt.success ajax发送并接收成功调用的回调函数
-  	 @param {function}opt.error ajax发送并接收error调用的回调函数
-  	 @param {function}opt.getXHR 获取xhr对象
-  	 @param {number}opt.timeout // 超时
+  @param {string}opt.type http连接的方式，包括POST和GET两种方式
+  @param {string}opt.url 发送请求的url
+  @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
+  @param {object}opt.data 发送的参数，格式为对象类型
+  @param {function}opt.contentType   内容类型
+  @param{function}opt.success ajax发送并接收成功调用的回调函数
+  @param {function}opt.error ajax发送并接收error调用的回调函数
+  @param {function}opt.getXHR 获取xhr对象
+  @param {number}opt.timeout // 超时
    */
 		ajax: function ajax(opt) {
 
@@ -2407,7 +2460,7 @@ ajax
 			opt.success = opt.success || function () {};
 			opt.error = opt.error || function () {};
 			opt.contentType = opt.contentType || "application/x-www-form-urlencoded;charset=utf-8";
-			opt.timeout = typeof opt.timeout === "number" ? opt.timeout : 10000;
+			opt.timeout = typeof opt.timeout === "number" ? opt.timeout : 20000;
 			opt.progress = opt.progress || {};
 
 			var xhr = Mobile.createXHR();
