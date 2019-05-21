@@ -444,6 +444,7 @@ gulp.task("rollup-html", function () {
 
 var gulpJsFile = [
 	"./src/mobile/js/mobile-dom.js",
+	//"./src/mobile/js/mobile-transition.js",
 	"./src/mobile/js/mobile-ajax.js",
 
 ];
@@ -464,7 +465,9 @@ gulp.task("gulp-build", function () {
 		.pipe(gulpMinJs()) //压缩js文件
 		.pipe(gulp.dest(`./dist/${outputDir}/`));
 
-	gulp.src([`./src/${outputDir}/**/*.html`]).pipe(gulp.dest(`./dist/${outputDir}/`)); //复制html
+	gulp.src([`./src/${outputDir}/*.html`]).pipe(gulp.dest(`./dist/${outputDir}/`)); //复制html
+
+	gulp.src([`./src/${outputDir}/demo/**/*.*`]).pipe(gulp.dest(`./dist/${outputDir}/demo`)); //复制demo目录
 
 })
 

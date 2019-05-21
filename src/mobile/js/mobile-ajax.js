@@ -1,5 +1,5 @@
 /* 
-ajax
+	ajax
 */
 (function (Mobile) {
 	// init xhr
@@ -38,30 +38,26 @@ ajax
 	// 链接ajax发送的参数数据
 	function _JoinParams(data) {
 
-		// 参数data对象字符
 		var params = [];
 		if (data instanceof Object) {
 			_compilerparams(params, data, "");
 		}
 		return params.join("&") || "";
 
-
 	}
 
 	function _compilerparams(params, data, preKey) {
 		preKey = preKey || "";
 
-
 		for (var key in data) {
 			var data2 = data[key];
 			if (data2 === null || data2 === undefined) {
-
+				continue;
 			}
-			// object
+	
 			else if (data2.constructor === Object) {
 				for (var key2 in data2) {
-					//var _key =preKey+ key + "[" + key2 + "]";
-
+				
 					var _key = "";
 					var _key2 = "[" + key2 + "]";
 					if (preKey == "") {
@@ -73,7 +69,7 @@ ajax
 					var _value = data2[key2];
 
 					if (_value.constructor === Array || _value.constructor === Object) {
-						//console.log(_key)
+					
 						_compilerparams(params, _value, _key);
 					} else {
 						params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
@@ -88,8 +84,7 @@ ajax
 					var data3 = data2[key2];
 					if (typeof data3 === "object") {
 						for (var key3 in data3) {
-							//var _key = preKey+key + "[" + key2 + "]" + "[" + key3 + "]";
-
+						
 							var _key = "";
 							var _key2 = "[" + key2 + "]" + "[" + key3 + "]";
 							if (preKey == "") {
@@ -101,7 +96,7 @@ ajax
 							var _value = data3[key3];
 
 							if (_value.constructor === Array || _value.constructor === Object) {
-								//console.log(_key)
+								
 								_compilerparams(params, _value, _key);
 							} else {
 								params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
@@ -167,7 +162,6 @@ ajax
 		},
 
 
-
 		/* 封装ajax函数
 		@param {string}opt.type http连接的方式，包括POST和GET两种方式
 		@param {string}opt.url 发送请求的url
@@ -198,8 +192,8 @@ ajax
 			xhr.xhrFields = opt.xhrFields || {};
 
 			// 连接参数
-			var postData = _JoinParams(opt.data); // params.join('&');
-
+			var postData = _JoinParams(opt.data); 
+			
 			if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {
 				opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() : opt.url + "&_=" + Math.random();
 
@@ -283,10 +277,7 @@ ajax
 			var params = [];
 			var postData = "";
 			if (typeof data === "object") {
-				//				for(var key in data) {
-				//					params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
-				//				}
-				//				postData = params && params.join('&');
+			
 				postData = _JoinParams(data)
 			}
 
@@ -307,4 +298,4 @@ ajax
 
 	});
 
-})(Mobile)
+})(Mobile);

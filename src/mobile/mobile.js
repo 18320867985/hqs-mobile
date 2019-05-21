@@ -4,7 +4,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 /*
  *	移动端 公共类库
- * 作者： hqs
+ * 作者：黄其山
  */
 
 (function (global, factory) {
@@ -52,7 +52,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	// 版本号
 	Mobile.version = "1.1.0";
 
-	// 可计算值 的列表
+	// 可计算值的列表值
 	Mobile.numberList = ["left", "top", "right", "bottom", "width", "height"];
 
 	var _block = ["body", "div", "p", "table", "tr", "thead", "tbody", "tfoot", "h1", "h2", "h3", "h4", "h5", "h6", "article", "aside", "details", "figcaption", "figure", "footer", "header", "hgroup", "main", "menu", "nav", "section", "summary", "ul", "li", "ol", "dl", "dt", "dd", "fieldset"];
@@ -97,13 +97,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		return _searchParents(el.parentElement, fn);
 	}
 
-	// prototype
+	// 原型-prototype
 	Mobile.fn = Mobile.prototype = {
 
 		init: function init(selector, content) {
 
 			var arrs = [];
-			this.length = 0; // init length=0;
+			this.length = 0;
 			if (!content) {
 
 				// 字符串
@@ -172,6 +172,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		// 将init函数作为实例化的mobile原型。 
 	};Mobile.fn.init.prototype = Mobile.fn;
 
+	// 添加静态和实例的扩展方法
 	Mobile.extend = Mobile.fn.extend = function (obj) {
 
 		var src,
@@ -185,7 +186,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		    length = arguments.length,
 		    deep = false;
 
-		// Handle a deep copy situation
 		if (typeof target === "boolean") {
 			deep = target;
 
@@ -194,19 +194,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			i++;
 		}
 
-		// Handle case when target is a string or something (possible in deep copy)
 		if ((typeof target === "undefined" ? "undefined" : _typeof(target)) !== "object" && !Mobile.isFunction(target)) {
 			target = {};
 		}
 
-		// extend Mobile itself if only one argument is passed
 		if (i === length) {
 			target = this;
 			i--;
 		}
 
 		for (; i < length; i++) {
-			// Only deal with non-null/undefined values
+
 			if ((options = arguments[i]) != null) {
 				// Extend the base object
 				for (name in options) {
@@ -238,11 +236,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 		}
 
-		// Return the modified object
 		return target;
 	};
 
-	/*extend 静态方法*/
+	// extend static function
 	Mobile.extend({
 
 		noCoflict: function noCoflict(deep) {
@@ -578,7 +575,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	});
 
-	/*extend instantiation function 实例方法*/
+	// extend instantiation function 
 	Mobile.fn.extend({
 
 		//each
@@ -1290,7 +1287,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	});
 
-	/*animate*/
+	// animate
 	Mobile.fn.extend({
 
 		// show
@@ -1541,143 +1538,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				// set
 				return this;
 			}
-		},
-
-		// transition
-		transition: function transition(option, time, ease, delay, fn) {
-
-			ease = typeof ease === "string" ? ease : "ease";
-			delay = typeof delay === "number" ? delay : 0;
-			var _transition = "all " + time / 1000 + "s  " + ease + " " + delay / 1000 + "s";
-
-			if (typeof option === "string") {
-
-				if (arguments.length === 1) {
-					_transition = option;
-				} else if (arguments.length > 1) {
-					_transition = option + " " + time / 1000 + "s  " + ease + " " + delay / 1000 + "s";
-				}
-
-				Mobile.each(this, function () {
-					this.style.MozTransition = _transition;
-					this.style.msTransition = _transition;
-					this.style.webkitTransition = _transition;
-					this.style.OTransition = _transition;
-					this.style.transition = _transition;
-				});
-
-				return this;
-			}
-
-			// option is object	
-			if ((typeof option === "undefined" ? "undefined" : _typeof(option)) != "object") {
-				return;
-			}
-			Mobile.each(this, function (i, el) {
-				time = typeof time === "number" ? time : 400;
-				el.setTimeout = el.setTimeout || 0; // 第一次执行
-				el.isEnd = el.isEnd || false; // 动画是否完毕
-
-				if (el.isEnd === false) {
-
-					// 第一次执行
-					if (!el.isStart) {
-						el.isStart = true;
-						el.one = option; // 记录的第一次对象属性
-						el.setTimeout = time + el.setTimeout + delay;
-						el.style.MozTransition = _transition;
-						el.style.msTransition = _transition;
-						el.style.webkitTransition = _transition;
-						el.style.OTransition = _transition;
-						el.style.transition = _transition;
-						for (var name in option) {
-							el.style[name] = option[name];
-						}
-
-						//  第一次执行回调函数
-						if (typeof fn === "function") {
-							var clearTimeId2 = setTimeout(function () {
-								fn(el);
-								clearTimeout(clearTimeId2);
-							}, time + delay);
-						}
-					} else {
-						var clearTimeId = setTimeout(function () {
-
-							el.style.MozTransition = _transition;
-							el.style.msTransition = _transition;
-							el.style.webkitTransition = _transition;
-							el.style.OTransition = _transition;
-							el.style.transition = _transition;
-
-							for (var name in option) {
-								el.style[name] = option[name];
-							}
-							//  执行回调函数
-							if (typeof fn === "function") {
-								var clearTimeId2 = setTimeout(function () {
-									fn(el);
-									clearTimeout(clearTimeId2);
-								}, time + delay);
-							}
-							clearTimeout(clearTimeId);
-						}, el.setTimeout);
-
-						el.setTimeout = time + el.setTimeout + delay;
-					}
-				}
-			});
-
-			return this;
-		},
-
-		// transitionEnd
-		transitionEnd: function transitionEnd(isReset, fn) {
-
-			// 是否回复到第一次的状态
-			//isReset = typeof isReset === "boolean" ? isReset : false;
-			var $arguments = arguments;
-			Mobile.each(this, function (i, el) {
-
-				// 第一次执行
-				el.setTimeout = el.setTimeout || 0;
-
-				// 动画是否完毕
-				el.isEnd = true;
-				//console.log("========end=======")
-				//	console.log(this.isEnd)
-
-				// 动画是否完毕 回调函数
-				var clearTimeId = setTimeout(function () {
-					el.isEnd = false;
-					el.setTimeout = 0;
-					el.isStart = false;
-
-					if (typeof isReset === "function") {
-						isReset(el);
-					} else if (typeof isReset === "boolean" && isReset === true) {
-
-						for (var name in el.one) {
-							el.style[name] = el.one[name];
-						}
-						var _v = "none";
-						el.style.MozTransition = _v;
-						el.style.msTransition = _v;
-						el.style.webkitTransition = _v;
-						el.style.OTransition = _v;
-						el.style.transition = _v;
-					}
-
-					if (typeof fn === "function") {
-						fn(el);
-					}
-				}, el.setTimeout + 20);
-			});
 		}
 
 	});
 
-	// bind enevt 绑定事件
+	// bind enevt 
 	Mobile.fn.extend({
 		on: function on(type) {
 
@@ -1836,7 +1701,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this;
 		},
 
-		// 自定义事件
+		// trigger
 		trigger: function trigger(type, obj) {
 
 			Mobile.each(this, function () {
@@ -1847,17 +1712,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			});
 		},
 
+		// emit
 		emit: function emit(type, obj) {
 			Mobile.each(this, function () {
 				m(this).trigger(type, obj);
 			});
 		},
 
+		//  only bind one event
 		one: function one() {
 			var args = arguments;
 			var $this = this;
-
-			//  只绑定一次事件
 			this.bindOneElementEvent = true;
 			Mobile.each($this, function (i, v) {
 				m(this).on.apply($this, args);
@@ -1887,6 +1752,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				m(this).on("dblclick", fn, bl);
 			});
 		},
+
 		//  blur
 		blur: function blur(fn, bl) {
 			if (arguments.length === 0) {
@@ -1948,7 +1814,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			});
 		},
 
-		// touchend 和 touchcancel 同时绑定事件
+		// touchend 和 touchcancel 
 		touchendcancel: function touchendcancel(fn, bl) {
 			bl = bl || false;
 			Mobile.each(this, function () {
@@ -1957,7 +1823,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			});
 		},
 
-		// window canel 绑定事件
+		// window cancel event
 		windowcancel: function windowcancel(fn) {
 			var $this = this[0] || {};
 			m(window).on("touchstart", function (event) {
@@ -2119,7 +1985,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	});
 
-	// 自定义事件的函数
+	// cst event
 	Mobile.extend({
 		events: {
 			props: {},
@@ -2286,7 +2152,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /* 
-ajax
+	ajax
 */
 (function (Mobile) {
 	// init xhr
@@ -2324,7 +2190,6 @@ ajax
 	// 链接ajax发送的参数数据
 	function _JoinParams(data) {
 
-		// 参数data对象字符
 		var params = [];
 		if (data instanceof Object) {
 			_compilerparams(params, data, "");
@@ -2337,70 +2202,68 @@ ajax
 
 		for (var key in data) {
 			var data2 = data[key];
-			if (data2 === null || data2 === undefined) {}
-			// object
-			else if (data2.constructor === Object) {
-					for (var key2 in data2) {
-						//var _key =preKey+ key + "[" + key2 + "]";
+			if (data2 === null || data2 === undefined) {
+				continue;
+			} else if (data2.constructor === Object) {
+				for (var key2 in data2) {
 
-						var _key = "";
-						var _key2 = "[" + key2 + "]";
-						if (preKey == "") {
-							_key = preKey + key + _key2;
-						} else {
-							_key = preKey + "[" + key + "]" + _key2;
-						}
-
-						var _value = data2[key2];
-
-						if (_value.constructor === Array || _value.constructor === Object) {
-							//console.log(_key)
-							_compilerparams(params, _value, _key);
-						} else {
-							params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
-						}
-					}
-				} else if (data2.constructor === Array) {
-
-					for (var key2 in data2) {
-						var data3 = data2[key2];
-						if ((typeof data3 === "undefined" ? "undefined" : _typeof(data3)) === "object") {
-							for (var key3 in data3) {
-								//var _key = preKey+key + "[" + key2 + "]" + "[" + key3 + "]";
-
-								var _key = "";
-								var _key2 = "[" + key2 + "]" + "[" + key3 + "]";
-								if (preKey == "") {
-									_key = preKey + key + _key2;
-								} else {
-									_key = preKey + "[" + key + "]" + _key2;
-								}
-
-								var _value = data3[key3];
-
-								if (_value.constructor === Array || _value.constructor === Object) {
-									//console.log(_key)
-									_compilerparams(params, _value, _key);
-								} else {
-									params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
-								}
-							}
-						} else {
-							var _key = preKey + key + "[]";
-							var _value = data3;
-							params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
-						}
-					}
-				} else {
 					var _key = "";
+					var _key2 = "[" + key2 + "]";
 					if (preKey == "") {
-						_key = preKey + key;
+						_key = preKey + key + _key2;
 					} else {
-						_key = preKey + "[" + key + "]";
+						_key = preKey + "[" + key + "]" + _key2;
 					}
 
-					params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(data[key]));
+					var _value = data2[key2];
+
+					if (_value.constructor === Array || _value.constructor === Object) {
+
+						_compilerparams(params, _value, _key);
+					} else {
+						params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
+					}
 				}
+			} else if (data2.constructor === Array) {
+
+				for (var key2 in data2) {
+					var data3 = data2[key2];
+					if ((typeof data3 === "undefined" ? "undefined" : _typeof(data3)) === "object") {
+						for (var key3 in data3) {
+
+							var _key = "";
+							var _key2 = "[" + key2 + "]" + "[" + key3 + "]";
+							if (preKey == "") {
+								_key = preKey + key + _key2;
+							} else {
+								_key = preKey + "[" + key + "]" + _key2;
+							}
+
+							var _value = data3[key3];
+
+							if (_value.constructor === Array || _value.constructor === Object) {
+
+								_compilerparams(params, _value, _key);
+							} else {
+								params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
+							}
+						}
+					} else {
+						var _key = preKey + key + "[]";
+						var _value = data3;
+						params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
+					}
+				}
+			} else {
+				var _key = "";
+				if (preKey == "") {
+					_key = preKey + key;
+				} else {
+					_key = preKey + "[" + key + "]";
+				}
+
+				params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(data[key]));
+			}
 		}
 	}
 
@@ -2468,7 +2331,7 @@ ajax
 			xhr.xhrFields = opt.xhrFields || {};
 
 			// 连接参数
-			var postData = _JoinParams(opt.data); // params.join('&');
+			var postData = _JoinParams(opt.data);
 
 			if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {
 				opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() : opt.url + "&_=" + Math.random();
@@ -2550,10 +2413,7 @@ ajax
 			var params = [];
 			var postData = "";
 			if ((typeof data === "undefined" ? "undefined" : _typeof(data)) === "object") {
-				//				for(var key in data) {
-				//					params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
-				//				}
-				//				postData = params && params.join('&');
+
 				postData = _JoinParams(data);
 			}
 
