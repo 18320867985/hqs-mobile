@@ -97,6 +97,59 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		return _searchParents(el.parentElement, fn);
 	}
 
+	// scrollTop 动画
+	function _scrollTop(self, y, time) {
+		time = typeof time === "number" ? time : 400;
+		y = typeof y === "number" ? y : parseFloat(y);
+		y = isNaN(y) ? 0 : y;
+		var fx = 20;
+		var speed = 20;
+		self.clearTimeId = self.clearTimeId || 0;
+		clearInterval(self.clearTimeId);
+
+		var isElement = true;
+		if (self === window || self === document) {
+			isElement = false;
+		} else {
+			isElement = true;
+		}
+
+		var speed1 = time / fx;
+		var windowStartTop = (isElement ? self.scrollTop : parseFloat(window.pageYOffset)) || 0;
+
+		var speed2 = Math.abs(windowStartTop - y);
+		speed = speed2 / speed1;
+
+		if (windowStartTop > y) {
+
+			self.clearTimeId = setInterval(function () {
+				windowStartTop = windowStartTop - speed;
+				isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, windowStartTop);
+				console.log("scroll");
+				if (windowStartTop - speed < y) {
+					// stop
+					isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, y);
+					clearInterval(self.clearTimeId);
+				}
+			}, fx);
+		} else {
+			if (windowStartTop === y) {
+				// stop
+				clearInterval(self.clearTimeId);
+				return;
+			}
+			self.clearTimeId = setInterval(function () {
+				windowStartTop = windowStartTop + speed;
+				isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, windowStartTop);
+				console.log("scroll");
+				if (windowStartTop + speed > y) {
+					// stop
+					isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, y);
+					clearInterval(self.clearTimeId);
+				}
+			}, fx);
+		}
+	}
 	// 原型-prototype
 	Mobile.fn = Mobile.prototype = {
 
@@ -1464,46 +1517,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return parseFloat(window.pageYOffset) || 0;
 			}
 
-			// set
-			time = typeof time === "number" ? time : 400;
-			y = typeof y === "number" ? y : parseFloat(y);
-			y = isNaN(y) ? 0 : y;
-			var fx = 20;
-			var speed = 20;
 			Mobile.each(this, function () {
-
-				this.clearTimeId = this.clearTimeId || 0;
-				clearInterval(this.clearTimeId);
-
-				if (this !== window) {
-					throw new Error("element must is window");
-				}
-				var speed1 = time / fx;
-				var windowStartTop = parseFloat(window.pageYOffset) || 0;
-				var speed2 = Math.abs(windowStartTop - y);
-				speed = speed2 / speed1;
-
-				if (windowStartTop > y) {
-					this.clearTimeId = setInterval(function () {
-						windowStartTop = windowStartTop - speed;
-						window.scrollTo(0, windowStartTop);
-						if (windowStartTop - speed < y) {
-							window.scrollTo(0, y);
-							clearInterval(this.clearTimeId);
-						}
-					}, fx);
+				if (this == window || this === document) {
+					_scrollTop(this, y, time);
 				} else {
-					if (windowStartTop === y) {
-						return;
-					}
-					this.clearTimeId = setInterval(function () {
-						windowStartTop = windowStartTop + speed;
-						window.scrollTo(0, windowStartTop);
-						if (windowStartTop + speed > y) {
-							window.scrollTo(0, y);
-							clearInterval(this.clearTimeId);
-						}
-					}, fx);
+					throw new Error("windowTop() function with element must is window or document ");
 				}
 
 				return false;
@@ -1512,7 +1530,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		//  scrollTop
-		scrollTop: function scrollTop(y) {
+		scrollTop: function scrollTop(y, time) {
 
 			// get
 			if (arguments.length === 0) {
@@ -1528,14 +1546,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return _size;
 			} else {
 				Mobile.each(this, function () {
-					if (this === window || this === document) {
-						window.scrollTo(0, parseFloat(y));
-					} else {
-						this.scrollTop = parseFloat(y);
-					}
+					_scrollTop(this, y, time);
 				});
 
-				// set
 				return this;
 			}
 		}
