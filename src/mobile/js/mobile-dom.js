@@ -100,7 +100,7 @@
 	}
 
 	// scrollTop 动画
-	function _scrollTop(self,y,time){
+	function _scrollTop(self, y, time) {
 		time = typeof time === "number" ? time : 400;
 		y = typeof y === "number" ? y : parseFloat(y);
 		y = isNaN(y) ? 0 : y;
@@ -109,53 +109,53 @@
 		self.clearTimeId = self.clearTimeId || 0;
 		clearInterval(self.clearTimeId);
 
-		var isElement=true;
-		if(self===window || self=== document){
-			isElement=false;
-		}else{
-			isElement=true;
+		var isElement = true;
+		if (self === window || self === document) {
+			isElement = false;
+		} else {
+			isElement = true;
 		}
 
-	
-	var speed1 = time / fx;
-	var windowStartTop = (isElement?self.scrollTop:parseFloat(window.pageYOffset))||0;
-	
-	var speed2 = Math.abs(windowStartTop - y);
-	speed = speed2 / speed1;
 
-	if (windowStartTop > y) {
-	
-		self.clearTimeId = setInterval(function () {
-			windowStartTop = (windowStartTop - speed);
-			isElement?self.scrollTop=windowStartTop:window.scrollTo(0, windowStartTop);
-			console.log("scroll")
-			if ((windowStartTop - speed) < y) {
+		var speed1 = time / fx;
+		var windowStartTop = (isElement ? self.scrollTop : parseFloat(window.pageYOffset)) || 0;
+
+		var speed2 = Math.abs(windowStartTop - y);
+		speed = speed2 / speed1;
+
+		if (windowStartTop > y) {
+
+			self.clearTimeId = setInterval(function () {
+				windowStartTop = (windowStartTop - speed);
+				isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, windowStartTop);
+				console.log("scroll")
+				if ((windowStartTop - speed) < y) {
+					// stop
+					isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, y);
+					clearInterval(self.clearTimeId);
+				}
+
+			}, fx);
+
+		} else {
+			if (windowStartTop === y) {
 				// stop
-				isElement?self.scrollTop=windowStartTop:window.scrollTo(0, y);
 				clearInterval(self.clearTimeId);
+				return;
 			}
+			self.clearTimeId = setInterval(function () {
+				windowStartTop = (windowStartTop + speed);
+				isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, windowStartTop);
+				console.log("scroll")
+				if ((windowStartTop + speed) > y) {
+					// stop
+					isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, y);
+					clearInterval(self.clearTimeId);
+				}
 
-		}, fx);
-
-	} else {
-		if (windowStartTop === y) {
-			// stop
-			clearInterval(self.clearTimeId);
-			return;
+			}, fx);
 		}
-		self.clearTimeId = setInterval(function () {
-			windowStartTop = (windowStartTop + speed);
-			isElement?self.scrollTop=windowStartTop:window.scrollTo(0, windowStartTop);
-			console.log("scroll")
-			if ((windowStartTop + speed) > y) {
-				// stop
-				isElement?self.scrollTop=windowStartTop:window.scrollTo(0, y);
-				clearInterval(self.clearTimeId);
-			}
-
-		}, fx);
 	}
-}
 	// 原型-prototype
 	Mobile.fn = Mobile.prototype = {
 
@@ -165,7 +165,7 @@
 			this.length = 0;
 			if (!content) {
 
-					// 字符串
+				// 字符串
 				if (typeof selector === "string") {
 					if (selector.trim().length === 0) {
 						return this;
@@ -181,7 +181,7 @@
 						});
 					} else if (selector.nodeType === Node.ELEMENT_NODE || selector.nodeType === Node.DOCUMENT_NODE || selector ===
 						window) {
-					// 单例对象 
+						// 单例对象 
 						arrs.push(selector);
 					}
 
@@ -1176,8 +1176,8 @@
 			return this;
 		},
 
-		//  outerHeight
-		outerHeight: function () {
+		//  clientHeight
+		clientHeight: function () {
 
 			if (arguments.length === 0) {
 				var _h = 0;
@@ -1188,9 +1188,9 @@
 					if (this === window) {
 						_h = window.innerHeight || window.document.documentElement.clientHeight || window.document.body.clientHeight;
 					} else if (this === document) {
-						_h = m(document.documentElement).eq(0) && m(document.documentElement).eq(0)[0].offsetHeight; //document.documentElement.offsetHeight;
+						_h = m(document.documentElement).css("height"); //document.documentElement.offsetHeight;
 					} else {
-						_h = m(this).eq(0) && m(this).eq(0)[0].offsetHeight;
+						_h = m(this).eq(0) && m(this).eq(0)[0].clientHeight;
 					}
 					_h = parseFloat(_h);
 
@@ -1200,54 +1200,9 @@
 				return _h;
 			}
 
-			// set
-			else if (arguments.length === 1) {
-				var _value = arguments[0]
-				Mobile.each(this, function () {
-					m(this).css("height", _value);
-
-				});
-			}
 			return this;
 		},
 
-		//  outWidth
-		outerWidth: function () {
-
-			if (arguments.length === 0) {
-				var _w = 0;
-				Mobile.each(this, function () {
-
-					// window
-					if (this === window) {
-						_w = window.innerWidth || window.document.documentElement.clientWidth || window.document.body.clientWidth;
-					} else if (this === document) {
-						_w = m(document.documentElement).eq(0) && m(document.documentElement).eq(0)[0].offsetWidth; //document.documentElement.offsetWidth;
-
-					} else {
-						_w = m(this).eq(0) && m(this).eq(0)[0].offsetWidth;
-
-					}
-					_w = parseFloat(_w);
-					return false;
-
-				});
-
-				return _w;
-
-			}
-
-			// set
-			else if (arguments.length === 1) {
-				var _value = arguments[0]
-				Mobile.each(this, function () {
-					m(this).css("width", _value);
-
-				});
-			}
-
-			return this;
-		},
 		//  width
 		width: function () {
 
@@ -1283,6 +1238,37 @@
 
 				});
 			}
+
+			return this;
+		},
+
+		//  clientWidth
+		clientWidth: function () {
+
+			// get
+			if (arguments.length === 0) {
+				var _w = 0;
+				Mobile.each(this, function () {
+
+					// window
+					if (this === window) {
+
+						_w = window.innerWidth || window.document.documentElement.clientWidth || window.document.body.clientWidth;
+					} else if (this === document) {
+						_w = m(document.documentElement).css("width"); //document.documentElement.offsetWidth;
+
+					} else {
+						_w = m(this).eq(0) && m(this).eq(0)[0].clientWidth;
+					}
+					_w = parseFloat(_w);
+					return false;
+
+				});
+
+				return _w;
+
+			}
+
 
 			return this;
 		},
@@ -1601,19 +1587,19 @@
 			}
 
 			Mobile.each(this, function () {
-				if (this == window ||this===document) {
-					_scrollTop(this,y,time)
-				}else{
+				if (this == window || this === document) {
+					_scrollTop(this, y, time)
+				} else {
 					throw new Error("windowTop() function with element must is window or document ");
 				}
-				
+
 				return false;
 			});
 			return this;
 		},
 
 		//  scrollTop
-		scrollTop: function (y,time) {
+		scrollTop: function (y, time) {
 
 			// get
 			if (arguments.length === 0) {
@@ -1629,10 +1615,10 @@
 				return _size;
 			} else {
 				Mobile.each(this, function () {
-					_scrollTop(this,y,time);
+					_scrollTop(this, y, time);
 				});
 
-			
+
 				return this;
 			}
 		},

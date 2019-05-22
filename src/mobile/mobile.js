@@ -1118,8 +1118,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this;
 		},
 
-		//  outerHeight
-		outerHeight: function outerHeight() {
+		//  clientHeight
+		clientHeight: function clientHeight() {
 
 			if (arguments.length === 0) {
 				var _h = 0;
@@ -1130,9 +1130,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					if (this === window) {
 						_h = window.innerHeight || window.document.documentElement.clientHeight || window.document.body.clientHeight;
 					} else if (this === document) {
-						_h = m(document.documentElement).eq(0) && m(document.documentElement).eq(0)[0].offsetHeight; //document.documentElement.offsetHeight;
+						_h = m(document.documentElement).css("height"); //document.documentElement.offsetHeight;
 					} else {
-						_h = m(this).eq(0) && m(this).eq(0)[0].offsetHeight;
+						_h = m(this).eq(0) && m(this).eq(0)[0].clientHeight;
 					}
 					_h = parseFloat(_h);
 
@@ -1141,48 +1141,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return _h;
 			}
 
-			// set
-			else if (arguments.length === 1) {
-					var _value = arguments[0];
-					Mobile.each(this, function () {
-						m(this).css("height", _value);
-					});
-				}
 			return this;
 		},
 
-		//  outWidth
-		outerWidth: function outerWidth() {
-
-			if (arguments.length === 0) {
-				var _w = 0;
-				Mobile.each(this, function () {
-
-					// window
-					if (this === window) {
-						_w = window.innerWidth || window.document.documentElement.clientWidth || window.document.body.clientWidth;
-					} else if (this === document) {
-						_w = m(document.documentElement).eq(0) && m(document.documentElement).eq(0)[0].offsetWidth; //document.documentElement.offsetWidth;
-					} else {
-						_w = m(this).eq(0) && m(this).eq(0)[0].offsetWidth;
-					}
-					_w = parseFloat(_w);
-					return false;
-				});
-
-				return _w;
-			}
-
-			// set
-			else if (arguments.length === 1) {
-					var _value = arguments[0];
-					Mobile.each(this, function () {
-						m(this).css("width", _value);
-					});
-				}
-
-			return this;
-		},
 		//  width
 		width: function width() {
 
@@ -1214,6 +1175,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						m(this).css("width", _value);
 					});
 				}
+
+			return this;
+		},
+
+		//  clientWidth
+		clientWidth: function clientWidth() {
+
+			// get
+			if (arguments.length === 0) {
+				var _w = 0;
+				Mobile.each(this, function () {
+
+					// window
+					if (this === window) {
+
+						_w = window.innerWidth || window.document.documentElement.clientWidth || window.document.body.clientWidth;
+					} else if (this === document) {
+						_w = m(document.documentElement).css("width"); //document.documentElement.offsetWidth;
+					} else {
+						_w = m(this).eq(0) && m(this).eq(0)[0].clientWidth;
+					}
+					_w = parseFloat(_w);
+					return false;
+				});
+
+				return _w;
+			}
 
 			return this;
 		},
@@ -2215,9 +2203,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		for (var key in data) {
 			var data2 = data[key];
-			if (data2 === null || data2 === undefined) {
+
+			if (data2 === undefined) {
 				continue;
-			} else if (data2.constructor === Object) {
+			} else if (data2 !== null && data2.constructor === Object) {
 				for (var key2 in data2) {
 
 					var _key = "";
@@ -2237,7 +2226,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
 					}
 				}
-			} else if (data2.constructor === Array) {
+			} else if (data2 !== null && data2.constructor === Array) {
 
 				for (var key2 in data2) {
 					var data3 = data2[key2];
@@ -2274,8 +2263,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				} else {
 					_key = preKey + "[" + key + "]";
 				}
-
-				params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(data[key]));
+				var dataVal = data[key];
+				dataVal = dataVal === null ? "" : dataVal;
+				params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(dataVal));
 			}
 		}
 	}

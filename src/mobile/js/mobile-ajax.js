@@ -51,11 +51,12 @@
 
 		for (var key in data) {
 			var data2 = data[key];
-			if (data2 === null || data2 === undefined) {
+
+			if ( data2 === undefined) {
 				continue;
 			}
 	
-			else if (data2.constructor === Object) {
+			else if (data2 !== null &&data2.constructor === Object) {
 				for (var key2 in data2) {
 				
 					var _key = "";
@@ -78,7 +79,7 @@
 				}
 			}
 
-			else if (data2.constructor === Array) {
+			else if (data2 !== null &&data2.constructor === Array) {
 
 				for (var key2 in data2) {
 					var data3 = data2[key2];
@@ -118,8 +119,9 @@
 				} else {
 					_key = preKey + "[" + key + "]";
 				}
-
-				params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(data[key]));
+				var dataVal=data[key];
+				dataVal=dataVal===null?"":dataVal;
+				params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(dataVal));
 
 			}
 

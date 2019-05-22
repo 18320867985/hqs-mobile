@@ -84,6 +84,14 @@
 			button:not(.btn) {
 				color: red;
 			}
+
+			.client{
+				width: 200px;
+				height: 200px;
+				padding: 10px;
+			box-sizing: border-box;
+				border: 10px solid;
+			}
 		</style>
 
 	</head>
@@ -97,9 +105,14 @@
 
 		</div>
 
+		<div class="client">
+
+		</div>
+
 	<script src="../mobile.js" type="text/javascript" charset="utf-8"></script>
 		<!-- <script src="js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script> -->
 		<script type="text/javascript">
+
 			var url="http://localhost:3000/test"
 			$(".get").click(function() {
 					$.get(url,{
@@ -210,8 +223,7 @@
 			
 			});
 					
-					
-
+	
 			function jsonp(url, data) {
 				
 					var callback;
@@ -257,6 +269,8 @@
 					document.body.appendChild(script);
 				
 			}
+
+		
 		</script>
 	</body>
 
