@@ -340,10 +340,6 @@ function rollupBuild(isBuild, name, dir) {
 
 
 
-
-
-
-
 /* 2. ============================================== rollup 单项编译===================================================*/
 
 /* 
@@ -356,13 +352,19 @@ function rollupBuild(isBuild, name, dir) {
 
 var rollupName = "umd";
 var rollupOutputFormat = "iife";  
-var rollupDir ="rollupJsFile";
-var outputFileName="all";
+var rollupDir ="rollupJsFile";   // 输出目录
 
-var rollup_url = `./src/${rollupDir}/js/app.js`;
-var rollup_url_dev = `./src/${rollupDir}/${outputFileName}.js`;
-var rollup_url_watch = `./src/${rollupDir}/js/**/*.js`;
-var rollup_url_build = `./dist/${rollupDir}/${outputFileName}.js`;
+var outputFileName="all";   //js 输出的名称
+var rollup_url = `./src/${rollupDir}/js-dev/app.js`;
+var rollup_url_watch = `./src/${rollupDir}/js-dev/**/*.js`;
+var rollup_url_dev = `./src/${rollupDir}/js/${outputFileName}.js`;
+var rollup_url_build = `./dist/${rollupDir}/js/${outputFileName}.js`;
+
+var outputCssFileName="all";   //css 输出的名称
+var rollup_css_url=`./src/${rollupDir}/css-dev/all.scss`;
+var rollup_css_url_watch = `./src/${rollupDir}/css-dev/**/*.scss`;
+var rollup_css_url_dev = `./src/${rollupDir}/css`;
+// var rollup_css_url_build = `./dist/${rollupDir}/css`;
 
 // 是否压缩js
 function rollup_list(isBuildRollup) {
@@ -414,18 +416,30 @@ gulp.task("rollup-dev", function () {
 });
 
 
-gulp.task("rollup-build", function () {
+gulp.task("rollup-build",["rollup-dev-css"], function () {
+
 	asyncRollupDev(true,rollup_url_build);
+
+	gulp.src([`./src/${rollupDir}/css/*.css`]).pipe(minCss()).pipe(gulp.dest(`./dist/${rollupDir}/css`)); //复制css
 	gulp.src([`./src/${rollupDir}/**/*.html`]).pipe(gulp.dest(`./dist/${rollupDir}/`)); //复制html
+	gulp.src(`./src/${rollupDir}/static/**/*.*`).pipe(gulp.dest(`./dist/${rollupDir}/static/`)); //复制
+	gulp.src([`./src/${rollupDir}/css/fonts/**/*.*`])
+	.pipe(gulp.dest(`./dist/${rollupDir}/css/fonts`)); //复制fonts-css
 
 });
-gulp.task("rollup-watch", ["connect"], function () {
+gulp.task("rollup-watch", ["rollup-dev-css", "connect"], function () {
 
+	// js
 	watch(rollup_url_watch, function () {
 		gulp.start("rollup-dev");
 	});
 
-	//监听html
+	// css 
+	watch(rollup_css_url_watch, function () {
+		gulp.start("rollup-dev-css");
+	});
+
+	// html
 	watch(`./src/${rollupDir}/**/*.html`, function () {
 		gulp.start("rollup-html");
 	});
@@ -437,6 +451,15 @@ gulp.task("rollup-html", function () {
 });
 
 
+gulp.task("rollup-dev-css", async function () {
+
+	gulp.src(rollup_css_url)
+	.pipe(sass().on('error', sass.logError)) // sass编译
+	.pipe(postcss([autoprefixer])) // 自动添加css3缀-webkit-  适合用于手机端 
+	.pipe(rename(outputCssFileName+".css"))
+	.pipe(gulp.dest(rollup_css_url_dev)).pipe(connect.reload());
+				
+});
 
 
 
