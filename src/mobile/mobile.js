@@ -1118,7 +1118,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this;
 		},
 
-		//  clientHeight
+		//  clientHeight  垂直方向 height + 上下padding
 		clientHeight: function clientHeight() {
 
 			if (arguments.length === 0) {
@@ -1133,6 +1133,32 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						_h = m(document.documentElement).css("height"); //document.documentElement.offsetHeight;
 					} else {
 						_h = m(this).eq(0) && m(this).eq(0)[0].clientHeight;
+					}
+					_h = parseFloat(_h);
+
+					return false;
+				});
+				return _h;
+			}
+
+			return this;
+		},
+
+		//  outerHeight 垂直方向 height + 上下padding + 上下border-width
+		outerHeight: function outerHeight() {
+
+			if (arguments.length === 0) {
+				var _h = 0;
+				Mobile.each(this, function (i, v) {
+
+					// window
+
+					if (this === window) {
+						_h = window.innerHeight || window.document.documentElement.clientHeight || window.document.body.clientHeight;
+					} else if (this === document) {
+						_h = m(document.documentElement).eq(0) && m(document.documentElement).eq(0)[0].offsetHeight; //document.documentElement.offsetHeight;
+					} else {
+						_h = m(this).eq(0) && m(this).eq(0)[0].offsetHeight;
 					}
 					_h = parseFloat(_h);
 
@@ -1179,7 +1205,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this;
 		},
 
-		//  clientWidth
+		//  clientWidth  水平方向 width + 左右padding
 		clientWidth: function clientWidth() {
 
 			// get
@@ -1206,33 +1232,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this;
 		},
 
-		//  outerHeight
-		outerHeight: function outerHeight() {
-
-			if (arguments.length === 0) {
-				var _h = 0;
-				Mobile.each(this, function (i, v) {
-
-					// window
-
-					if (this === window) {
-						_h = window.innerHeight || window.document.documentElement.clientHeight || window.document.body.clientHeight;
-					} else if (this === document) {
-						_h = m(document.documentElement).eq(0) && m(document.documentElement).eq(0)[0].offsetHeight; //document.documentElement.offsetHeight;
-					} else {
-						_h = m(this).eq(0) && m(this).eq(0)[0].offsetHeight;
-					}
-					_h = parseFloat(_h);
-
-					return false;
-				});
-				return _h;
-			}
-
-			return this;
-		},
-
-		//  outWidth
+		//  outWidth 水平方向 width + 左右padding + 左右border-width
 		outerWidth: function outerWidth() {
 
 			if (arguments.length === 0) {
@@ -1257,7 +1257,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this;
 		},
 
-		// offsetTop
+		// offsetTop  获取当前元素到 定位父节点 的top方向的距离
 		offsetTop: function offsetTop() {
 			var _top = 0;
 			Mobile.each(this, function () {
@@ -1267,7 +1267,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return _top;
 		},
 
-		// offsetLeft
+		// offsetLeft  获取当前元素到 定位父节点 的left方向的距离
 		offsetLeft: function offsetLeft() {
 			var _left = 0;
 			Mobile.each(this, function () {

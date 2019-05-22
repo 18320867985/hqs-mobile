@@ -40,8 +40,8 @@ var less = require("gulp-less");
 /* 1. =======================================gulp-rollup 使用单页和多页应用 =================================== */
 
 /***  打包修改的配置 ***/
-var appJs = require("./src/app-js"); // js 打包入口
-var appScss = require("./src/app-css"); // scss 打包入口
+var appJs = require("./src/multiModuleSetting").jsObj;  // js 打包入口
+var appScss = require("./src/multiModuleSetting").cssObj; // scss 打包入口
 var isScss = true;        // scss=>true 或 less=>false
 
 // 文件路径
