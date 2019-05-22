@@ -1206,6 +1206,57 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this;
 		},
 
+		//  outerHeight
+		outerHeight: function outerHeight() {
+
+			if (arguments.length === 0) {
+				var _h = 0;
+				Mobile.each(this, function (i, v) {
+
+					// window
+
+					if (this === window) {
+						_h = window.innerHeight || window.document.documentElement.clientHeight || window.document.body.clientHeight;
+					} else if (this === document) {
+						_h = m(document.documentElement).eq(0) && m(document.documentElement).eq(0)[0].offsetHeight; //document.documentElement.offsetHeight;
+					} else {
+						_h = m(this).eq(0) && m(this).eq(0)[0].offsetHeight;
+					}
+					_h = parseFloat(_h);
+
+					return false;
+				});
+				return _h;
+			}
+
+			return this;
+		},
+
+		//  outWidth
+		outerWidth: function outerWidth() {
+
+			if (arguments.length === 0) {
+				var _w = 0;
+				Mobile.each(this, function () {
+
+					// window
+					if (this === window) {
+						_w = window.innerWidth || window.document.documentElement.clientWidth || window.document.body.clientWidth;
+					} else if (this === document) {
+						_w = m(document.documentElement).eq(0) && m(document.documentElement).eq(0)[0].offsetWidth; //document.documentElement.offsetWidth;
+					} else {
+						_w = m(this).eq(0) && m(this).eq(0)[0].offsetWidth;
+					}
+					_w = parseFloat(_w);
+					return false;
+				});
+
+				return _w;
+			}
+
+			return this;
+		},
+
 		// offsetTop
 		offsetTop: function offsetTop() {
 			var _top = 0;
