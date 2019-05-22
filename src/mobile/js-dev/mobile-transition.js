@@ -6,8 +6,7 @@ css3 transition
 
 (function (Mobile) {
 
-
-	Mobile.extends({
+	Mobile.extend({
 
 		// transition
 		transition: function (option, time, ease, delay, fn) {

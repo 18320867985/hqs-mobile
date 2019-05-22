@@ -466,9 +466,9 @@ gulp.task("rollup-dev-css", async function () {
 /* 3. ======================================= gulp  单项编译=================================== */
 
 var gulpJsFile = [
-	"./src/mobile/js/mobile-dom.js",
-	//"./src/mobile/js/mobile-transition.js",
-	"./src/mobile/js/mobile-ajax.js",
+	"./src/mobile/js-dev/mobile-dom.js",
+	"./src/mobile/js-dev/mobile-transition.js",
+	"./src/mobile/js-dev/mobile-ajax.js",
 
 ];
 
