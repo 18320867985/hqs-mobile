@@ -99,11 +99,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	// scrollTop 动画
 	function _scrollTop(self, y, time) {
+
 		time = typeof time === "number" ? time : 400;
 		y = typeof y === "number" ? y : parseFloat(y);
 		y = isNaN(y) ? 0 : y;
 		var fx = 20;
 		var speed = 20;
+
 		self.clearTimeId = self.clearTimeId || 0;
 		clearInterval(self.clearTimeId);
 
@@ -125,10 +127,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			self.clearTimeId = setInterval(function () {
 				windowStartTop = windowStartTop - speed;
 				isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, windowStartTop);
-				console.log("scroll");
-				if (windowStartTop - speed < y) {
+				console.log("scrolltop");
+				if (windowStartTop - speed <= y) {
 					// stop
-					isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, y);
+					isElement ? self.scrollTop = y : window.scrollTo(0, y);
 					clearInterval(self.clearTimeId);
 				}
 			}, fx);
@@ -141,15 +143,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			self.clearTimeId = setInterval(function () {
 				windowStartTop = windowStartTop + speed;
 				isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, windowStartTop);
-				console.log("scroll");
+				console.log("scrolltop");
 				if (windowStartTop + speed > y) {
 					// stop
-					isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, y);
+					isElement ? self.scrollTop = y : window.scrollTo(0, y);
 					clearInterval(self.clearTimeId);
 				}
 			}, fx);
 		}
 	}
+
 	// 原型-prototype
 	Mobile.fn = Mobile.prototype = {
 
@@ -1244,6 +1247,38 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			return this;
+		},
+
+		//  scroll 区域的高度 
+		scrollHeight: function scrollHeight() {
+
+			// get
+			var _h = 0;
+			if (arguments.length === 0) {
+				Mobile.each(this, function () {
+
+					_h = m(this).eq(0) && m(this).eq(0)[0].scrollHeight;
+					return false;
+				});
+			}
+
+			return _h;
+		},
+
+		//  scroll 区域的宽度 
+		scrollWidth: function scrollWidth() {
+
+			// get
+			var _w = 0;
+			if (arguments.length === 0) {
+				Mobile.each(this, function () {
+
+					_w = m(this).eq(0) && m(this).eq(0)[0].scrollWidth;
+					return false;
+				});
+			}
+
+			return _w;
 		},
 
 		// getBoundingClientRect() 用于获取某个元素相对于视窗的位置集合。集合中有top, right, bottom, left,width,heigth

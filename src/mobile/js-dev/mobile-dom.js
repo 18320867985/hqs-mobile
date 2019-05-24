@@ -101,11 +101,13 @@
 
 	// scrollTop 动画
 	function _scrollTop(self, y, time) {
+
 		time = typeof time === "number" ? time : 400;
 		y = typeof y === "number" ? y : parseFloat(y);
 		y = isNaN(y) ? 0 : y;
 		var fx = 20;
 		var speed = 20;
+
 		self.clearTimeId = self.clearTimeId || 0;
 		clearInterval(self.clearTimeId);
 
@@ -116,7 +118,6 @@
 			isElement = true;
 		}
 
-
 		var speed1 = time / fx;
 		var windowStartTop = (isElement ? self.scrollTop : parseFloat(window.pageYOffset)) || 0;
 
@@ -126,17 +127,15 @@
 		if (windowStartTop > y) {
 
 			self.clearTimeId = setInterval(function () {
-				windowStartTop = (windowStartTop - speed);
+				windowStartTop = windowStartTop - speed;
 				isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, windowStartTop);
-				console.log("scroll")
-				if ((windowStartTop - speed) < y) {
+				console.log("scrolltop")
+				if ((windowStartTop - speed) <= y) {
 					// stop
-					isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, y);
+					isElement ? self.scrollTop = y : window.scrollTo(0, y);
 					clearInterval(self.clearTimeId);
 				}
-
 			}, fx);
-
 		} else {
 			if (windowStartTop === y) {
 				// stop
@@ -144,18 +143,18 @@
 				return;
 			}
 			self.clearTimeId = setInterval(function () {
-				windowStartTop = (windowStartTop + speed);
+				windowStartTop = windowStartTop + speed;
 				isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, windowStartTop);
-				console.log("scroll")
-				if ((windowStartTop + speed) > y) {
+				console.log("scrolltop");
+				if (windowStartTop + speed > y) {
 					// stop
-					isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, y);
+					isElement ? self.scrollTop = y : window.scrollTo(0, y);
 					clearInterval(self.clearTimeId);
 				}
-
 			}, fx);
 		}
 	}
+
 	// 原型-prototype
 	Mobile.fn = Mobile.prototype = {
 
@@ -326,7 +325,7 @@
 				throw new Error("els property type must is Array or Object");
 			}
 			for (var i = 0; i < els.length; i++) {
-			
+
 				if (typeof fn === "function") {
 					var bl = fn.call(els[i], i, els[i]);
 					if (bl === false) {
@@ -600,11 +599,11 @@
 		},
 
 		isWindow: function (obj) {
-		
+
 			return obj != null && obj == obj.window;
 		},
 
-	
+
 		isEmptyObject: function (obj) {
 			var name;
 			for (name in obj) {
@@ -1308,7 +1307,7 @@
 
 					}
 					_w = parseFloat(_w);
-					
+
 					return false;
 
 				});
@@ -1320,21 +1319,53 @@
 			return this;
 		},
 
-		// getBoundingClientRect() 用于获取某个元素相对于视窗的位置集合。集合中有top, right, bottom, left,width,heigth
-		clientRect:function(){
+		//  scroll 区域的高度 
+		scrollHeight: function () {
 
 			// get
-			var o={};
+			var _h = 0;
 			if (arguments.length === 0) {
-			
 				Mobile.each(this, function () {
-				
-					if (this === window ||this === document) {
-						 o={};
+
+					_h = m(this).eq(0) && m(this).eq(0)[0].scrollHeight;
+					return false;
+				});
+			}
+
+			return _h;
+		},
+
+		//  scroll 区域的宽度 
+		scrollWidth: function () {
+
+			// get
+			var _w = 0;
+			if (arguments.length === 0) {
+				Mobile.each(this, function () {
+
+					_w = m(this).eq(0) && m(this).eq(0)[0].scrollWidth;
+					return false;
+				});
+			}
+
+			return _w;
+		},
+
+		// getBoundingClientRect() 用于获取某个元素相对于视窗的位置集合。集合中有top, right, bottom, left,width,heigth
+		clientRect: function () {
+
+			// get
+			var o = {};
+			if (arguments.length === 0) {
+
+				Mobile.each(this, function () {
+
+					if (this === window || this === document) {
+						o = {};
 					} else {
 						o = m(this).eq(0) && m(this).eq(0)[0].getBoundingClientRect();
 					}
-				
+
 					return false;
 
 				});

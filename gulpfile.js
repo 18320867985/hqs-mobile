@@ -408,11 +408,17 @@ async function asyncRollupDev(isBuildRollup,interUrl) {
 		strict: false, //在生成的包中省略`"use strict";`
 	});
 
+	try{
+		gulp.src(rollup_url).pipe(connect.reload());
+	}catch{
+		
+	}
+
 }
 
 gulp.task("rollup-dev", function () {
 	asyncRollupDev(false,rollup_url_dev);
-	gulp.src(rollup_url).pipe(connect.reload());
+
 });
 
 
