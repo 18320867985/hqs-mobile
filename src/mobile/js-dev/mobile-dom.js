@@ -270,30 +270,33 @@
 		for (; i < length; i++) {
 
 			if ((options = arguments[i]) != null) {
-				// Extend the base object
+
 				for (name in options) {
 					src = target[name];
 					copy = options[name];
 
-					// Prevent never-ending loop
 					if (target === copy) {
 						continue;
 					}
 
-					// Recurse if we're merging plain objects or arrays
+
 					if (deep && copy && (Mobile.isPlainObject(copy) || (copyIsArray = Mobile.isArray(copy)))) {
 						if (copyIsArray) {
 							copyIsArray = false;
+
+							// 深度复制数组
 							clone = src && Mobile.isArray(src) ? src : [];
 
 						} else {
+
+							//  深度复制对象
 							clone = src && Mobile.isPlainObject(src) ? src : {};
 						}
 
-						// Never move original objects, clone them
+
 						target[name] = Mobile.extend(deep, clone, copy);
 
-						// Don't bring in undefined values
+						//  复制值类型
 					} else if (copy !== undefined) {
 						target[name] = copy;
 					}
@@ -305,7 +308,7 @@
 		return target;
 	}
 
-	// extend static function
+	// 扩展静态方法
 	Mobile.extend({
 
 		noCoflict: function (deep) {
@@ -323,7 +326,7 @@
 				throw new Error("els property type must is Array or Object");
 			}
 			for (var i = 0; i < els.length; i++) {
-				//try {
+			
 				if (typeof fn === "function") {
 					var bl = fn.call(els[i], i, els[i]);
 					if (bl === false) {
@@ -562,26 +565,29 @@
 		  fmt=("yyyy-MM-dd HH:mm:ss.S") ==> 2006-07-02 08:09:04.423 
 		  */
 		jsonToDate: function (value, fmt) {
-			fmt = typeof fmt !== "string" ? "yyyy-MM-dd" : fmt;
+			fmt = typeof fmt !== "string" ? "yyyy-MM-dd HH:mm:ss" : fmt;
 			var txts = value.toString().replace("/Date(", "").replace(")/", "");
-			var times = parseInt(txts);
-			times = isNaN(times) ? new Date(1970, 0, 1, 0, 0, 1) : times;
-
+			var times = Number(txts);
+			times = isNaN(times) ? new Date(value).getTime() : times;
 			var dt = new Date(Number(times.toString()));
 			var o = {
-				"M+": dt.getMonth() + 1, //月份 
-				"d+": dt.getDate(), //日 
-				"H+": dt.getHours(), //小时 
-				"m+": dt.getMinutes(), //分 
-				"s+": dt.getSeconds(), //秒 
-				"q+": Math.floor((dt.getMonth() + 3) / 3), //季度 
-				"S": dt.getMilliseconds() //毫秒 
+				"M+": dt.getMonth() + 1,
+				"d+": dt.getDate(),
+				"H+": dt.getHours(),
+				"m+": dt.getMinutes(),
+				"s+": dt.getSeconds(),
+				"q+": Math.floor((dt.getMonth() + 3) / 3),
+				"S": dt.getMilliseconds()
 			};
-			if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (dt.getFullYear() + "").substr(4 - RegExp.$1.length));
-			for (var k in o)
-				if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" +
-					o[k]).substr(("" + o[k]).length)));
-			return fmt;
+			if (/(y+)/.test(fmt)) {
+				fmt = fmt.replace(RegExp.$1, (dt.getFullYear() + "").substr(4 - RegExp.$1.length))
+			}
+			for (var k in o) {
+				if (new RegExp("(" + k + ")").test(fmt)) {
+					fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)))
+				}
+			}
+			return fmt
 
 		},
 
@@ -594,17 +600,11 @@
 		},
 
 		isWindow: function (obj) {
-			/* jshint eqeqeq: false */
+		
 			return obj != null && obj == obj.window;
 		},
 
-		isNumeric: function (obj) {
-			// parseFloat NaNs numeric-cast false positives (null|true|false|"")
-			// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
-			// subtraction forces infinities to NaN
-			return obj - parseFloat(obj) >= 0;
-		},
-
+	
 		isEmptyObject: function (obj) {
 			var name;
 			for (name in obj) {
@@ -624,8 +624,8 @@
 			try {
 				// Not own constructor property must be Object
 				if (obj.constructor &&
-					!hasOwn.call(obj, "constructor") &&
-					!hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
+					!{}.hasOwnProperty.call(obj, "constructor") &&
+					!{}.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf")) {
 					return false;
 				}
 			} catch (e) {
@@ -633,19 +633,9 @@
 				return false;
 			}
 
-			// Support: IE<9
-
-			if (support.ownLast) {
-				for (key in obj) {
-					return hasOwn.call(obj, key);
-				}
-			}
-
-			// Own properties are enumerated firstly, so to speed up,
-			// if last one is own, then all properties are own.
 			for (key in obj) { }
 
-			return key === undefined || hasOwn.call(obj, key);
+			return key === undefined || {}.hasOwnProperty.call(obj, key);
 		},
 
 		type: function (obj) {
@@ -661,7 +651,7 @@
 
 	});
 
-	// extend instantiation function 
+	// 扩展实例方法
 	Mobile.fn.extend({
 
 		//each
@@ -1204,17 +1194,17 @@
 		},
 
 		//  outerHeight 垂直方向 height + 上下padding + 上下border-width
-		outerHeight: function() {
+		outerHeight: function () {
 
-			if(arguments.length === 0) {
+			if (arguments.length === 0) {
 				var _h = 0;
-				Mobile.each(this, function(i, v) {
+				Mobile.each(this, function (i, v) {
 
 					// window
 
-					if(this === window) {
+					if (this === window) {
 						_h = window.innerHeight || window.document.documentElement.clientHeight || window.document.body.clientHeight;
-					} else if(this === document) {
+					} else if (this === document) {
 						_h = m(document.documentElement).eq(0) && m(document.documentElement).eq(0)[0].offsetHeight; //document.documentElement.offsetHeight;
 					} else {
 						_h = m(this).eq(0) && m(this).eq(0)[0].offsetHeight;
@@ -1227,7 +1217,7 @@
 				return _h;
 			}
 
-			
+
 			return this;
 		},
 
@@ -1297,21 +1287,20 @@
 
 			}
 
-
 			return this;
 		},
-			
-		//  outWidth 水平方向 width + 左右padding + 左右border-width
-		outerWidth: function() {
 
-			if(arguments.length === 0) {
+		//  outWidth 水平方向 width + 左右padding + 左右border-width
+		outerWidth: function () {
+
+			if (arguments.length === 0) {
 				var _w = 0;
-				Mobile.each(this, function() {
+				Mobile.each(this, function () {
 
 					// window
-					if(this === window) {
+					if (this === window) {
 						_w = window.innerWidth || window.document.documentElement.clientWidth || window.document.body.clientWidth;
-					} else if(this === document) {
+					} else if (this === document) {
 						_w = m(document.documentElement).eq(0) && m(document.documentElement).eq(0)[0].offsetWidth; //document.documentElement.offsetWidth;
 
 					} else {
@@ -1319,6 +1308,7 @@
 
 					}
 					_w = parseFloat(_w);
+					
 					return false;
 
 				});
@@ -1329,7 +1319,31 @@
 
 			return this;
 		},
-		
+
+		// getBoundingClientRect() 用于获取某个元素相对于视窗的位置集合。集合中有top, right, bottom, left,width,heigth
+		clientRect:function(){
+
+			// get
+			var o={};
+			if (arguments.length === 0) {
+			
+				Mobile.each(this, function () {
+				
+					if (this === window ||this === document) {
+						 o={};
+					} else {
+						o = m(this).eq(0) && m(this).eq(0)[0].getBoundingClientRect();
+					}
+				
+					return false;
+
+				});
+			}
+
+			return o;
+
+		},
+
 
 		// offsetTop  获取当前元素到 定位父节点 的top方向的距离
 		offsetTop: function () {
@@ -1458,7 +1472,7 @@
 
 	});
 
-	// animate
+	// 动画
 	Mobile.fn.extend({
 
 		// show
@@ -1684,7 +1698,7 @@
 	});
 
 
-	// bind enevt 
+	// 绑定事件
 	Mobile.fn.extend({
 		on: function (type) {
 
@@ -2140,7 +2154,7 @@
 		},
 	});
 
-	// cst event
+	// 自定义事件
 	Mobile.extend({
 		events: {
 			props: {},

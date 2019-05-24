@@ -259,29 +259,30 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		for (; i < length; i++) {
 
 			if ((options = arguments[i]) != null) {
-				// Extend the base object
+
 				for (name in options) {
 					src = target[name];
 					copy = options[name];
 
-					// Prevent never-ending loop
 					if (target === copy) {
 						continue;
 					}
 
-					// Recurse if we're merging plain objects or arrays
 					if (deep && copy && (Mobile.isPlainObject(copy) || (copyIsArray = Mobile.isArray(copy)))) {
 						if (copyIsArray) {
 							copyIsArray = false;
+
+							// 深度复制数组
 							clone = src && Mobile.isArray(src) ? src : [];
 						} else {
+
+							//  深度复制对象
 							clone = src && Mobile.isPlainObject(src) ? src : {};
 						}
 
-						// Never move original objects, clone them
 						target[name] = Mobile.extend(deep, clone, copy);
 
-						// Don't bring in undefined values
+						//  复制值类型
 					} else if (copy !== undefined) {
 						target[name] = copy;
 					}
@@ -292,7 +293,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		return target;
 	};
 
-	// extend static function
+	// 扩展静态方法
 	Mobile.extend({
 
 		noCoflict: function noCoflict(deep) {
@@ -310,7 +311,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				throw new Error("els property type must is Array or Object");
 			}
 			for (var i = 0; i < els.length; i++) {
-				//try {
+
 				if (typeof fn === "function") {
 					var bl = fn.call(els[i], i, els[i]);
 					if (bl === false) {
@@ -535,25 +536,29 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     fmt=("yyyy-MM-dd HH:mm:ss.S") ==> 2006-07-02 08:09:04.423 
     */
 		jsonToDate: function jsonToDate(value, fmt) {
-			fmt = typeof fmt !== "string" ? "yyyy-MM-dd" : fmt;
+			fmt = typeof fmt !== "string" ? "yyyy-MM-dd HH:mm:ss" : fmt;
 			var txts = value.toString().replace("/Date(", "").replace(")/", "");
-			var times = parseInt(txts);
-			times = isNaN(times) ? new Date(1970, 0, 1, 0, 0, 1) : times;
-
+			var times = Number(txts);
+			times = isNaN(times) ? new Date(value).getTime() : times;
 			var dt = new Date(Number(times.toString()));
 			var o = {
-				"M+": dt.getMonth() + 1, //月份 
-				"d+": dt.getDate(), //日 
-				"H+": dt.getHours(), //小时 
-				"m+": dt.getMinutes(), //分 
-				"s+": dt.getSeconds(), //秒 
-				"q+": Math.floor((dt.getMonth() + 3) / 3), //季度 
-				"S": dt.getMilliseconds() //毫秒 
+				"M+": dt.getMonth() + 1,
+				"d+": dt.getDate(),
+				"H+": dt.getHours(),
+				"m+": dt.getMinutes(),
+				"s+": dt.getSeconds(),
+				"q+": Math.floor((dt.getMonth() + 3) / 3),
+				"S": dt.getMilliseconds()
 			};
-			if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (dt.getFullYear() + "").substr(4 - RegExp.$1.length));
+			if (/(y+)/.test(fmt)) {
+				fmt = fmt.replace(RegExp.$1, (dt.getFullYear() + "").substr(4 - RegExp.$1.length));
+			}
 			for (var k in o) {
-				if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
-			}return fmt;
+				if (new RegExp("(" + k + ")").test(fmt)) {
+					fmt = fmt.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+				}
+			}
+			return fmt;
 		},
 
 		isFunction: function isFunction(obj) {
@@ -565,15 +570,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		isWindow: function isWindow(obj) {
-			/* jshint eqeqeq: false */
-			return obj != null && obj == obj.window;
-		},
 
-		isNumeric: function isNumeric(obj) {
-			// parseFloat NaNs numeric-cast false positives (null|true|false|"")
-			// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
-			// subtraction forces infinities to NaN
-			return obj - parseFloat(obj) >= 0;
+			return obj != null && obj == obj.window;
 		},
 
 		isEmptyObject: function isEmptyObject(obj) {
@@ -594,7 +592,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			try {
 				// Not own constructor property must be Object
-				if (obj.constructor && !hasOwn.call(obj, "constructor") && !hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
+				if (obj.constructor && !{}.hasOwnProperty.call(obj, "constructor") && !{}.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf")) {
 					return false;
 				}
 			} catch (e) {
@@ -602,19 +600,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return false;
 			}
 
-			// Support: IE<9
-
-			if (support.ownLast) {
-				for (key in obj) {
-					return hasOwn.call(obj, key);
-				}
-			}
-
-			// Own properties are enumerated firstly, so to speed up,
-			// if last one is own, then all properties are own.
 			for (key in obj) {}
 
-			return key === undefined || hasOwn.call(obj, key);
+			return key === undefined || {}.hasOwnProperty.call(obj, key);
 		},
 
 		type: function type(obj) {
@@ -628,7 +616,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	});
 
-	// extend instantiation function 
+	// 扩展实例方法
 	Mobile.fn.extend({
 
 		//each
@@ -1248,6 +1236,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						_w = m(this).eq(0) && m(this).eq(0)[0].offsetWidth;
 					}
 					_w = parseFloat(_w);
+
 					return false;
 				});
 
@@ -1255,6 +1244,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			return this;
+		},
+
+		// getBoundingClientRect() 用于获取某个元素相对于视窗的位置集合。集合中有top, right, bottom, left,width,heigth
+		clientRect: function clientRect() {
+
+			// get
+			var o = {};
+			if (arguments.length === 0) {
+
+				Mobile.each(this, function () {
+
+					if (this === window || this === document) {
+						o = {};
+					} else {
+						o = m(this).eq(0) && m(this).eq(0)[0].getBoundingClientRect();
+					}
+
+					return false;
+				});
+			}
+
+			return o;
 		},
 
 		// offsetTop  获取当前元素到 定位父节点 的top方向的距离
@@ -1379,7 +1390,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	});
 
-	// animate
+	// 动画
 	Mobile.fn.extend({
 
 		// show
@@ -1594,7 +1605,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	});
 
-	// bind enevt 
+	// 绑定事件
 	Mobile.fn.extend({
 		on: function on(type) {
 
@@ -2037,7 +2048,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	});
 
-	// cst event
+	// 自定义事件
 	Mobile.extend({
 		events: {
 			props: {},
