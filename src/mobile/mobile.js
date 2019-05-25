@@ -81,7 +81,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		return _type;
 	}
 
-	// 递归查找父元素
+	// 查找父元素
 	function _searchParents(el, fn) {
 
 		if (el.parentElement) {
@@ -1933,9 +1933,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		// touchstart touchmove touchend touchcell 合并封装
-		move: function move(startfn, movefn, endfn) {
-
-			var isAddFirstMoveEvent= true; // 判断是否第一次拖动
+		move: function move(startfn, movefn, endfn, bl) {
+			bl = !!bl;
+			var isAddMoveEventFirst = true; // 判断是否第一次拖动
 			var startX = 0;
 			var startY = 0;
 			var obj = {
@@ -1947,7 +1947,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				isY: false
 			};
 
-			m(this).touchstart(start);
+			m(this).touchstart(start, bl);
 
 			function start(event) {
 
@@ -1963,7 +1963,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				}
 			}
 
-			m(this).touchmove(move);
+			m(this).touchmove(move, bl);
 
 			function move(event) {
 
@@ -1981,8 +1981,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				obj.ident = identifier;
 
 				// 检查是否向上下或左右移动
-				if (isAddFirstMoveEvent && _x != _y) {
-					isAddFirstMoveEvent = false;
+				if (isAddMoveEventFirst && _x != _y) {
+					isAddMoveEventFirst = false;
 					if (_y > _x) {
 
 						obj.isY = true;
@@ -1998,7 +1998,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				}
 			}
 
-			m(this).touchendcancel(end);
+			m(this).touchendcancel(end, bl);
 
 			function end(event) {
 
@@ -2006,7 +2006,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				var identifier = touch.identifier;
 				obj.ident = identifier;
 
-				isAddFirstMoveEvent = true; // 判断是否第一次拖动
+				isAddMoveEventFirst = true; // 判断是否第一次拖动
 				obj.x = touch.clientX;
 				obj.y = touch.clientY;
 
@@ -2516,7 +2516,7 @@ css3 transition
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /* 
-	ajax
+ajax
 */
 (function (Mobile) {
 	// init xhr

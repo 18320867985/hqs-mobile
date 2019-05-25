@@ -82,7 +82,7 @@
 
 	}
 
-	// 递归查找父元素
+	// 查找父元素
 	function _searchParents(el, fn) {
 
 		if (el.parentElement) {
@@ -2033,8 +2033,8 @@
 		},
 
 		// touchstart touchmove touchend touchcell 合并封装
-		move: function (startfn, movefn, endfn) {
-
+		move: function (startfn, movefn, endfn,bl) {
+			bl=!!bl;
 			var isAddMoveEventFirst = true; // 判断是否第一次拖动
 			var startX = 0;
 			var startY = 0;
@@ -2047,7 +2047,7 @@
 				isY: false
 			};
 
-			m(this).touchstart(start);
+			m(this).touchstart(start,bl);
 
 			function start(event) {
 
@@ -2064,7 +2064,7 @@
 
 			}
 
-			m(this).touchmove(move);
+			m(this).touchmove(move,bl);
 
 			function move(event) {
 
@@ -2101,7 +2101,7 @@
 
 			}
 
-			m(this).touchendcancel(end);
+			m(this).touchendcancel(end,bl);
 
 			function end(event) {
 

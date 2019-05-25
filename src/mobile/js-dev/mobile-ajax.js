@@ -1,5 +1,5 @@
 /* 
-	ajax
+ajax
 */
 (function (Mobile) {
 	// init xhr
