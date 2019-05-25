@@ -127,7 +127,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			self.clearTimeId = setInterval(function () {
 				windowStartTop = windowStartTop - speed;
 				isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, windowStartTop);
-				console.log("scrolltop");
+				//	console.log("scrolltop")
 				if (windowStartTop - speed <= y) {
 					// stop
 					isElement ? self.scrollTop = y : window.scrollTo(0, y);
@@ -143,7 +143,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			self.clearTimeId = setInterval(function () {
 				windowStartTop = windowStartTop + speed;
 				isElement ? self.scrollTop = windowStartTop : window.scrollTo(0, windowStartTop);
-				console.log("scrolltop");
+				//console.log("scrolltop");
 				if (windowStartTop + speed > y) {
 					// stop
 					isElement ? self.scrollTop = y : window.scrollTo(0, y);
@@ -1932,6 +1932,90 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			});
 		},
 
+		// touchstart touchmove touchend touchcell 合并封装
+		move: function move(startfn, movefn, endfn) {
+
+			var isAddFirstMoveEvent= true; // 判断是否第一次拖动
+			var startX = 0;
+			var startY = 0;
+			var obj = {
+				x: 0,
+				y: 0,
+				elX: 0,
+				elY: 0,
+				isX: false,
+				isY: false
+			};
+
+			m(this).touchstart(start);
+
+			function start(event) {
+
+				var touch = event.changedTouches[0];
+				var identifier = touch.identifier;
+
+				obj.x = startX = touch.clientX;
+				obj.y = startY = touch.clientY;
+				obj.ident = identifier;
+
+				if (typeof startfn === "function") {
+					startfn(event, obj);
+				}
+			}
+
+			m(this).touchmove(move);
+
+			function move(event) {
+
+				var touch = event.changedTouches[0];
+				var identifier = touch.identifier;
+
+				var nowX = touch.clientX;
+				var nowY = touch.clientY;
+
+				var _x = Math.abs(nowX - startX);
+				var _y = Math.abs(nowY - startY);
+				obj.x = nowX - startX;
+				obj.y = nowY - startY;
+
+				obj.ident = identifier;
+
+				// 检查是否向上下或左右移动
+				if (isAddFirstMoveEvent && _x != _y) {
+					isAddFirstMoveEvent = false;
+					if (_y > _x) {
+
+						obj.isY = true;
+						obj.isX = false;
+					} else {
+						obj.isY = false;
+						obj.isX = true;
+					}
+				}
+
+				if (typeof movefn === "function") {
+					movefn(event, obj);
+				}
+			}
+
+			m(this).touchendcancel(end);
+
+			function end(event) {
+
+				var touch = event.changedTouches[0];
+				var identifier = touch.identifier;
+				obj.ident = identifier;
+
+				isAddFirstMoveEvent = true; // 判断是否第一次拖动
+				obj.x = touch.clientX;
+				obj.y = touch.clientY;
+
+				if (typeof movefn === "function") {
+					endfn(event, obj);
+				}
+			}
+		},
+
 		// tap
 		tap: function tap() {
 			var args = arguments;
@@ -2239,6 +2323,42 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			});
 
 			return result;
+		},
+
+		// translateX
+		translateX: function translateX(size) {
+			if (arguments.length === 0) {
+
+				var _v = 0;
+				Mobile.each(this, function () {
+					_v = m(this).getTransform("translateX");
+					return false;
+				});
+
+				return _v;
+			} else {
+
+				m(this).setTransform("translateX", size);
+				return this;
+			}
+		},
+
+		// translateY
+		translateY: function translateY(size) {
+			if (arguments.length === 0) {
+
+				var _v = 0;
+				Mobile.each(this, function () {
+					_v = m(this).getTransform("translateY");
+					return false;
+				});
+
+				return _v;
+			} else {
+
+				m(this).setTransform("translateY", size);
+				return this;
+			}
 		}
 
 	});
