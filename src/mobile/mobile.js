@@ -2197,7 +2197,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	// transform 
 	Mobile.fn.extend({
 
-		// setTransform
+		// setTransform 
 		setTransform: function setTransform(transforName, value) {
 
 			Mobile.each(this, function () {
@@ -2280,7 +2280,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					this.transform = {};
 				}
 
-				//读
+				// read
 				if (typeof this.transform[transforName] == 'undefined') {
 					if (transforName == 'scale' || transforName == 'scaleX' || transforName == 'scaleY') {
 						result = 1;

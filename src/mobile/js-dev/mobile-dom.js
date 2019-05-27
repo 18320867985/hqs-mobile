@@ -694,6 +694,7 @@
 						this.style[attr.trim()] = Number(value) ? Number(value).toString() + "px" : value;
 					} else {
 						this.style[attr.trim()] = value;
+
 					}
 
 				});
@@ -2309,7 +2310,7 @@
 	// transform 
 	Mobile.fn.extend({
 
-		// setTransform
+		// setTransform 
 		setTransform: function (transforName, value) {
 
 			Mobile.each(this, function () {
@@ -2394,7 +2395,7 @@
 					this.transform = {};
 				}
 
-				//读
+				// read
 				if (typeof this.transform[transforName] == 'undefined') {
 					if (transforName == 'scale' || transforName == 'scaleX' || transforName == 'scaleY') {
 						result = 1

@@ -76,27 +76,29 @@
 		<a href="javascript:;" class="btn2">btn20</a>
 
 	<script src="../mobile.js" type="text/javascript" charset="utf-8"></script>
-		<!--	<script src="js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>-->
+			<script src="js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 			$(function() {
 				
-				$(".scrollbox").scroll(function(){
-					console.log($(this).scrollTop())
-				});
-				$(".btn").click(function(){
-					//$(".scrollbox").scrollTop(100)
-					$(".scrollbox").scrollTop(0)
-				})
-				$("h4").click(function(){
-			alert($("h4").offset().top)
+			// 	$(".scrollbox").scroll(function(){
+			// 		console.log($(this).scrollTop())
+			// 	});
+			// 	$(".btn").click(function(){
+			// 		//$(".scrollbox").scrollTop(100)
+			// 		$(".scrollbox").scrollTop(0)
+			// 	})
+			// 	$("h4").click(function(){
+			// alert($("h4").offset().top)
 				
-					$(".scrollbox").scrollTop($("h4").offset().top)
-				})
+			// 		$(".scrollbox").scrollTop($("h4").offset().top)
+			// 	})
 
-				$(".btn2").click(function(){
-					//$(".scrollbox").scrollTop(100)
-				alert(	$(".scrollbox").scrollTop(300))
-				})
+			// 	$(".btn2").click(function(){
+			// 		//$(".scrollbox").scrollTop(100)
+			// 	alert(	$(".scrollbox").scrollTop(300))
+			// 	})
+
+		
 			});
 		</script>
 	</body>
