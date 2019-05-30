@@ -648,6 +648,179 @@
 				typeof obj;
 		},
 
+		
+		max: function (data, fn) {
+			data = data || [];
+			if (data.constructor !== Array) {
+				throw new Error("参数必须是个数组");
+			}
+			var _array_max;
+			var isOne = true;
+			if (arguments.length === 1) {
+
+				for (var i = 0; i < data.length; i++) {
+					var _temp = 0;
+
+					if (typeof data[i] !== "number") {
+
+						//  is not a number
+						var _num = parseFloat(data[i]);
+						if (isNaN(_num)) {
+							continue;
+						}
+						_temp = _num;
+
+					} else {
+
+						//  is a number
+						_temp = data[i];
+					}
+
+					if (isOne) {
+						_array_max = _temp;
+						isOne = false;
+
+					} else {
+						// set value number
+						if (_temp > _array_max) {
+							_array_max = _temp;
+						}
+
+					}
+
+				}
+				return _array_max;
+
+			}
+
+			if (arguments.length === 2 && typeof fn === "function") {
+
+				var maxVal = 0;
+				for (var i = 0; i < data.length; i++) {
+					var _temp = 0;
+					var item = data[i];
+					var v = fn(item);
+					if (typeof v !== "number") {
+
+						//  is not a number
+						var _num = parseFloat(v);
+						if (isNaN(_num)) {
+							continue;
+						}
+						_temp = _num;
+
+					} else {
+
+						//  is a number
+						_temp = v;
+					}
+
+					if (isOne) {
+						maxVal = _temp;
+						_array_max = item;
+						isOne = false;
+
+					} else {
+						// set value number
+						if (_temp > maxVal) {
+							maxVal = _temp;
+							_array_max = item;
+						}
+
+					}
+
+				}
+				return _array_max;
+
+			}
+		},
+
+	
+		min: function (data, fn) {
+			data = data || [];
+			if (data.constructor !== Array) {
+				throw new Error("参数必须是个数组");
+			}
+			var _array_min;
+			var isOne = true;
+			if (arguments.length === 1) {
+				for (var i = 0; i < data.length; i++) {
+					var _temp = 0;
+
+					if (typeof data[i] !== "number") {
+
+						//  is not a number
+						var _num = Number(data[i]);
+						if (isNaN(_num)) {
+							continue;
+						}
+						_temp = _num;
+
+					} else {
+
+						//  is a number
+						_temp = data[i];
+					}
+
+					if (isOne) {
+						_array_min = _temp;
+						isOne = false;
+
+					} else {
+						// set value number
+						if (_temp < _array_min) {
+							_array_min = _temp;
+						}
+
+					}
+
+				}
+				return _array_min;
+			}
+
+			if (arguments.length === 2 && typeof fn === "function") {
+				var minVal = 0;
+				for (var i = 0; i < data.length; i++) {
+					var _temp = 0;
+					var item = data[i];
+					var v = fn(item);
+					if (typeof v !== "number") {
+
+						//  is not a number
+						var _num = parseFloat(v);
+						if (isNaN(_num)) {
+							continue;
+						}
+						_temp = _num;
+
+					} else {
+
+						//  is a number
+						_temp = v;
+					}
+
+					if (isOne) {
+						minVal = _temp;
+						_array_min = item;
+						isOne = false;
+
+					} else {
+						// set value number
+						if (_temp < minVal) {
+							minVal = _temp;
+							_array_min = item;
+						}
+
+					}
+
+				}
+				return _array_min;
+
+			}
+
+		},
+
+
 	});
 
 	// 扩展实例方法
@@ -2034,8 +2207,8 @@
 		},
 
 		// touchstart touchmove touchend touchcell 合并封装
-		move: function (startfn, movefn, endfn,bl) {
-			bl=!!bl;
+		move: function move(startfn, movefn, endfn, bl) {
+			bl = !!bl;
 			var isAddMoveEventFirst = true; // 判断是否第一次拖动
 			var startX = 0;
 			var startY = 0;
@@ -2045,19 +2218,45 @@
 				elX: 0,
 				elY: 0,
 				isX: false,
-				isY: false
+				isY: false,
+			
 			};
 
-			m(this).touchstart(start,bl);
+			/* 变化touchList的identifier和时间戳的集合
+				{
+					id,
+					timestamp
+				}
+			*/
+			var tempObj = [];
 
-			function start(event) {
+			m(this).touchstart(starteEl, bl);
 
-				var touch = event.changedTouches[0];
-				var identifier = touch.identifier;
+			function starteEl(event) {
 
+				var touches = event.touches;
+
+				Object.keys(touches).forEach(name => {
+
+					if (!tempObj.some(item => touches[name].identifier === item.id)) {
+						tempObj.push({
+							id: touches[name].identifier,
+							timestamp: new Date().getTime()
+						})
+					}
+				});
+				var _index = 0;
+				var maxCh = m.max(tempObj, item => item.timestamp);
+
+				if (maxCh) {
+					_index = maxCh.id
+				} else {
+					_index = touches.length - 1;
+				}
+
+				var touch = touches[_index];  
 				obj.x = startX = touch.clientX;
 				obj.y = startY = touch.clientY;
-				obj.ident = identifier;
 
 				if (typeof startfn === "function") {
 					startfn(event, obj);
@@ -2065,25 +2264,43 @@
 
 			}
 
-			m(this).touchmove(move,bl);
+			m(this).touchmove(moveEl, bl);
 
-			function move(event) {
+			function moveEl(event) {
 
-				var touch = event.changedTouches[0];
-				var identifier = touch.identifier;
+				var touches = event.touches;
+				var len = touches.length;
+				var _index = 0;
+				var maxCh = m.max(tempObj, item => item.timestamp);
 
+				if (maxCh) {
+					var i = 0;
+					Object.keys(touches).forEach(name => {
+						var ch = touches[name];
+						if (ch.identifier === maxCh.id) {
+							_index = i;
+						}
+
+						i++;
+					})
+
+				} else {
+					_index = len - 1;
+				}
+
+				var touch = touches[_index];
 				var nowX = touch.clientX;
 				var nowY = touch.clientY;
+				moveX = nowX;
+				moveY = nowY;
 
 				var _x = Math.abs(nowX - startX);
 				var _y = Math.abs(nowY - startY);
 				obj.x = nowX - startX;
 				obj.y = nowY - startY;
 
-				obj.ident = identifier;
-
 				// 检查是否向上下或左右移动
-				if (isAddMoveEventFirst && (_x != _y)) {
+				if (isAddMoveEventFirst && _x != _y) {
 					isAddMoveEventFirst = false;
 					if (_y > _x) {
 
@@ -2099,28 +2316,54 @@
 					movefn(event, obj);
 				}
 
-
 			}
 
-			m(this).touchendcancel(end,bl);
+			m(this).touchendcancel(endEl, bl);
 
-			function end(event) {
+			function endEl(event) {
 
-				var touch = event.changedTouches[0];
-				var identifier = touch.identifier;
-				obj.ident = identifier;
+				var touches = event.touches;
+				var len = touches.length;
+				if (len > 0) {
+					//	tempObj=[];
+					var ids = [];
+					Object.keys(touches).forEach(name => {
+						var ch = touches[name];
+						ids.push({
+							id: ch.identifier
+						});
 
-				isAddMoveEventFirst = true; // 判断是否第一次拖动
-				obj.x = touch.clientX;
-				obj.y = touch.clientY;
+					});
 
-				if (typeof movefn === "function") {
-					endfn(event, obj);
+					tempObj = tempObj.filter(item => ids.some(item2 => item.id === item2.id));
+					var _index = 0;
+					var maxCh = m.max(tempObj, item => item.timestamp);
+					if (maxCh) {
+						var i = 0;
+						Object.keys(touches).forEach(name => {
+							var ch = touches[name];
+							if (ch.identifier === maxCh.id) {
+								_index = i;
+							}
+
+						})
+					}
+					else {
+						_index = len - 1;
+					}
+					var touch = touches[_index];
+					startX = touch.clientX - obj.x;
+					startY = touch.clientY - obj.y;
 				}
 
+				if (len === 0) {
+					tempObj=[];
+					isAddMoveEventFirst = true; // 判断是否第一次拖动
+					if (typeof endfn === "function") {
+						endfn(event, obj);
+					}
+				}
 			}
-
-
 		},
 
 		// tap

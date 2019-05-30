@@ -615,6 +615,156 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return obj + "";
 			}
 			return (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" || typeof obj === "function" ? class2type[toString.call(obj)] || "object" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
+		},
+
+		max: function max(data, fn) {
+			data = data || [];
+			if (data.constructor !== Array) {
+				throw new Error("参数必须是个数组");
+			}
+			var _array_max;
+			var isOne = true;
+			if (arguments.length === 1) {
+
+				for (var i = 0; i < data.length; i++) {
+					var _temp = 0;
+
+					if (typeof data[i] !== "number") {
+
+						//  is not a number
+						var _num = parseFloat(data[i]);
+						if (isNaN(_num)) {
+							continue;
+						}
+						_temp = _num;
+					} else {
+
+						//  is a number
+						_temp = data[i];
+					}
+
+					if (isOne) {
+						_array_max = _temp;
+						isOne = false;
+					} else {
+						// set value number
+						if (_temp > _array_max) {
+							_array_max = _temp;
+						}
+					}
+				}
+				return _array_max;
+			}
+
+			if (arguments.length === 2 && typeof fn === "function") {
+
+				var maxVal = 0;
+				for (var i = 0; i < data.length; i++) {
+					var _temp = 0;
+					var item = data[i];
+					var v = fn(item);
+					if (typeof v !== "number") {
+
+						//  is not a number
+						var _num = parseFloat(v);
+						if (isNaN(_num)) {
+							continue;
+						}
+						_temp = _num;
+					} else {
+
+						//  is a number
+						_temp = v;
+					}
+
+					if (isOne) {
+						maxVal = _temp;
+						_array_max = item;
+						isOne = false;
+					} else {
+						// set value number
+						if (_temp > maxVal) {
+							maxVal = _temp;
+							_array_max = item;
+						}
+					}
+				}
+				return _array_max;
+			}
+		},
+
+		min: function min(data, fn) {
+			data = data || [];
+			if (data.constructor !== Array) {
+				throw new Error("参数必须是个数组");
+			}
+			var _array_min;
+			var isOne = true;
+			if (arguments.length === 1) {
+				for (var i = 0; i < data.length; i++) {
+					var _temp = 0;
+
+					if (typeof data[i] !== "number") {
+
+						//  is not a number
+						var _num = Number(data[i]);
+						if (isNaN(_num)) {
+							continue;
+						}
+						_temp = _num;
+					} else {
+
+						//  is a number
+						_temp = data[i];
+					}
+
+					if (isOne) {
+						_array_min = _temp;
+						isOne = false;
+					} else {
+						// set value number
+						if (_temp < _array_min) {
+							_array_min = _temp;
+						}
+					}
+				}
+				return _array_min;
+			}
+
+			if (arguments.length === 2 && typeof fn === "function") {
+				var minVal = 0;
+				for (var i = 0; i < data.length; i++) {
+					var _temp = 0;
+					var item = data[i];
+					var v = fn(item);
+					if (typeof v !== "number") {
+
+						//  is not a number
+						var _num = parseFloat(v);
+						if (isNaN(_num)) {
+							continue;
+						}
+						_temp = _num;
+					} else {
+
+						//  is a number
+						_temp = v;
+					}
+
+					if (isOne) {
+						minVal = _temp;
+						_array_min = item;
+						isOne = false;
+					} else {
+						// set value number
+						if (_temp < minVal) {
+							minVal = _temp;
+							_array_min = item;
+						}
+					}
+				}
+				return _array_min;
+			}
 		}
 
 	});
