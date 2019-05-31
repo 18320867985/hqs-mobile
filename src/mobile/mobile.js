@@ -1,6 +1,6 @@
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*
  *	移动端 公共类库
@@ -10,7 +10,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 (function (global, factory) {
 
 	//  cmd commonjs
-	if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && _typeof(module.exports) === "object") {
+	if ((typeof module === "undefined" ? "undefined" : _typeof2(module)) === "object" && _typeof2(module.exports) === "object") {
 		module.exports = factory(global);
 	}
 
@@ -169,7 +169,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					}
 					var els = document.querySelectorAll(selector);
 					Array.prototype.push.apply(this, els);
-				} else if ((typeof selector === "undefined" ? "undefined" : _typeof(selector)) === "object") {
+				} else if ((typeof selector === "undefined" ? "undefined" : _typeof2(selector)) === "object") {
 
 					// 遍历数组型对象
 					if (selector.hasOwnProperty("length") && selector.length > 0) {
@@ -202,7 +202,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						}
 					});
 					Array.prototype.push.apply(this, arrs);
-				} else if ((typeof content === "undefined" ? "undefined" : _typeof(content)) === "object" && typeof selector === "string") {
+				} else if ((typeof content === "undefined" ? "undefined" : _typeof2(content)) === "object" && typeof selector === "string") {
 					if (selector.trim().length === 0) {
 						return this;
 					}
@@ -230,6 +230,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	// 添加静态和实例的扩展方法
 	Mobile.extend = Mobile.fn.extend = function (obj) {
+		// if (typeof obj === "object") {
+		// 	for (var i in obj) {
+		// 		this[i] = obj[i];
+		// 	}
+		// }
+
+		// return this;
 
 		var src,
 		    copyIsArray,
@@ -614,7 +621,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			if (obj == null) {
 				return obj + "";
 			}
-			return (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" || typeof obj === "function" ? class2type[toString.call(obj)] || "object" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
+			return (typeof obj === "undefined" ? "undefined" : _typeof2(obj)) === "object" || typeof obj === "function" ? class2type[toString.call(obj)] || "object" : typeof obj === "undefined" ? "undefined" : _typeof2(obj);
 		},
 
 		max: function max(data, fn) {
@@ -817,7 +824,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			//set 对象的值
-			if (arguments.length === 1 && (typeof attr === "undefined" ? "undefined" : _typeof(attr)) === "object") {
+			if (arguments.length === 1 && (typeof attr === "undefined" ? "undefined" : _typeof2(attr)) === "object") {
 				Mobile.each(this, function (i, v) {
 					for (var _attr in attr) {
 						if (Mobile.isEqual(Mobile.numberList, _attr.trim())) {
@@ -1522,7 +1529,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		//  append
 		append: function append(obj) {
-			if ((typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" && obj.length && obj.length > 0) {
+			if ((typeof obj === "undefined" ? "undefined" : _typeof2(obj)) === "object" && obj.length && obj.length > 0) {
 				Mobile.each(this, function () {
 					for (var i = 0; i < obj.length; i++) {
 						this.appendChild(obj[i]);
@@ -1543,7 +1550,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		//  prepend
 		prepend: function prepend(obj) {
-			if ((typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" && obj.length && obj.length > 0) {
+			if ((typeof obj === "undefined" ? "undefined" : _typeof2(obj)) === "object" && obj.length && obj.length > 0) {
 				Mobile.each(this, function () {
 					for (var i = obj.length; i > 0; i--) {
 						this.insertBefore(obj[i - 1], this.childNodes[0]);
@@ -1792,8 +1799,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	// 绑定事件
 	Mobile.fn.extend({
-		on: function on(type) {
-
+		on: function on() {
+			var type = arguments[0];
 			var $this = this;
 			var isonebind = $this.length > 0 && $this.bindOneElementEvent ? true : false; // m(el).one()只绑定一次事件
 
@@ -1829,7 +1836,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			// 正常绑定事件传object值
-			if (arguments.length >= 3 && _typeof(arguments[1]) === "object" && typeof arguments[2] === "function") {
+			if (arguments.length >= 3 && _typeof2(arguments[1]) === "object" && typeof arguments[2] === "function") {
 				var _f = function _f(event) {
 					event.data = obj;
 					handler.call(this, event);
@@ -1884,7 +1891,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			// 委托绑定事件传object值
-			if (arguments.length >= 4 && typeof arguments[1] === "string" && _typeof(arguments[2]) === "object" && typeof arguments[3] === "function") {
+			if (arguments.length >= 4 && typeof arguments[1] === "string" && _typeof2(arguments[2]) === "object" && typeof arguments[3] === "function") {
 				var _f3 = function _f3(event) {
 					if (Mobile.checkSelector(event.target, el)) {
 						event.data = obj;
@@ -2095,31 +2102,86 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				elY: 0,
 				isX: false,
 				isY: false
+
 			};
 
-			m(this).touchstart(start, bl);
+			/* 变化touchList的identifier和时间戳的集合
+   	{
+   		id,
+   		timestamp
+   	}
+   */
+			var tempObj = [];
 
-			function start(event) {
+			m(this).touchstart(function (event) {
 
-				var touch = event.changedTouches[0];
-				var identifier = touch.identifier;
+				var touches = event.touches;
+				var len = touches.length;
+				Object.keys(touches).forEach(function (name) {
 
+					if (!tempObj.some(function (item) {
+						return touches[name].identifier === item.id;
+					})) {
+						tempObj.push({
+							id: touches[name].identifier,
+							timestamp: new Date().getTime()
+						});
+					}
+				});
+
+				var _index = 0;
+				var maxCh = m.max(tempObj, function (item) {
+					return item.timestamp;
+				});
+
+				if (maxCh) {
+					_index = maxCh.id;
+					var i = 0;
+					Object.keys(touches).forEach(function (name) {
+						var ch = touches[name];
+						if (ch.identifier === maxCh.id) {
+							_index = i;
+						}
+						i++;
+					});
+				} else {
+					_index = len - 1;
+				}
+
+				var touch = touches[_index];
 				obj.x = startX = touch.clientX;
 				obj.y = startY = touch.clientY;
-				obj.ident = identifier;
 
 				if (typeof startfn === "function") {
+
 					startfn(event, obj);
 				}
-			}
+			}, bl);
 
-			m(this).touchmove(move, bl);
+			m(this).touchmove(function (event) {
 
-			function move(event) {
+				var touches = event.touches;
+				var len = touches.length;
+				var _index = 0;
+				var maxCh = m.max(tempObj, function (item) {
+					return item.timestamp;
+				});
 
-				var touch = event.changedTouches[0];
-				var identifier = touch.identifier;
+				if (maxCh) {
+					var i = 0;
+					Object.keys(touches).forEach(function (name) {
+						var ch = touches[name];
+						if (ch.identifier === maxCh.id) {
+							_index = i;
+						}
 
+						i++;
+					});
+				} else {
+					_index = len - 1;
+				}
+
+				var touch = touches[_index];
 				var nowX = touch.clientX;
 				var nowY = touch.clientY;
 
@@ -2128,42 +2190,74 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				obj.x = nowX - startX;
 				obj.y = nowY - startY;
 
-				obj.ident = identifier;
-
 				// 检查是否向上下或左右移动
-				if (isAddMoveEventFirst && _x != _y) {
-					isAddMoveEventFirst = false;
-					if (_y > _x) {
+				if (isAddMoveEventFirst && _x !== _y) {
 
+					if (_y - _x) {
+						isAddMoveEventFirst = false;
 						obj.isY = true;
 						obj.isX = false;
 					} else {
+						isAddMoveEventFirst = false;
 						obj.isY = false;
 						obj.isX = true;
 					}
 				}
 
 				if (typeof movefn === "function") {
+					//event.data=obj;
 					movefn(event, obj);
 				}
-			}
+			}, bl);
 
-			m(this).touchendcancel(end, bl);
+			m(this).touchendcancel(function (event) {
+				var touches = event.touches;
+				var len = touches.length;
+				if (len > 0) {
+					//	tempObj=[];
+					var ids = [];
+					Object.keys(touches).forEach(function (name) {
+						var ch = touches[name];
+						ids.push({
+							id: ch.identifier
+						});
+					});
 
-			function end(event) {
-
-				var touch = event.changedTouches[0];
-				var identifier = touch.identifier;
-				obj.ident = identifier;
-
-				isAddMoveEventFirst = true; // 判断是否第一次拖动
-				obj.x = touch.clientX;
-				obj.y = touch.clientY;
-
-				if (typeof movefn === "function") {
-					endfn(event, obj);
+					tempObj = tempObj.filter(function (item) {
+						return ids.some(function (item2) {
+							return item.id === item2.id;
+						});
+					});
+					var _index = 0;
+					var maxCh = m.max(tempObj, function (item) {
+						return item.timestamp;
+					});
+					if (maxCh) {
+						var i = 0;
+						Object.keys(touches).forEach(function (name) {
+							var ch = touches[name];
+							if (ch.identifier === maxCh.id) {
+								_index = i;
+							}
+							i++;
+						});
+					} else {
+						_index = len - 1;
+					}
+					var touch = touches[_index];
+					startX = touch.clientX - obj.x;
+					startY = touch.clientY - obj.y;
 				}
-			}
+
+				if (len === 0) {
+					tempObj = [];
+					isAddMoveEventFirst = true; // 判断是否第一次拖动
+					if (typeof endfn === "function") {
+						//event.data=obj;
+						endfn(event, obj);
+					}
+				}
+			}, bl);
 		},
 
 		// tap
@@ -2243,7 +2337,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					}
 
 					// 使用事件data		
-					else if (args.length >= 2 && _typeof(args[0]) === "object" && typeof args[1] === "function") {
+					else if (args.length >= 2 && _typeof2(args[0]) === "object" && typeof args[1] === "function") {
 							fn = args[1];
 							bl = args[2] || false;
 							var obj = args[0];
@@ -2254,7 +2348,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						}
 
 						// 使用委托事件传值data	
-						else if (args.length >= 3 && typeof args[0] === "string" && _typeof(args[1]) === "object" && typeof args[2] === "function") {
+						else if (args.length >= 3 && typeof args[0] === "string" && _typeof2(args[1]) === "object" && typeof args[2] === "function") {
 								deletage = args[0];
 								var obj = args[1];
 								fn = args[2];
