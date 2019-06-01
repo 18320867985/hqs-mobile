@@ -186,7 +186,7 @@ ajax
 			opt.success = opt.success || function () { };
 			opt.error = opt.error || function () { };
 			opt.contentType = opt.contentType || "application/x-www-form-urlencoded;charset=utf-8";
-			opt.timeout = typeof opt.timeout === "number" ? opt.timeout : 20000;
+			opt.timeout = typeof opt.timeout === "number" ? opt.timeout : 30000;
 			opt.progress = opt.progress || {};
 
 			var xhr = Mobile.createXHR();
