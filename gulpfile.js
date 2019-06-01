@@ -58,6 +58,7 @@ gulp.task('connect',
 
 var gulpJsFile = [
 	"./src/mobile/js-dev/mobile-dom.js",
+	"./src/mobile/js-dev/mobile-transform.js",
 	"./src/mobile/js-dev/mobile-transition.js",
 	"./src/mobile/js-dev/mobile-ajax.js",
 
