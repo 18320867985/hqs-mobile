@@ -242,76 +242,72 @@
 
 	// 添加静态和实例的扩展方法
 	Mobile.extend = Mobile.fn.extend = function (obj) {
-		// if (typeof obj === "object") {
-		// 	for (var i in obj) {
-		// 		this[i] = obj[i];
-		// 	}
-		// }
+		// 		if (typeof obj === "object") {
+		// 			for (var i in obj) {
+		// 				this[i] = obj[i];
+		// 			}
+		// 		}
+		// 
+		// 		return this;
 
-		// return this;
-
-		var src,
-			copyIsArray,
-			copy,
-			name,
-			options,
-			clone,
+		var src, copyIsArray, copy, name, options, clone,
 			target = arguments[0] || {},
 			i = 1,
 			length = arguments.length,
 			deep = false;
 
-		if (typeof target === "boolean") {
+		if(typeof target === "boolean") {
 			deep = target;
 
-			// skip the boolean and the target
 			target = arguments[i] || {};
 			i++;
 		}
 
-		if ((typeof target === "undefined" ? "undefined" : _typeof(target)) !== "object" && !Mobile.isFunction(target)) {
+	
+		if(typeof target !== "object" && !Mobile.isFunction(target)) {
 			target = {};
 		}
 
-		if (i === length) {
+		if(i === length) {
 			target = this;
 			i--;
 		}
 
-		for (; i < length; i++) {
-
-			if ((options = arguments[i]) != null) {
-
-				for (name in options) {
+		for(; i < length; i++) {
+		
+			if((options = arguments[i]) != null) {
+			
+				for(name in options) {
 					src = target[name];
 					copy = options[name];
 
-					if (target === copy) {
+				
+					if(target === copy) {
 						continue;
 					}
 
-					if (deep && copy && (Mobile.isPlainObject(copy) || (copyIsArray = Mobile.isArray(copy)))) {
-						if (copyIsArray) {
+				
+					if(deep && copy && (Mobile.isPlainObject(copy) || (copyIsArray = Mobile.isArray(copy)))) {
+						if(copyIsArray) {
 							copyIsArray = false;
-
-							// 深度复制数组
 							clone = src && Mobile.isArray(src) ? src : [];
-						} else {
 
-							//  深度复制对象
+						} else {
 							clone = src && Mobile.isPlainObject(src) ? src : {};
 						}
 
+						
 						target[name] = Mobile.extend(deep, clone, copy);
 
-						//  复制值类型
-					} else if (copy !== undefined) {
+					
+					} else if(copy !== undefined) {
 						target[name] = copy;
 					}
 				}
 			}
 		}
 
+	
 		return target;
 	};
 
@@ -1913,13 +1909,13 @@
 
 	// 绑定事件
 	Mobile.fn.extend({
-		on: function () {
-			var type = arguments[0];
+		on: function(type) {
+
 			var $this = this;
 			var isonebind = $this.length > 0 && $this.bindOneElementEvent ? true : false; // m(el).one()只绑定一次事件
 
 			// 正常绑定事件
-			if (arguments.length >= 2 && typeof arguments[1] === "function") {
+			if(arguments.length >= 2 && typeof arguments[1] === "function") {
 				var handler = arguments[1];
 				var bl = typeof arguments[2] === "boolean" ? arguments[2] : false;
 
@@ -1927,15 +1923,15 @@
 					handler.call(this, event);
 
 					// m(el).one()只绑定一次事件
-					if (isonebind) {
+					if(isonebind) {
 						m(this).off(type, f, bl);
 						m.events.on(type, f);
 						$this.bindOneElementEvent = false;
 					}
 				}
 
-				Mobile.each(this, function () {
-					if (this.addEventListener) {
+				Mobile.each(this, function() {
+					if(this.addEventListener) {
 						this.addEventListener(type, f, bl);
 					}
 					//ie8
@@ -1950,7 +1946,7 @@
 			}
 
 			// 正常绑定事件传object值
-			if (arguments.length >= 3 && typeof arguments[1] === "object" && typeof arguments[2] === "function") {
+			if(arguments.length >= 3 && typeof arguments[1] === "object" && typeof arguments[2] === "function") {
 				var obj = arguments[1]
 				var handler = arguments[2];
 				var bl = typeof arguments[3] === "boolean" ? arguments[3] : false;
@@ -1960,15 +1956,15 @@
 					handler.call(this, event);
 
 					// m(el).one()只绑定一次事件
-					if (isonebind) {
+					if(isonebind) {
 						m(this).off(type, f, bl);
 						m.events.on(type, f);
 						$this.bindOneElementEvent = false;
 					}
 				}
 
-				Mobile.each(this, function () {
-					if (this.addEventListener) {
+				Mobile.each(this, function() {
+					if(this.addEventListener) {
 						this.addEventListener(type, f, bl);
 					}
 
@@ -1978,25 +1974,25 @@
 			}
 
 			// 委托绑定事件
-			if (arguments.length >= 3 && typeof arguments[1] === "string" && typeof arguments[2] === "function") {
+			if(arguments.length >= 3 && typeof arguments[1] === "string" && typeof arguments[2] === "function") {
 				var el = arguments[1].trim();
 				var handler = arguments[2];
 				var bl = typeof arguments[3] === "boolean" ? arguments[3] : false;
 
 				function f(event) {
-					if (Mobile.checkSelector(event.target, el)) {
+					if(Mobile.checkSelector(event.target, el)) {
 						handler.call(event.target, event);
 
 						// m(el).one()只绑定一次事件
-						if (isonebind) {
+						if(isonebind) {
 							m(this).off(type, f, bl);
 							m.events.on(type, f);
 							$this.bindOneElementEvent = false;
 						}
 					}
 				}
-				Mobile.each(this, function () {
-					if (this.addEventListener) {
+				Mobile.each(this, function() {
+					if(this.addEventListener) {
 						this.addEventListener(type, f, bl);
 					}
 				});
@@ -2005,20 +2001,19 @@
 			}
 
 			// 委托绑定事件传object值
-			if (arguments.length >= 4 && typeof arguments[1] === "string" && typeof arguments[2] === "object" && typeof arguments[
-				3] === "function") {
+			if(arguments.length >= 4 && typeof arguments[1] === "string" && typeof arguments[2] === "object" && typeof arguments[3] === "function") {
 				var el = arguments[1].trim();
 				var obj = arguments[2];
 				var handler = arguments[3];
 				var bl = typeof arguments[4] === "boolean" ? arguments[4] : false;
 
 				function f(event) {
-					if (Mobile.checkSelector(event.target, el)) {
+					if(Mobile.checkSelector(event.target, el)) {
 						event.data = obj;
 						handler.call(event.target, event);
 
 						// m(el).one()只绑定一次事件
-						if (isonebind) {
+						if(isonebind) {
 							m(this).off(type, f, bl);
 							m.events.on(type, f);
 							$this.bindOneElementEvent = false;
@@ -2026,8 +2021,8 @@
 					}
 
 				}
-				Mobile.each(this, function () {
-					if (this.addEventListener) {
+				Mobile.each(this, function() {
+					if(this.addEventListener) {
 						this.addEventListener(type, f, bl);
 					}
 				});
@@ -2038,6 +2033,7 @@
 			return this;
 
 		},
+
 
 		off: function (type, handler) {
 
@@ -2277,8 +2273,8 @@
 				obj.y = startY = touch.clientY;
 
 				if (typeof startfn === "function") {
-
-					startfn(event, obj);
+					//event.obj=obj;
+					startfn(event,obj);
 				}
 
 			}, bl);
@@ -2317,21 +2313,21 @@
 
 				// 检查是否向上下或左右移动
 				if (isAddMoveEventFirst && (_x !== _y)) {
-
+					isAddMoveEventFirst = false;
 					if (_y - _x) {
-						isAddMoveEventFirst = false;
+					
 						obj.isY = true;
 						obj.isX = false;
 					} else {
-						isAddMoveEventFirst = false;
+						
 						obj.isY = false;
 						obj.isX = true;
 					}
 				}
 
 				if (typeof movefn === "function") {
-					//event.data=obj;
-					movefn(event, obj);
+					//event.obj=obj;
+					movefn(event,obj);
 				}
 
 			}, bl);
@@ -2376,14 +2372,16 @@
 					tempObj = [];
 					isAddMoveEventFirst = true; // 判断是否第一次拖动
 					if (typeof endfn === "function") {
-						//event.data=obj;
-						endfn(event, obj);
+						//event.obj=obj;
+						endfn(event,obj);
 					}
 				}
 			}, bl);
 
 
 		},
+
+
 
 		// tap
 		tap: function () {
