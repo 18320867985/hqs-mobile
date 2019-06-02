@@ -173,8 +173,8 @@
 					Array.prototype.push.apply(this, els);
 				} else if (typeof selector === "object") {
 
-					// nodelist 对象
-					if (selector.constructor&& selector.constructor===NodeList) {
+					// Nodelist, HTMLCollection 对象
+					if (selector.constructor&& (selector.constructor===NodeList||selector.constructor===HTMLCollection)) {
 						Mobile.each(selector, function (i, v) {
 							arrs.push(v);
 						});
