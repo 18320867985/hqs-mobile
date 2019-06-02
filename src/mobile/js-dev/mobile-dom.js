@@ -173,14 +173,20 @@
 					Array.prototype.push.apply(this, els);
 				} else if (typeof selector === "object") {
 
-					// 遍历数组型对象
-					if (selector.hasOwnProperty("length") && selector.length > 0) {
+					// nodelist 对象
+					if (selector.constructor&& selector.constructor===NodeList) {
+						Mobile.each(selector, function (i, v) {
+							arrs.push(v);
+						});
+					}
+					// Mobile 对象
+					else if (selector.hasOwnProperty("length") && selector.length > 0) {
 						Mobile.each(selector, function (i, v) {
 							arrs.push(v);
 						});
 					} else if (selector.nodeType === Node.ELEMENT_NODE || selector.nodeType === Node.DOCUMENT_NODE || selector ===
 						window) {
-						// 单例对象 
+						// element 单例对象 
 						arrs.push(selector);
 					}
 

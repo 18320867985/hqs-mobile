@@ -12,8 +12,17 @@
 
 	<script data-parent="umd" data-umd="test" src="./mobile.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-			// var o= new Person();
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ?
+ function (obj) { return typeof obj; } : 
+ function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ?
+  "symbol" : typeof obj; };
+			 var o= Symbol("111")
 			// console.log(o)
+
+		console.log(_typeof( o))
+
+		
 	</script>
 </body>
 
