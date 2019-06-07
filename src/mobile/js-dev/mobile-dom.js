@@ -48,7 +48,7 @@
 	Mobile.version = "1.1.0";
 
 	// 可计算值的列表值
-	Mobile.numberList = ["left", "top", "right", "bottom", "width", "height"];
+	Mobile.numberList = ["left", "top", "right", "bottom", "width", "height","max-width","min-width","max-height","min-height"];
 
 	var _block = ["body", "div", "p", "table", "tr", "thead", "tbody", "tfoot", "h1", "h2", "h3", "h4", "h5", "h6",
 		"article",
@@ -2320,7 +2320,7 @@
 				// 检查是否向上下或左右移动
 				if (isAddMoveEventFirst && (_x !== _y)) {
 					isAddMoveEventFirst = false;
-					if (_y - _x) {
+					if (_y > _x) {
 					
 						obj.isY = true;
 						obj.isX = false;
