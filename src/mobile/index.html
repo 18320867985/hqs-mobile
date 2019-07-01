@@ -1,29 +1,103 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
-	<meta charset="utf-8">
-	<title>gulp-dev</title>
+    <meta charset="utf-8">
+    <title>gulp-dev</title>
 
 </head>
 
 <body>
-	<h1>mobile</h1>
+    <h1>mobile</h1>
 
-	<script data-parent="umd" data-umd="test" src="./mobile.js" type="text/javascript" charset="utf-8"></script>
-	<script type="text/javascript">
+    <script data-parent="umd" data-umd="test" src="./mobile.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ?
- function (obj) { return typeof obj; } : 
- function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ?
-  "symbol" : typeof obj; };
-			 var o= Symbol("111")
-			// console.log(o)
 
-		console.log(_typeof( o))
-
-		
-	</script>
+    </script>
 </body>
 
 </html>
+
+
+	function _compilerparams(params, data, preKey) {
+		preKey = preKey || "";
+
+		for (var key in data) {
+			var data2 = data[key];
+
+			if ( data2 === undefined) {
+				continue;
+			}
+
+			else if (data2 !== null &&data2.constructor === Object) {
+				for (var key2 in data2) {
+
+					var _key = "";
+					var _key2 = "[" + key2 + "]";
+					if (preKey === "") {
+						_key = preKey + key + _key2;
+					} else {
+						_key = preKey + "[" + key + "]" + _key2;
+					}
+
+					var _value = data2[key2];
+
+					if (_value.constructor === Array || _value.constructor === Object) {
+
+						_compilerparams(params, _value, _key);
+					} else {
+						params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
+					}
+
+				}
+			}
+
+			else if (data2 !== null &&data2.constructor === Array) {
+
+				for (var key2_ in data2) {
+					var data3 = data2[key2_];
+					if (typeof data3 === "object") {
+						for (var key3 in data3) {
+
+							var _key_ = "";
+							var _key2_ = "[" + key2_ + "]" + "[" + key3 + "]";
+							if (preKey === "") {
+								_key_ = preKey + key + _key2_;
+							} else {
+								_key_ = preKey + "[" + key + "]" + _key2_;
+							}
+
+							var _value_ = data3[key3];
+
+							if (_value_.constructor === Array || _value_.constructor === Object) {
+
+								_compilerparams(params, _value_, _key_);
+							} else {
+								params.push(encodeURIComponent(_key_) + '=' + encodeURIComponent(_value_));
+							}
+
+						}
+					} else {
+						var _key_2 = preKey + key + "[]";
+						var _value_2 = data3;
+						params.push(encodeURIComponent(_key_2) + '=' + encodeURIComponent(_value_2));
+					}
+
+				}
+
+			} else {
+				var _key3 = "";
+				if (preKey === "") {
+					_key3 = preKey + key;
+				} else {
+					_key = preKey + "[" + key + "]";
+				}
+				var dataVal=data[key];
+				dataVal=dataVal===null?"":dataVal;
+				params.push(encodeURIComponent(_key3) + '=' + encodeURIComponent(dataVal));
+
+			}
+
+		}
+	}

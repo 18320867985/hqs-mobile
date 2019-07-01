@@ -61,7 +61,7 @@ ajax
 				
 					var _key = "";
 					var _key2 = "[" + key2 + "]";
-					if (preKey == "") {
+					if (preKey === "") {
 						_key = preKey + key + _key2;
 					} else {
 						_key = preKey + "[" + key + "]" + _key2;
@@ -81,47 +81,47 @@ ajax
 
 			else if (data2 !== null &&data2.constructor === Array) {
 
-				for (var key2 in data2) {
-					var data3 = data2[key2];
+				for (var key2_ in data2) {
+					var data3 = data2[key2_];
 					if (typeof data3 === "object") {
 						for (var key3 in data3) {
 						
-							var _key = "";
-							var _key2 = "[" + key2 + "]" + "[" + key3 + "]";
-							if (preKey == "") {
-								_key = preKey + key + _key2;
+							var _key_ = "";
+							var _key2_ = "[" + key2_ + "]" + "[" + key3 + "]";
+							if (preKey === "") {
+								_key_ = preKey + key + _key2_;
 							} else {
-								_key = preKey + "[" + key + "]" + _key2;
+								_key_ = preKey + "[" + key + "]" + _key2_;
 							}
 
-							var _value = data3[key3];
+							var _value_ = data3[key3];
 
-							if (_value.constructor === Array || _value.constructor === Object) {
+							if (_value_.constructor === Array || _value_.constructor === Object) {
 								
-								_compilerparams(params, _value, _key);
+								_compilerparams(params, _value_, _key_);
 							} else {
-								params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
+								params.push(encodeURIComponent(_key_) + '=' + encodeURIComponent(_value_));
 							}
 
 						}
 					} else {
-						var _key = preKey + key + "[]";
-						var _value = data3;
-						params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
+						var _key_2 = preKey + key + "[]";
+						var _value_2 = data3;
+						params.push(encodeURIComponent(_key_2) + '=' + encodeURIComponent(_value_2));
 					}
 
 				}
 
 			} else {
-				var _key = "";
-				if (preKey == "") {
-					_key = preKey + key;
+				var _key_3 = "";
+				if (preKey === "") {
+					_key_3 = preKey + key;
 				} else {
-					_key = preKey + "[" + key + "]";
+					_key_3 = preKey + "[" + key + "]";
 				}
 				var dataVal=data[key];
 				dataVal=dataVal===null?"":dataVal;
-				params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(dataVal));
+				params.push(encodeURIComponent(_key_3) + '=' + encodeURIComponent(dataVal));
 
 			}
 
@@ -148,7 +148,7 @@ ajax
 				for (var i = 0, len = versions.length; i < len; i++) {
 					try {
 						return _xhrCORS = new ActiveXObject(version[i]);
-						break;
+						
 					} catch (e) {
 						//跳过
 					}

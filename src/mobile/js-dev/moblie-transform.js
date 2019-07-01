@@ -40,11 +40,11 @@
 
         }
 
-        if (aa == bb || -aa == bb) {
+        if (aa === bb || -aa === bb) {
             deg = dd;
-        } else if (-aa + bb == 180) {
+        } else if (-aa + bb === 180) {
             deg = 180 + cc;
-        } else if (aa + bb == 180) {
+        } else if (aa + bb === 180) {
             deg = 360 - cc || 360 - dd;
         }
 
@@ -69,6 +69,7 @@
 
             this.transform[transforName] = value;
             var result = '';
+            var arrs = [];
             for (var item in this.transform) {
                 switch (item) {
                     case 'rotate':
@@ -82,7 +83,7 @@
                         break;
                     case 'skew':
 
-                        var arrs = this.transform[item];
+                         arrs = this.transform[item]||[];
                         if (arrs.length === 2) {
                             result += item + '(' + parseFloat(arrs[0]) + 'deg,' + parseFloat(arrs[1]) + 'deg)  ';
                         } else {
@@ -97,7 +98,7 @@
                         break;
 
                     case 'scale':
-                        var arrs = this.transform[item];
+                         arrs = this.transform[item]||[];
 
                         if (arrs.length === 2) {
                             result += item + '(' + parseFloat(arrs[0]) + ',' + parseFloat(arrs[1]) + ')  ';
@@ -112,7 +113,7 @@
                         result += item + '(' + parseFloat(this.transform[item]) + 'px)  ';
                         break;
                     case 'translate':
-                        var arrs = this.transform[item];
+                         arrs = this.transform[item]||[];
 
                         if (arrs.length === 2) {
                             result += item + '(' + parseFloat(arrs[0]) + 'px,' + parseFloat(arrs[1]) + 'px)  ';
@@ -121,9 +122,9 @@
                         }
                         break;
 
-                };
+                }
 
-            };
+            }
 
             this.style.WebkitTransform = result;
             this.style.MozTransform = result;
@@ -137,7 +138,7 @@
         });
 
         return this;
-    };
+    }
 
     //  getTransform by style
     // function getTransform(transforName) {
@@ -359,7 +360,7 @@
                     }
 
                     break;
-            };
+            }
 
             return false;
         });
@@ -524,7 +525,7 @@
         },
 
 
-        // // rotate
+         // rotate
         rotate: function (size) {
             if (arguments.length === 0) {
 
@@ -545,7 +546,9 @@
                 return this;
             }
 
-        },
+        }
+
+        //,
 
         // rotateX
         // rotateX: function (size) {
