@@ -10,21 +10,10 @@
     "del": "gulp  del",
     "dev": "  gulp gulp-dev && gulp gulp-watch",
     "build": " gulp del && gulp gulp-build "
-   
   },
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.0",
-    "bootstrap-vue": "^2.0.0-rc.11",
-    "element-ui": "^2.6.1",
-    "uiv": "^0.28.0",
-    "underscore": "^1.9.1",
-    "utils": "^0.3.1",
-    "vee-validate": "^2.1.1",
-    "vue": "^2.5.17",
-    "vue-resource": "^1.5.1",
-    "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    
   },
   "devDependencies": {
     "autoprefixer": "^7.1.4",
@@ -38,6 +27,8 @@
     "babel-preset-latest": "^6.24.1",
     "babel-preset-stage-2": "^6.22.0",
     "del": "^3.0.0",
+    "expand-brackets": "^4.0.0",
+    "filename-regex": "^2.0.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.1",
     "gulp-clean-css": "^3.4.2",

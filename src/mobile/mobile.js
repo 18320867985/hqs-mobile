@@ -50,7 +50,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	};
 
 	// 版本号
-	Mobile.version = "1.1.2";
+	Mobile.version = "1.1.0";
 
 	// 可计算值的列表值
 	Mobile.numberList = ["left", "top", "right", "bottom", "width", "height", "max-width", "min-width", "max-height", "min-height"];
@@ -1232,7 +1232,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return obj;
 		},
 
-		//  heigth
+		//  heigth 根据box-sizing去获取 默认content-box
 		height: function height() {
 
 			if (arguments.length === 0) {
@@ -1266,7 +1266,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		//  clientHeight  垂直方向 height + 上下padding
-		clientHeight: function clientHeight() {
+		innerHeight: function innerHeight() {
 
 			if (arguments.length === 0) {
 				var _h = 0;
@@ -1317,7 +1317,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this;
 		},
 
-		//  width
+		//  width 根据box-sizing去获取 默认content-box
 		width: function width() {
 
 			// get
@@ -1353,7 +1353,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		//  clientWidth  水平方向 width + 左右padding
-		clientWidth: function clientWidth() {
+		innerWidth: function innerWidth() {
 
 			// get
 			if (arguments.length === 0) {
@@ -1438,7 +1438,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		// getBoundingClientRect() 用于获取某个元素相对于视窗的位置集合。集合中有top, right, bottom, left,width,heigth
-		clientRect: function clientRect() {
+		rect: function rect() {
 
 			// get
 			var o = {};
@@ -1798,8 +1798,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	// 绑定事件
 	Mobile.fn.extend({
-		on: function on(type) {
 
+		on: function on(type) {
 			var $this = this;
 			var isonebind = $this.length > 0 && $this.bindOneElementEvent ? true : false; // m(el).one()只绑定一次事件
 			var handler = function handler() {};
@@ -2773,7 +2773,7 @@ ajax
 		},
 
 		/* 封装ajax函数
-  @param {string}opt.type http连接的方式，包括POST和GET两种方式
+  @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE 
   @param {string}opt.url 发送请求的url
   @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
   @param {object}opt.data 发送的参数，格式为对象类型

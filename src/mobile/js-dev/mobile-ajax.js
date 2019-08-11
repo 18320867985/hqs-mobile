@@ -163,9 +163,8 @@ ajax
 			return this.createXHR();
 		},
 
-
 		/* 封装ajax函数
-		@param {string}opt.type http连接的方式，包括POST和GET两种方式
+		@param {string}opt.type http连接的方式，包括POST,GET PUT DELETE 
 		@param {string}opt.url 发送请求的url
 		@param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
 		@param {object}opt.data 发送的参数，格式为对象类型
