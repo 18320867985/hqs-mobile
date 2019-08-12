@@ -1823,7 +1823,6 @@
 
 		},
 
-
 		off: function (type, handler) {
 
 			if (arguments.length === 1) {
