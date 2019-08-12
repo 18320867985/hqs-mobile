@@ -1,4 +1,4 @@
-(function (m) {
++function (m) {
 
     function getTransformArrayByCss($this) {
         var transformText = m($this).css("transform");
@@ -660,4 +660,4 @@
 
     });
 
-})(Mobile);
+}(Mobile);

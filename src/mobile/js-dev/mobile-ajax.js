@@ -1,7 +1,7 @@
 /* 
 ajax
 */
-(function (Mobile) {
++function (Mobile) {
 	// init xhr
 	var _xhrCORS;
 
@@ -299,4 +299,4 @@ ajax
 
 	});
 
-})(Mobile);
+}(Mobile);

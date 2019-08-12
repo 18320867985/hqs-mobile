@@ -45,42 +45,7 @@
 	};
 
 	// 版本号
-	Mobile.version = "1.1.0";
-
-	// 可计算值的列表值
-	Mobile.numberList = ["left", "top", "right", "bottom", "width", "height","max-width","min-width","max-height","min-height"];
-
-	var _block = ["body", "div", "p", "table", "tr", "thead", "tbody", "tfoot", "h1", "h2", "h3", "h4", "h5", "h6",
-		"article",
-		"aside", "details", "figcaption", "figure", "footer", "header", "hgroup", "main", "menu", "nav", "section",
-		"summary",
-		"ul", "li", "ol", "dl", "dt", "dd", "fieldset"
-	]
-	var _inlineBlock = ["img", "audio", "canvas", "progress", "video", "text-area", "select", "input", "button"];
-
-	// 查找元素显示类型
-	function _getElementType(nodeName) {
-		var _type = "inline";
-
-		// block
-		Mobile.each(_block, function (i, v) {
-			if (v === nodeName) {
-				_type = "block";
-				return false;
-			}
-		});
-
-		// inlineblock
-		Mobile.each(_inlineBlock, function (i, v) {
-			if (v === nodeName) {
-				_type = "inline-block";
-				return false;
-			}
-		});
-
-		return _type;
-
-	}
+	Mobile.version = "1.1.2";
 
 	// 查找父元素
 	function _searchParents(el, fn) {
@@ -156,98 +121,100 @@
 	}
 
 	// 原型-prototype
-	Mobile.fn = Mobile.prototype = {
+    Mobile.fn = Mobile.prototype = {
 
-		init: function (selector, content) {
+        init: function (selector, content) {
 
-			var arrs = [];
-			this.length = 0;
-			if (!content) {
+            var arrs = [];
+            this.length = 0;
+            if (!content) {
 
-				// 字符串
-				if (typeof selector === "string") {
-					if (selector.trim().length === 0) {
-						return this;
-					}
-					var els = document.querySelectorAll(selector);
-					Array.prototype.push.apply(this, els);
-				} else if (typeof selector === "object") {
+                // 字符串
+                if (typeof selector === "string") {
+                    if (selector.trim().length === 0) {
+                        return this;
+                    }
+                    var els = document.querySelectorAll(selector);
+                    Array.prototype.push.apply(this, els);
+                } else if (typeof selector === "object") {
 
-					// Nodelist, HTMLCollection 对象
-					if (selector.constructor&& (selector.constructor===NodeList||selector.constructor===HTMLCollection)) {
-						Mobile.each(selector, function (i, v) {
-							arrs.push(v);
-						});
-					}
-					// Mobile 对象
-					else if (selector.hasOwnProperty("length") && selector.length > 0) {
-						Mobile.each(selector, function (i, v) {
-							arrs.push(v);
-						});
-					} else if (selector.nodeType === Node.ELEMENT_NODE || selector.nodeType === Node.DOCUMENT_NODE || selector ===
-						window) {
-						// element 单例对象 
-						arrs.push(selector);
-					}
+                    // Nodelist, HTMLCollection 对象
+                    if (selector.constructor && (selector.constructor === NodeList || selector.constructor === HTMLCollection)) {
+                        Mobile.each(selector, function (i, v) {
+                            arrs.push(v);
+                        });
+                    }
+                    // Mobile 对象
+                    else if (selector.hasOwnProperty("length") && selector.length > 0) {
+                        Mobile.each(selector, function (i, v) {
+                            arrs.push(v);
+                        });
+                    } else if (selector.nodeType === Node.ELEMENT_NODE || selector.nodeType === Node.DOCUMENT_NODE || selector ===
+                        window) {
+                        // element 单例对象 
+                        arrs.push(selector);
+                    }
 
-					Array.prototype.push.apply(this, arrs);
+                    Array.prototype.push.apply(this, arrs);
 
-				}
+                }
 
-			} else {
+            } else {
 
-				if (typeof content === "string" && typeof selector === "string") {
+                if (typeof content === "string" && typeof selector === "string") {
 
-					if (content.trim().length === 0) {
-						return this;
-					}
-					if (selector.trim().length === 0) {
-						return this;
-					}
+                    if (content.trim().length === 0) {
+                        return this;
+                    }
+                    if (selector.trim().length === 0) {
+                        return this;
+                    }
 
-					var p = document.querySelectorAll(content);
-					Mobile.each(p, function () {
-						var childElements = this.querySelectorAll(selector);
-						for (var i = 0; i < childElements.length; i++) {
-							arrs.push(childElements[i])
-						}
-					});
-					Array.prototype.push.apply(this, arrs);
+                    var p = document.querySelectorAll(content);
+                    Mobile.each(p, function () {
+                        var childElements = this.querySelectorAll(selector);
+                        for (var i = 0; i < childElements.length; i++) {
+                            arrs.push(childElements[i])
+                        }
+                    });
+                    Array.prototype.push.apply(this, arrs);
 
-				} else if (typeof content === "object" && typeof selector === "string") {
-					if (selector.trim().length === 0) {
-						return this;
-					}
-					// 遍历数组型对象
-					if (content.hasOwnProperty("length") && content.length > 0) {
+                } else if (typeof content === "object" && typeof selector === "string") {
+                    if (selector.trim().length === 0) {
+                        return this;
+                    }
+                    // 遍历数组型对象
+                    if (content.hasOwnProperty("length") && content.length > 0) {
 
-						Mobile.each(content, function () {
-							var childElements = this.querySelectorAll(selector);
-							for (var i = 0; i < childElements.length; i++) {
-								arrs.push(childElements[i]);
-							}
+                        Mobile.each(content, function () {
+                            var childElements = this.querySelectorAll(selector);
+                            for (var i = 0; i < childElements.length; i++) {
+                                arrs.push(childElements[i]);
+                            }
 
-						});
-						Array.prototype.push.apply(this, arrs);
+                        });
+                        Array.prototype.push.apply(this, arrs);
 
-					} else if (content.nodeType === Node.ELEMENT_NODE || content.nodeType === Node.DOCUMENT_NODE) {
-						var childElements = content.querySelectorAll(selector);
-						Array.prototype.push.apply(this, childElements);
-					}
+                    } else if (content.nodeType === Node.ELEMENT_NODE || content.nodeType === Node.DOCUMENT_NODE) {
+                        var childElements = content.querySelectorAll(selector);
+                        Array.prototype.push.apply(this, childElements);
+                    }
 
-				}
+                }
 
-			}
-			return this;
-		},
+            }
+            return this;
+        }
 
-	}
+    };
 
 	// 将init函数作为实例化的mobile原型。 
 	Mobile.fn.init.prototype = Mobile.fn;
 
 	// 添加静态和实例的扩展方法
-	Mobile.extend = Mobile.fn.extend = function (obj) {
+    Mobile.extend = Mobile.fn.extend = function (obj) {
+
+        // 简单扩展方法
 		// 		if (typeof obj === "object") {
 		// 			for (var i in obj) {
 		// 				this[i] = obj[i];
@@ -256,6 +223,7 @@
 		// 
 		// 		return this;
 
+        // 兼容扩展方法
 		var src, copyIsArray, copy, name, options, clone,
 			target = arguments[0] || {},
 			i = 1,
@@ -292,7 +260,6 @@
 						continue;
 					}
 
-				
 					if(deep && copy && (Mobile.isPlainObject(copy) || (copyIsArray = Mobile.isArray(copy)))) {
 						if(copyIsArray) {
 							copyIsArray = false;
@@ -829,6 +796,9 @@
 		},
 
 	});
+
+    // 可计算值的列表值
+    Mobile.numberList = ["left", "top", "right", "bottom", "width", "height", "max-width", "min-width", "max-height", "min-height"];
 
 	// 扩展实例方法
 	Mobile.fn.extend({
@@ -1687,181 +1657,6 @@
 	// 动画
 	Mobile.fn.extend({
 
-		// show
-		show: function () {
-
-			Mobile.each(this, function (i, el) {
-				clearInterval(this.clearTimeId);
-				this.isshow = true;
-				var _showType = this.showValue || "none";
-				var _nodeName = this.nodeName.toLowerCase();
-				if (_showType === "none") {
-					_showType = _getElementType(_nodeName);
-				}
-
-				this.style.display = _showType;
-				this.style.opacity = 1;
-
-			});
-			return this;
-
-		},
-
-		// hide
-		hide: function () {
-
-			Mobile.each(this, function (i, el) {
-				clearInterval(this.clearTimeId);
-				this.isshow = false;
-				var _v = m(this).css("display") || "none";
-				this.showValue = _v;
-				this.style.display = "none";
-				this.style.opacity = 0;
-
-			});
-			return this;
-		},
-
-		// toggle
-		toggle: function () {
-
-			Mobile.each(this, function () {
-
-				var _v = m(this).css("display") || "none";
-				if (_v.trim() !== "none") {
-					m(this).hide();
-				} else {
-					m(this).show();
-				}
-			});
-			return this;
-		},
-
-		// fadeIn
-		fadeIn: function (time) {
-
-			Mobile.each(this, function (i, el) {
-
-				clearInterval(this.clearTimeId);
-				var _showType = "";
-				this.isshow = true;
-				if (!this.firstclick) {
-					this.firstclick = true;
-					_showType = m(this).css("display") || "none";
-					if (_showType === "none") {
-						this.style.opacity = 0;
-					} else {
-						this.style.opacity = 1;
-					}
-
-				} else {
-					_showType = this.showValue || "none";
-					this.style.opacity = parseFloat(m(this).css("opacity")) || 0;
-
-				}
-
-				var _nodeName = this.nodeName.toLowerCase();
-				var _opacity = parseFloat(m(this).css("opacity")) || 0;
-				if (_showType === "none") {
-					_showType = _getElementType(_nodeName);
-				}
-
-				this.style.display = _showType;
-				this.showValue = _showType;
-				time = typeof time === "number" ? time : 400;
-				var opt = 1000;
-				var fx = 30;
-				var t = time / fx;
-				var speed = opt / t;
-				this.clearTimeId = setInterval(function () {
-					var v = parseFloat(el.style.opacity) || 0;
-					v = v * 1000;
-					el.style.opacity = (speed + v) / 1000;
-					v = (parseFloat(el.style.opacity) || 0) * 1000;
-
-					if ((v + speed) > opt) {
-						el.style.opacity = opt / 1000;
-						el.style.opacity = 1;
-						el.style.display = _showType;
-						clearInterval(this.clearTimeId);
-					}
-				}.bind(this), fx);
-
-			});
-			return this;
-
-		},
-
-		// fadeOut
-		fadeOut: function (time) {
-
-			Mobile.each(this, function (i, el) {
-				clearInterval(this.clearTimeId);
-				this.firstclick = true;
-				this.isshow = false;
-				var _v = m(this).css("display") || "none";
-				if (_v !== "none") {
-					this.style.opacity = parseFloat(el.style.opacity) || 1;
-				}
-				this.showValue = _v;
-				time = typeof time === "number" ? time : 400;
-				var opt = 1000;
-				var fx = 30;
-				var t = time / fx;
-				var speed = opt / t;
-				this.clearTimeId = setInterval(function () {
-					var v = parseFloat(el.style.opacity) || 0;
-					v = v * 1000;
-					el.style.opacity = (v - speed) / 1000;
-					v = (parseFloat(el.style.opacity) || 0) * 1000;
-					if ((v - speed) < 0) {
-						el.style.opacity = 0;
-						el.style.display = "none";
-						clearInterval(this.clearTimeId);
-					}
-				}.bind(this), fx);
-			});
-			return this;
-		},
-
-		// fadeToggle
-		fadeToggle: function (time) {
-
-			Mobile.each(this, function () {
-				var _v = m(this).css("display") || "none";
-				if (typeof this.isshow !== "undefined") {
-					if (this.isshow) {
-						m(this).fadeOut(time);
-						this.isshow = false;
-					} else {
-						m(this).fadeIn(time);
-						this.isshow = true;
-					}
-
-				} else {
-					if (_v !== "none") {
-						if (!this.firstclick) {
-							m(this).fadeOut(time);
-							this.isshow = false;
-						} else {
-							m(this).fadeIn(time);
-							this.isshow = true;
-						}
-					} else {
-						if (this.firstclick) {
-							m(this).fadeOut(time);
-							this.isshow = false;
-						} else {
-							m(this).fadeIn(time);
-							this.isshow = true;
-						}
-					}
-
-				}
-			});
-			return this;
-		},
-
 		//  windowTop
 		windowTop: function (y, time) {
 
@@ -2568,7 +2363,7 @@
 		},
 	});
 
-	// 自定义事件
+	// 自定义事件列表
 	Mobile.extend({
 		events: {
 			props: {},
