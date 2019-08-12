@@ -1890,7 +1890,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			});
 		},
 
-		// touchstart touchmove touchend touchcell 合并封装
+		// 支持多指触摸 touchstart touchmove touchend touchcell 合并封装
 		move: function move(startfn, movefn, endfn, bl) {
 
 			Mobile.each(this, function () {

@@ -266,20 +266,20 @@ ajax
 
 			// 创建一个几乎唯一的id
 			var callbackName = "mobile" + (new Date()).getTime().toString().trim();
-			window[callbackName] = function (result) {
+            window[callbackName] = function (result) {
 
-				// 创建一个全局回调处理函数
-				if (typeof callback === "function") {
-					callback(result);
-				}
-			}
+                // 创建一个全局回调处理函数
+                if (typeof callback === "function") {
+                    callback(result);
+                }
+            };
 
 			// 参数data对象字符
 			var params = [];
 			var postData = "";
 			if (typeof data === "object") {
 			
-				postData = _JoinParams(data)
+                postData = _JoinParams(data);
 			}
 
 			if (postData.length > 0) {
@@ -295,7 +295,7 @@ ajax
 			script.setAttribute("type", "text/javascript");
 			document.body.appendChild(script);
 
-		},
+		}
 
 	});
 
