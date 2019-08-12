@@ -50,36 +50,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	};
 
 	// 版本号
-	Mobile.version = "1.1.0";
-
-	// 可计算值的列表值
-	Mobile.numberList = ["left", "top", "right", "bottom", "width", "height", "max-width", "min-width", "max-height", "min-height"];
-
-	var _block = ["body", "div", "p", "table", "tr", "thead", "tbody", "tfoot", "h1", "h2", "h3", "h4", "h5", "h6", "article", "aside", "details", "figcaption", "figure", "footer", "header", "hgroup", "main", "menu", "nav", "section", "summary", "ul", "li", "ol", "dl", "dt", "dd", "fieldset"];
-	var _inlineBlock = ["img", "audio", "canvas", "progress", "video", "text-area", "select", "input", "button"];
-
-	// 查找元素显示类型
-	function _getElementType(nodeName) {
-		var _type = "inline";
-
-		// block
-		Mobile.each(_block, function (i, v) {
-			if (v === nodeName) {
-				_type = "block";
-				return false;
-			}
-		});
-
-		// inlineblock
-		Mobile.each(_inlineBlock, function (i, v) {
-			if (v === nodeName) {
-				_type = "inline-block";
-				return false;
-			}
-		});
-
-		return _type;
-	}
+	Mobile.version = "1.1.2";
 
 	// 查找父元素
 	function _searchParents(el, fn) {
@@ -231,11 +202,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this;
 		}
 
-		// 将init函数作为实例化的mobile原型。 
-	};Mobile.fn.init.prototype = Mobile.fn;
+	};
+
+	// 将init函数作为实例化的mobile原型。 
+	Mobile.fn.init.prototype = Mobile.fn;
 
 	// 添加静态和实例的扩展方法
 	Mobile.extend = Mobile.fn.extend = function (obj) {
+
+		// 简单扩展方法
 		// 		if (typeof obj === "object") {
 		// 			for (var i in obj) {
 		// 				this[i] = obj[i];
@@ -244,6 +219,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		// 
 		// 		return this;
 
+		// 兼容扩展方法
 		var src,
 		    copyIsArray,
 		    copy,
@@ -774,6 +750,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 
 	});
+
+	// 可计算值的列表值
+	Mobile.numberList = ["left", "top", "right", "bottom", "width", "height", "max-width", "min-width", "max-height", "min-height"];
 
 	// 扩展实例方法
 	Mobile.fn.extend({
@@ -1584,172 +1563,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	// 动画
 	Mobile.fn.extend({
 
-		// show
-		show: function show() {
-
-			Mobile.each(this, function (i, el) {
-				clearInterval(this.clearTimeId);
-				this.isshow = true;
-				var _showType = this.showValue || "none";
-				var _nodeName = this.nodeName.toLowerCase();
-				if (_showType === "none") {
-					_showType = _getElementType(_nodeName);
-				}
-
-				this.style.display = _showType;
-				this.style.opacity = 1;
-			});
-			return this;
-		},
-
-		// hide
-		hide: function hide() {
-
-			Mobile.each(this, function (i, el) {
-				clearInterval(this.clearTimeId);
-				this.isshow = false;
-				var _v = m(this).css("display") || "none";
-				this.showValue = _v;
-				this.style.display = "none";
-				this.style.opacity = 0;
-			});
-			return this;
-		},
-
-		// toggle
-		toggle: function toggle() {
-
-			Mobile.each(this, function () {
-
-				var _v = m(this).css("display") || "none";
-				if (_v.trim() !== "none") {
-					m(this).hide();
-				} else {
-					m(this).show();
-				}
-			});
-			return this;
-		},
-
-		// fadeIn
-		fadeIn: function fadeIn(time) {
-
-			Mobile.each(this, function (i, el) {
-
-				clearInterval(this.clearTimeId);
-				var _showType = "";
-				this.isshow = true;
-				if (!this.firstclick) {
-					this.firstclick = true;
-					_showType = m(this).css("display") || "none";
-					if (_showType === "none") {
-						this.style.opacity = 0;
-					} else {
-						this.style.opacity = 1;
-					}
-				} else {
-					_showType = this.showValue || "none";
-					this.style.opacity = parseFloat(m(this).css("opacity")) || 0;
-				}
-
-				var _nodeName = this.nodeName.toLowerCase();
-				var _opacity = parseFloat(m(this).css("opacity")) || 0;
-				if (_showType === "none") {
-					_showType = _getElementType(_nodeName);
-				}
-
-				this.style.display = _showType;
-				this.showValue = _showType;
-				time = typeof time === "number" ? time : 400;
-				var opt = 1000;
-				var fx = 30;
-				var t = time / fx;
-				var speed = opt / t;
-				this.clearTimeId = setInterval(function () {
-					var v = parseFloat(el.style.opacity) || 0;
-					v = v * 1000;
-					el.style.opacity = (speed + v) / 1000;
-					v = (parseFloat(el.style.opacity) || 0) * 1000;
-
-					if (v + speed > opt) {
-						el.style.opacity = opt / 1000;
-						el.style.opacity = 1;
-						el.style.display = _showType;
-						clearInterval(this.clearTimeId);
-					}
-				}.bind(this), fx);
-			});
-			return this;
-		},
-
-		// fadeOut
-		fadeOut: function fadeOut(time) {
-
-			Mobile.each(this, function (i, el) {
-				clearInterval(this.clearTimeId);
-				this.firstclick = true;
-				this.isshow = false;
-				var _v = m(this).css("display") || "none";
-				if (_v !== "none") {
-					this.style.opacity = parseFloat(el.style.opacity) || 1;
-				}
-				this.showValue = _v;
-				time = typeof time === "number" ? time : 400;
-				var opt = 1000;
-				var fx = 30;
-				var t = time / fx;
-				var speed = opt / t;
-				this.clearTimeId = setInterval(function () {
-					var v = parseFloat(el.style.opacity) || 0;
-					v = v * 1000;
-					el.style.opacity = (v - speed) / 1000;
-					v = (parseFloat(el.style.opacity) || 0) * 1000;
-					if (v - speed < 0) {
-						el.style.opacity = 0;
-						el.style.display = "none";
-						clearInterval(this.clearTimeId);
-					}
-				}.bind(this), fx);
-			});
-			return this;
-		},
-
-		// fadeToggle
-		fadeToggle: function fadeToggle(time) {
-
-			Mobile.each(this, function () {
-				var _v = m(this).css("display") || "none";
-				if (typeof this.isshow !== "undefined") {
-					if (this.isshow) {
-						m(this).fadeOut(time);
-						this.isshow = false;
-					} else {
-						m(this).fadeIn(time);
-						this.isshow = true;
-					}
-				} else {
-					if (_v !== "none") {
-						if (!this.firstclick) {
-							m(this).fadeOut(time);
-							this.isshow = false;
-						} else {
-							m(this).fadeIn(time);
-							this.isshow = true;
-						}
-					} else {
-						if (this.firstclick) {
-							m(this).fadeOut(time);
-							this.isshow = false;
-						} else {
-							m(this).fadeIn(time);
-							this.isshow = true;
-						}
-					}
-				}
-			});
-			return this;
-		},
-
 		//  windowTop
 		windowTop: function windowTop(y, time) {
 
@@ -2443,7 +2256,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	});
 
-	// 自定义事件
+	// 自定义事件列表
 	Mobile.extend({
 		events: {
 			props: {},
@@ -2480,7 +2293,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 css3 transition 
 */
 
-(function (Mobile) {
++function (Mobile) {
 
     Mobile.fn.extend({
 
@@ -2616,7 +2429,7 @@ css3 transition
         }
 
     });
-})(Mobile);
+}(Mobile);
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -2624,7 +2437,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /* 
 ajax
 */
-(function (Mobile) {
++function (Mobile) {
 	// init xhr
 	var _xhrCORS;
 
@@ -2902,4 +2715,4 @@ ajax
 		}
 
 	});
-})(Mobile);
+}(Mobile);

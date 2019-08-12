@@ -4,7 +4,7 @@
 css3 transition 
 */
 
-(function (Mobile) {
++function (Mobile) {
 
 
     Mobile.fn.extend({
@@ -149,4 +149,4 @@ css3 transition
     });
 
 
-})(Mobile);
+}(Mobile);
