@@ -50,7 +50,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	};
 
 	// 版本号
-	Mobile.version = "1.1.2";
+	Mobile.version = "1.1.3";
 
 	// 查找父元素
 	function _searchParents(el, fn) {
@@ -1622,7 +1622,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			//  正常事件绑定
 			function f(event) {
+				if (type === "input") {
+					// delete event.data;
+					Object.defineProperty(event, 'data', {
+						enumerable: true,
+						configurable: true,
+						writable: true,
+						value: obj
+					});
+				}
+
 				if (obj) {
+
 					event.data = obj;
 				}
 				handler.call(this, event);
@@ -1640,6 +1651,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 				if (Mobile.checkSelector(event.target, el)) {
 
+					if (type === "input") {
+						//delete event.data;
+						Object.defineProperty(event, 'data', {
+							enumerable: true,
+							configurable: true,
+							writable: true,
+							value: obj
+						});
+					}
 					if (obj) {
 						event.data = obj;
 					}

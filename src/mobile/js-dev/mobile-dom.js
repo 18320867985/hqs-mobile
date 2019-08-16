@@ -47,7 +47,7 @@
 	};
 
 	// 版本号
-	Mobile.version = "1.1.2";
+	Mobile.version = "1.1.3";
 
 	// 查找父元素
 	function _searchParents(el, fn) {
@@ -1720,8 +1720,20 @@
 			var el = "";
 
 			//  正常事件绑定
-			function f(event) {
-				if (obj) {
+            function f(event) {
+                if (type === "input") {
+                   // delete event.data;
+                    Object.defineProperty(event, 'data', {
+                        enumerable: true,
+                        configurable: true,
+                        writable: true,
+                        value: obj
+                    });
+                   
+                }
+
+                if (obj) {
+                   
 					event.data = obj;
 				}
 				handler.call(this, event);
@@ -1737,8 +1749,18 @@
 			// 委托事件绑定
 			function f2(event) {
 
-				if (Mobile.checkSelector(event.target, el)) {
+                if (Mobile.checkSelector(event.target, el)) {
 
+                    if (type === "input") {
+                        //delete event.data;
+                        Object.defineProperty(event, 'data', {
+                            enumerable: true,
+                            configurable: true,
+                            writable: true,
+                            value: obj
+                        });
+
+                    }
 					if (obj) {
 						event.data = obj;
 					}
@@ -2401,3 +2423,4 @@
 	return Mobile;
 
 });
+
