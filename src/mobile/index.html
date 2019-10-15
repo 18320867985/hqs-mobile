@@ -30,11 +30,23 @@
     <p>p</p>
     <div class="a"></div>
     <div class="b"></div>
-    <div class="c"></div>
+    <div class="c" data-id="4" data-v="a"></div>
+    <div class="c" data-id="4" data-v="a" id="a2"></div>
 
     <script data-parent="umd" data-umd="test" src="./mobile.js" type="text/javascript" charset="utf-8"></script>
-    <script data-parent="umd" data-umd="test" src="./hqs-scrollspy.js" type="text/javascript" charset="utf-8"></script>
+
     <script type="text/javascript">
+
+        $(function () {
+            $(".c").data("o", {
+                name: "mimi", age: 12
+            });
+
+            $(".c").data("num", 12345);
+            $("#a2").data("num2", 12345);
+              console.log($(".c").data())
+            console.log($("#a2").data())
+        });
     </script>
 </body>
 

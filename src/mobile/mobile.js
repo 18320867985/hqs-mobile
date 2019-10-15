@@ -12,23 +12,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	//  cmd commonjs
 	if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && _typeof(module.exports) === "object") {
 		module.exports = factory(global);
+	} else if (typeof define === "function" && define.amd) {
+		define(function () {
+			return factory(global);
+		});
 	}
 
-	// amd requirejs
-	else if (typeof define === "function" && define.amd) {
-			define(function () {
-				return factory(global);
+	// cmd seajs
+	else if (typeof define === "function" && define.cmd) {
+			define(function (require, exports, module) {
+				module.exports = factory(global);
 			});
+		} else {
+			factory(global);
 		}
-
-		// cmd seajs
-		else if (typeof define === "function" && define.cmd) {
-				define(function (require, exports, module) {
-					module.exports = factory(global);
-				});
-			} else {
-				factory(global);
-			}
 })(typeof window !== "undefined" ? window : undefined, function (window) {
 
 	"use strict";
@@ -760,6 +757,52 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		//each
 		each: function each(fn) {
 			Mobile.each(this, fn);
+		},
+
+		// data
+		data: function data() {
+
+			var arg1 = arguments[0];
+
+			// get 空值返回{}对象
+			if (arguments.length === 0) {
+				var o;
+				Mobile.each(this, function () {
+
+					o = this.vdata = this.vdata || {};
+
+					return false;
+				});
+
+				return o;
+			}
+
+			// get
+			if (arguments.length === 1 && typeof arguments[0] === "string") {
+				var v;
+				Mobile.each(this, function () {
+
+					var o = this.vdata = this.vdata || {};
+
+					v = o[arg1];
+
+					return false;
+				});
+
+				return v;
+			}
+
+			// set
+			if (arguments.length === 2 && typeof arguments[0] === "string") {
+				var arg2 = arguments[1];
+				Mobile.each(this, function () {
+
+					var o = this.vdata = this.vdata || {};
+					v = o[arg1] = arg2;
+				});
+
+				return this;
+			}
 		},
 
 		// css
