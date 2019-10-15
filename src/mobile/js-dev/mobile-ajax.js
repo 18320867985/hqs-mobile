@@ -1,6 +1,8 @@
-/* 
+
+/*
 ajax
 */
+
 +function (Mobile) {
 	// init xhr
 	var _xhrCORS;
