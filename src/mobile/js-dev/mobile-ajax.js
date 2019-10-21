@@ -1,9 +1,11 @@
 
 /*
-ajax
+    ajax
+    hqs
 */
 
 +function (Mobile) {
+
 	// init xhr
     var _xhrCORS;
 
