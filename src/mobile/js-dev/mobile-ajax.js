@@ -194,8 +194,8 @@ ajax
 			try{
 				// IE
 				xhr.timeout = opt.timeout;
-			}catch{
-				
+            } catch{
+                console.log("ie");
 			}
 		
 			xhr.xhrFields = opt.xhrFields || {};
