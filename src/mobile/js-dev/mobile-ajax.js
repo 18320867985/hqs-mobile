@@ -194,7 +194,7 @@ ajax
 			try{
 				// IE
 				xhr.timeout = opt.timeout;
-			}catch(e){
+			}catch{
 				
 			}
 		
