@@ -195,15 +195,14 @@
         ajaxSetup: function (options) {
         
             options = typeof options === "object" ? options : {};
-            var p = $.extend({}, _ajaxSetup, options);
-            return p;
+             $.extend( _ajaxSetup, options);
+            return _ajaxSetup;
 
         },
         ajax: function (options) {
 
-            var setupObj = Mobile.ajaxSetup();
             options = typeof options === "object" ? options : {};
-            var opt = $.extend({}, setupObj, options);
+            var opt = $.extend({}, _ajaxSetup, options);
 
 			var xhr = Mobile.createXHR();
 			try{
