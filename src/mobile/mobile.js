@@ -12,23 +12,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	//  cmd commonjs
 	if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && _typeof(module.exports) === "object") {
 		module.exports = factory(global);
+	} else if (typeof define === "function" && define.amd) {
+		define(function () {
+			return factory(global);
+		});
 	}
 
-	// amd requirejs
-	else if (typeof define === "function" && define.amd) {
-			define(function () {
-				return factory(global);
+	// cmd seajs
+	else if (typeof define === "function" && define.cmd) {
+			define(function (require, exports, module) {
+				module.exports = factory(global);
 			});
+		} else {
+			factory(global);
 		}
-
-		// cmd seajs
-		else if (typeof define === "function" && define.cmd) {
-				define(function (require, exports, module) {
-					module.exports = factory(global);
-				});
-			} else {
-				factory(global);
-			}
 })(typeof window !== "undefined" ? window : undefined, function (window) {
 
 	"use strict";
@@ -760,6 +757,52 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		//each
 		each: function each(fn) {
 			Mobile.each(this, fn);
+		},
+
+		// data
+		data: function data() {
+
+			var arg1 = arguments[0];
+
+			// get 空值返回{}对象
+			if (arguments.length === 0) {
+				var o;
+				Mobile.each(this, function () {
+
+					o = this.vdata = this.vdata || {};
+
+					return false;
+				});
+
+				return o;
+			}
+
+			// get
+			if (arguments.length === 1 && typeof arguments[0] === "string") {
+				var v;
+				Mobile.each(this, function () {
+
+					var o = this.vdata = this.vdata || {};
+
+					v = o[arg1];
+
+					return false;
+				});
+
+				return v;
+			}
+
+			// set
+			if (arguments.length === 2 && typeof arguments[0] === "string") {
+				var arg2 = arguments[1];
+				Mobile.each(this, function () {
+
+					var o = this.vdata = this.vdata || {};
+					v = o[arg1] = arg2;
+				});
+
+				return this;
+			}
 		},
 
 		// css
@@ -2454,9 +2497,10 @@ css3 transition
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/* 
+/*
 ajax
 */
+
 +function (Mobile) {
 	// init xhr
 	var _xhrCORS;
@@ -2606,15 +2650,15 @@ ajax
 		},
 
 		/* 封装ajax函数
-  @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE 
-  @param {string}opt.url 发送请求的url
-  @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
-  @param {object}opt.data 发送的参数，格式为对象类型
-  @param {function}opt.contentType   内容类型
-  @param{function}opt.success ajax发送并接收成功调用的回调函数
-  @param {function}opt.error ajax发送并接收error调用的回调函数
-  @param {function}opt.getXHR 获取xhr对象
-  @param {number}opt.timeout // 超时
+		  @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE 
+		  @param {string}opt.url 发送请求的url
+		  @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
+		  @param {object}opt.data 发送的参数，格式为对象类型
+		  @param {function}opt.contentType   内容类型
+		  @param{function}opt.success ajax发送并接收成功调用的回调函数
+		  @param {function}opt.error ajax发送并接收error调用的回调函数
+		  @param {function}opt.getXHR 获取xhr对象
+		  @param {number}opt.timeout // 超时
    */
 		ajax: function ajax(opt) {
 
@@ -2631,7 +2675,14 @@ ajax
 			opt.progress = opt.progress || {};
 
 			var xhr = Mobile.createXHR();
-			xhr.timeout = opt.timeout;
+		
+			try{
+				// IE
+				xhr.timeout = opt.timeout;
+			}catch(e){
+				
+			}
+			
 			xhr.xhrFields = opt.xhrFields || {};
 
 			// 连接参数

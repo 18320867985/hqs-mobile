@@ -9,8 +9,6 @@
 	if (typeof module === "object" && typeof module.exports === "object") {
 		module.exports = factory(global);
 	}
-
-	// amd requirejs
 	else if (typeof define === "function" && define.amd) {
 		define(function() {
 			return factory(global);
@@ -287,515 +285,515 @@
 	};
 
 	// 扩展静态方法
-	Mobile.extend({
+    Mobile.extend({
 
-		noCoflict: function(deep) {
-			window.$ = _$;
-			window.m = _m;
-			if (deep) {
-				window.mobile = _mobile;
-			}
+        noCoflict: function (deep) {
+            window.$ = _$;
+            window.m = _m;
+            if (deep) {
+                window.mobile = _mobile;
+            }
 
-			return Mobile;
-		},
+            return Mobile;
+        },
 
-		each: function(els, fn) {
-			if (!els) {
-				throw new Error("els property type must is Array or Object");
-			}
-			for (var i = 0; i < els.length; i++) {
+        each: function (els, fn) {
+            if (!els) {
+                throw new Error("els property type must is Array or Object");
+            }
+            for (var i = 0; i < els.length; i++) {
 
-				if (typeof fn === "function") {
-					var bl = fn.call(els[i], i, els[i]);
-					if (bl === false) {
-						break;
-					}
-				}
-			}
-		},
+                if (typeof fn === "function") {
+                    var bl = fn.call(els[i], i, els[i]);
+                    if (bl === false) {
+                        break;
+                    }
+                }
+            }
+        },
 
-		ready: function(fn) {
+        ready: function (fn) {
 
-			if (typeof fn === "function") {
-				window.addEventListener("load", fn);
+            if (typeof fn === "function") {
+                window.addEventListener("load", fn);
 
-			}
-			return;
-		},
+            }
+            return;
+        },
 
-		// 列表项和子项的匹配	
-		isEqual: function(list, item) {
-			list = list || [];
-			for (var i = 0; i < list.length; i++) {
+        // 列表项和子项的匹配	
+        isEqual: function (list, item) {
+            list = list || [];
+            for (var i = 0; i < list.length; i++) {
 
-				if (list[i] === item) {
-					return true;
-				}
-			}
+                if (list[i] === item) {
+                    return true;
+                }
+            }
 
-			return false;
+            return false;
 
-		},
+        },
 
-		// html字符串转dom对象
-		htmlStringToDOM: function(txt) {
+        // html字符串转dom对象
+        htmlStringToDOM: function (txt) {
 
-			var df2 = document.createDocumentFragment();
-			var df = document.createDocumentFragment();
-			var div = document.createElement("div");
-			div.innerHTML = txt;
-			df.appendChild(div);
-			var _nodes = df.querySelector("div").childNodes;
-			for (var i = _nodes.length; i > 0; i--) {
-				df2.insertBefore(_nodes[i - 1], df2.childNodes[0]);
-			}
-			df = null;
-			return df2;
+            var df2 = document.createDocumentFragment();
+            var df = document.createDocumentFragment();
+            var div = document.createElement("div");
+            div.innerHTML = txt;
+            df.appendChild(div);
+            var _nodes = df.querySelector("div").childNodes;
+            for (var i = _nodes.length; i > 0; i--) {
+                df2.insertBefore(_nodes[i - 1], df2.childNodes[0]);
+            }
+            df = null;
+            return df2;
 
-		},
+        },
 
-		checkSelector: function(el, txt) {
-			txt = typeof txt === "string" ? txt : "";
-			if (txt.trim() === "") {
-				return false;
-			}
-			var regId = /\#[a-zA-Z_][\w|-]*[^\.|^#|\[]{0,}/g;
-			var regClass = /\.[a-zA-Z_][\w|-]*[^\.|^#|\[]{0,}/g;
-			var regTag = /^[a-zA-Z][\w|-]*[^\.|^#|\[]{0,}|[\]][a-zA-Z][\w|-]*[^\.|^#|\[]{0,}/g;
-			var regAttr = /\[[a-zA-Z][\w-=]*\]/g;
+        checkSelector: function (el, txt) {
+            txt = typeof txt === "string" ? txt : "";
+            if (txt.trim() === "") {
+                return false;
+            }
+            var regId = /\#[a-zA-Z_][\w|-]*[^\.|^#|\[]{0,}/g;
+            var regClass = /\.[a-zA-Z_][\w|-]*[^\.|^#|\[]{0,}/g;
+            var regTag = /^[a-zA-Z][\w|-]*[^\.|^#|\[]{0,}|[\]][a-zA-Z][\w|-]*[^\.|^#|\[]{0,}/g;
+            var regAttr = /\[[a-zA-Z][\w-=]*\]/g;
 
-			var idList = txt.match(regId) || [];
-			idList = rep(idList, "#", "");
-			var isIdBl = isId(el, idList, txt);
-			//alert(isIdBl)
+            var idList = txt.match(regId) || [];
+            idList = rep(idList, "#", "");
+            var isIdBl = isId(el, idList, txt);
+            //alert(isIdBl)
 
-			var classList = txt.match(regClass) || [];
-			classList = rep(classList, ".", "");
-			var isClassBl = isclass(el, classList, txt);
-			//alert(isClassBl)
+            var classList = txt.match(regClass) || [];
+            classList = rep(classList, ".", "");
+            var isClassBl = isclass(el, classList, txt);
+            //alert(isClassBl)
 
-			var tagList = txt.match(regTag) || [];
-			tagList = rep(tagList, "]", "")
-			var isTagBl = istag(el, tagList, txt);
-			//alert(isTagBl)
+            var tagList = txt.match(regTag) || [];
+            tagList = rep(tagList, "]", "")
+            var isTagBl = istag(el, tagList, txt);
+            //alert(isTagBl)
 
-			var attrList = txt.match(regAttr) || [];
-			attrList = rep(attrList, "[", "");
-			attrList = rep(attrList, "]", "");
-			var isAttrBl = isAttr(el, attrList, txt);
-			//alert(attrList)
+            var attrList = txt.match(regAttr) || [];
+            attrList = rep(attrList, "[", "");
+            attrList = rep(attrList, "]", "");
+            var isAttrBl = isAttr(el, attrList, txt);
+            //alert(attrList)
 
-			function rep(list, old, now) {
-				var arr = [];
-				for (var i = 0; i < list.length; i++) {
-					arr.push(list[i].replace(old, now));
-				}
+            function rep(list, old, now) {
+                var arr = [];
+                for (var i = 0; i < list.length; i++) {
+                    arr.push(list[i].replace(old, now));
+                }
 
-				return arr;
-			}
+                return arr;
+            }
 
-			function isId(el, idList, searchTxt) {
+            function isId(el, idList, searchTxt) {
 
-				if (searchTxt.search(/#/) === -1) {
-					return true;
-				} else if (searchTxt.search(/#/) !== -1 && idList.length === 0) {
-					return false;
-				}
+                if (searchTxt.search(/#/) === -1) {
+                    return true;
+                } else if (searchTxt.search(/#/) !== -1 && idList.length === 0) {
+                    return false;
+                }
 
-				// 上条件不符合  向下执行
-				var id = el.id || "";
-				for (var i = 0; i < idList.length; i++) {
-					if (idList[i] === id) {
-						return true;
-					}
-				}
-				return false;
+                // 上条件不符合  向下执行
+                var id = el.id || "";
+                for (var i = 0; i < idList.length; i++) {
+                    if (idList[i] === id) {
+                        return true;
+                    }
+                }
+                return false;
 
-			}
+            }
 
-			function isclass(el, idList, searchTxt) {
-				if (searchTxt.search(/\./) === -1) {
-					return true;
-				} else if (searchTxt.search(/\./) !== -1 && idList.length === 0) {
-					return false;
-				}
+            function isclass(el, idList, searchTxt) {
+                if (searchTxt.search(/\./) === -1) {
+                    return true;
+                } else if (searchTxt.search(/\./) !== -1 && idList.length === 0) {
+                    return false;
+                }
 
-				// 上条件不符合  向下执行
-				var _class = el.classList || "";
+                // 上条件不符合  向下执行
+                var _class = el.classList || "";
 
-				for (var i = 0; i < idList.length; i++) {
-					if (!_class.contains(idList[i])) {
-						return false;
-					}
-				}
-				return true;
+                for (var i = 0; i < idList.length; i++) {
+                    if (!_class.contains(idList[i])) {
+                        return false;
+                    }
+                }
+                return true;
 
-			}
+            }
 
-			function istag(el, idList, searchTxt) {
-				if (searchTxt.search(/^[a-zA-Z]|[\]][a-zA-Z]/) === -1) {
-					return true;
-				} else if (searchTxt.search(/^[a-zA-Z]|[\]][a-zA-Z]/) !== -1 && idList.length === 0) {
-					return false;
-				}
+            function istag(el, idList, searchTxt) {
+                if (searchTxt.search(/^[a-zA-Z]|[\]][a-zA-Z]/) === -1) {
+                    return true;
+                } else if (searchTxt.search(/^[a-zA-Z]|[\]][a-zA-Z]/) !== -1 && idList.length === 0) {
+                    return false;
+                }
 
-				// 上条件不符合  向下执行
-				var _tag = (el.nodeName || "").toLowerCase();
+                // 上条件不符合  向下执行
+                var _tag = (el.nodeName || "").toLowerCase();
 
-				for (var i = 0; i < idList.length; i++) {
-					if (idList[i].trim() !== _tag) {
-						return false;
-					}
-				}
-				return true;
+                for (var i = 0; i < idList.length; i++) {
+                    if (idList[i].trim() !== _tag) {
+                        return false;
+                    }
+                }
+                return true;
 
-			}
+            }
 
-			function isAttr(el, idList, searchTxt) {
+            function isAttr(el, idList, searchTxt) {
 
-				if (searchTxt.search(/\[.*\]/) === -1) {
-					return true;
-				} else if (searchTxt.search(/\[.*\]/) !== -1 && idList.length === 0) {
-					return false;
-				}
+                if (searchTxt.search(/\[.*\]/) === -1) {
+                    return true;
+                } else if (searchTxt.search(/\[.*\]/) !== -1 && idList.length === 0) {
+                    return false;
+                }
 
-				// 上条件不符合  向下执行
-				//var _tag = el.getat
-				var _reg2 = /=/g;
-				for (var i = 0; i < idList.length; i++) {
+                // 上条件不符合  向下执行
+                //var _tag = el.getat
+                var _reg2 = /=/g;
+                for (var i = 0; i < idList.length; i++) {
 
-					if (_reg2.test(idList[i])) {
-						//alert(idList[i]);
-						var arr2 = idList[i].split("=");
-						if ((el.getAttribute(arr2[0]) || "").trim() !== (arr2[1] || "").trim()) {
-							return false;
-						}
-					} else {
+                    if (_reg2.test(idList[i])) {
+                        //alert(idList[i]);
+                        var arr2 = idList[i].split("=");
+                        if ((el.getAttribute(arr2[0]) || "").trim() !== (arr2[1] || "").trim()) {
+                            return false;
+                        }
+                    } else {
 
-						if (!el.hasAttribute(idList[i])) {
-							return false;
-						}
-					}
+                        if (!el.hasAttribute(idList[i])) {
+                            return false;
+                        }
+                    }
 
-				}
-				return true;
+                }
+                return true;
 
-			}
+            }
 
-			return isIdBl && isClassBl && isTagBl && isAttrBl;
-		},
+            return isIdBl && isClassBl && isTagBl && isAttrBl;
+        },
 
-		trim: function(txt) {
-			var str = "";
-			txt = typeof txt === "string" ? txt : "";
-			str = txt.replace(/^\s*|\s*$/img, "");
-			return str;
-		},
+        trim: function (txt) {
+            var str = "";
+            txt = typeof txt === "string" ? txt : "";
+            str = txt.replace(/^\s*|\s*$/img, "");
+            return str;
+        },
 
-		round: function(value, ratio) {
+        round: function (value, ratio) {
 
-			if (arguments.length === 1) {
+            if (arguments.length === 1) {
 
-				if (typeof value === "number") {
-					return Math.round(value);
-				}
+                if (typeof value === "number") {
+                    return Math.round(value);
+                }
 
-			} else if (arguments.length === 2) {
-				if (typeof value === "number" && typeof ratio === "number") {
+            } else if (arguments.length === 2) {
+                if (typeof value === "number" && typeof ratio === "number") {
 
-					var _v = Math.floor(value);
-					_v = _v + ratio;
+                    var _v = Math.floor(value);
+                    _v = _v + ratio;
 
-					if (value > _v) {
-						return Math.ceil(value);
-					} else {
-						return Math.floor(value);
-					}
+                    if (value > _v) {
+                        return Math.ceil(value);
+                    } else {
+                        return Math.floor(value);
+                    }
 
-				}
+                }
 
-			}
+            }
 
-			return null;
-		},
+            return null;
+        },
 
-		// 检查是否为移动端
-		isMobile: function() {
+        // 检查是否为移动端
+        isMobile: function () {
 
-			var userAgentInfo = navigator.userAgent.toString().toLowerCase();
-			var Agents = ["Android", "iPhone",
-				"SymbianOS", "Windows Phone",
-				"iPad", "iPod"
-			];
-			//console.log(userAgentInfo)
-			var flag = false;
-			for (var v = 0; v < Agents.length; v++) {
-				if (userAgentInfo.indexOf(Agents[v].toLowerCase()) > 0) {
-					flag = true;
-					break;
-				}
-			}
-			return flag;
-		},
+            var userAgentInfo = navigator.userAgent.toString().toLowerCase();
+            var Agents = ["Android", "iPhone",
+                "SymbianOS", "Windows Phone",
+                "iPad", "iPod"
+            ];
+            //console.log(userAgentInfo)
+            var flag = false;
+            for (var v = 0; v < Agents.length; v++) {
+                if (userAgentInfo.indexOf(Agents[v].toLowerCase()) > 0) {
+                    flag = true;
+                    break;
+                }
+            }
+            return flag;
+        },
 
 		/* jsonToDate 
 		  /Date(1492048799952)/ 或 1492048799952
 		  fmt=("yyyy-MM-dd HH:mm:ss.S") ==> 2006-07-02 08:09:04.423 
 		  */
-		jsonToDate: function(value, fmt) {
-			fmt = typeof fmt !== "string" ? "yyyy-MM-dd HH:mm:ss" : fmt;
-			var txts = value.toString().replace("/Date(", "").replace(")/", "");
-			var times = Number(txts);
-			times = isNaN(times) ? new Date(value).getTime() : times;
-			var dt = new Date(Number(times.toString()));
-			var o = {
-				"M+": dt.getMonth() + 1,
-				"d+": dt.getDate(),
-				"H+": dt.getHours(),
-				"m+": dt.getMinutes(),
-				"s+": dt.getSeconds(),
-				"q+": Math.floor((dt.getMonth() + 3) / 3),
-				"S": dt.getMilliseconds()
-			};
-			if (/(y+)/.test(fmt)) {
-				fmt = fmt.replace(RegExp.$1, (dt.getFullYear() + "").substr(4 - RegExp.$1.length))
-			}
-			for (var k in o) {
-				if (new RegExp("(" + k + ")").test(fmt)) {
-					fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)))
-				}
-			}
-			return fmt
+        jsonToDate: function (value, fmt) {
+            fmt = typeof fmt !== "string" ? "yyyy-MM-dd HH:mm:ss" : fmt;
+            var txts = value.toString().replace("/Date(", "").replace(")/", "");
+            var times = Number(txts);
+            times = isNaN(times) ? new Date(value).getTime() : times;
+            var dt = new Date(Number(times.toString()));
+            var o = {
+                "M+": dt.getMonth() + 1,
+                "d+": dt.getDate(),
+                "H+": dt.getHours(),
+                "m+": dt.getMinutes(),
+                "s+": dt.getSeconds(),
+                "q+": Math.floor((dt.getMonth() + 3) / 3),
+                "S": dt.getMilliseconds()
+            };
+            if (/(y+)/.test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (dt.getFullYear() + "").substr(4 - RegExp.$1.length))
+            }
+            for (var k in o) {
+                if (new RegExp("(" + k + ")").test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)))
+                }
+            }
+            return fmt
 
-		},
+        },
 
-		isFunction: function(obj) {
-			return Mobile.type(obj) === "function";
-		},
+        isFunction: function (obj) {
+            return Mobile.type(obj) === "function";
+        },
 
-		isArray: Array.isArray || function(obj) {
-			return Mobile.type(obj) === "array";
-		},
+        isArray: Array.isArray || function (obj) {
+            return Mobile.type(obj) === "array";
+        },
 
-		isWindow: function(obj) {
+        isWindow: function (obj) {
 
-			return obj !== null && obj === obj.window;
-		},
+            return obj !== null && obj === obj.window;
+        },
 
+        isEmptyObject: function (obj) {
+            var name;
+            for (name in obj) {
+                return false;
+            }
+            return true;
+        },
 
-		isEmptyObject: function(obj) {
-			var name;
-			for (name in obj) {
-				return false;
-			}
-			return true;
-		},
+        isPlainObject: function (obj) {
+            var key;
 
-		isPlainObject: function(obj) {
-			var key;
+            // Must be an Object
+            if (!obj || Mobile.type(obj) !== "object" || obj.nodeType || Mobile.isWindow(obj)) {
+                return false;
+            }
 
-			// Must be an Object
-			if (!obj || Mobile.type(obj) !== "object" || obj.nodeType || Mobile.isWindow(obj)) {
-				return false;
-			}
+            try {
+                // Not own constructor property must be Object
+                if (obj.constructor &&
+                    !{}.hasOwnProperty.call(obj, "constructor") &&
+                    !{}.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf")) {
+                    return false;
+                }
+            } catch (e) {
+                // IE8,9 Will throw exceptions on certain host objects
+                return false;
+            }
 
-			try {
-				// Not own constructor property must be Object
-				if (obj.constructor &&
-					!{}.hasOwnProperty.call(obj, "constructor") &&
-					!{}.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf")) {
-					return false;
-				}
-			} catch (e) {
-				// IE8,9 Will throw exceptions on certain host objects
-				return false;
-			}
+            //for (key in obj) { }
 
-			//for (key in obj) { }
+            return key === undefined || {}.hasOwnProperty.call(obj, key);
+        },
 
-			return key === undefined || {}.hasOwnProperty.call(obj, key);
-		},
+        type: function (obj) {
+            var class2type = {};
+            var toString = class2type.toString;
+            if (obj === null) {
+                return obj + "";
+            }
+            return typeof obj === "object" || typeof obj === "function" ?
+                class2type[toString.call(obj)] || "object" :
+                typeof obj;
+        },
 
-		type: function(obj) {
-			var class2type = {};
-			var toString = class2type.toString;
-			if (obj === null) {
-				return obj + "";
-			}
-			return typeof obj === "object" || typeof obj === "function" ?
-				class2type[toString.call(obj)] || "object" :
-				typeof obj;
-		},
+        max: function (data, fn) {
+            data = data || [];
+            if (data.constructor !== Array) {
+                throw new Error("参数必须是个数组");
+            }
+            var _array_max;
+            var isOne = true;
+            if (arguments.length === 1) {
 
-		max: function(data, fn) {
-			data = data || [];
-			if (data.constructor !== Array) {
-				throw new Error("参数必须是个数组");
-			}
-			var _array_max;
-			var isOne = true;
-			if (arguments.length === 1) {
+                for (var i = 0; i < data.length; i++) {
+                    var _temp = 0;
 
-				for (var i = 0; i < data.length; i++) {
-					var _temp = 0;
+                    if (typeof data[i] !== "number") {
 
-					if (typeof data[i] !== "number") {
+                        //  is not a number
+                        var _num = parseFloat(data[i]);
+                        if (isNaN(_num)) {
+                            continue;
+                        }
+                        _temp = _num;
 
-						//  is not a number
-						var _num = parseFloat(data[i]);
-						if (isNaN(_num)) {
-							continue;
-						}
-						_temp = _num;
+                    } else {
 
-					} else {
+                        //  is a number
+                        _temp = data[i];
+                    }
 
-						//  is a number
-						_temp = data[i];
-					}
+                    if (isOne) {
+                        _array_max = _temp;
+                        isOne = false;
 
-					if (isOne) {
-						_array_max = _temp;
-						isOne = false;
+                    } else {
+                        // set value number
+                        if (_temp > _array_max) {
+                            _array_max = _temp;
+                        }
 
-					} else {
-						// set value number
-						if (_temp > _array_max) {
-							_array_max = _temp;
-						}
+                    }
 
-					}
+                }
+                return _array_max;
 
-				}
-				return _array_max;
+            }
 
-			}
+            if (arguments.length === 2 && typeof fn === "function") {
 
-			if (arguments.length === 2 && typeof fn === "function") {
+                var maxVal = 0;
+                for (var i2 = 0; i2 < data.length; i2++) {
+                    var _temp2 = 0;
+                    var item = data[i2];
+                    var v = fn(item);
+                    if (typeof v !== "number") {
 
-				var maxVal = 0;
-				for (var i2 = 0; i2 < data.length; i2++) {
-					var _temp2 = 0;
-					var item = data[i2];
-					var v = fn(item);
-					if (typeof v !== "number") {
+                        //  is not a number
+                        var _num2 = parseFloat(v);
+                        if (isNaN(_num2)) {
+                            continue;
+                        }
+                        _temp2 = _num2;
 
-						//  is not a number
-						var _num2 = parseFloat(v);
-						if (isNaN(_num2)) {
-							continue;
-						}
-						_temp2 = _num2;
+                    } else {
 
-					} else {
+                        //  is a number
+                        _temp2 = v;
+                    }
 
-						//  is a number
-						_temp2 = v;
-					}
+                    if (isOne) {
+                        maxVal = _temp2;
+                        _array_max = item;
+                        isOne = false;
 
-					if (isOne) {
-						maxVal = _temp2;
-						_array_max = item;
-						isOne = false;
+                    } else {
+                        // set value number
+                        if (_temp2 > maxVal) {
+                            maxVal = _temp2;
+                            _array_max = item;
+                        }
 
-					} else {
-						// set value number
-						if (_temp2 > maxVal) {
-							maxVal = _temp2;
-							_array_max = item;
-						}
+                    }
 
-					}
+                }
+                return _array_max;
 
-				}
-				return _array_max;
+            }
+        },
 
-			}
-		},
+        min: function (data, fn) {
+            data = data || [];
+            if (data.constructor !== Array) {
+                throw new Error("参数必须是个数组");
+            }
+            var _array_min;
+            var isOne = true;
+            if (arguments.length === 1) {
+                for (var i = 0; i < data.length; i++) {
+                    var _temp = 0;
 
-		min: function(data, fn) {
-			data = data || [];
-			if (data.constructor !== Array) {
-				throw new Error("参数必须是个数组");
-			}
-			var _array_min;
-			var isOne = true;
-			if (arguments.length === 1) {
-				for (var i = 0; i < data.length; i++) {
-					var _temp = 0;
+                    if (typeof data[i] !== "number") {
 
-					if (typeof data[i] !== "number") {
+                        //  is not a number
+                        var _num = Number(data[i]);
+                        if (isNaN(_num)) {
+                            continue;
+                        }
+                        _temp = _num;
 
-						//  is not a number
-						var _num = Number(data[i]);
-						if (isNaN(_num)) {
-							continue;
-						}
-						_temp = _num;
+                    } else {
 
-					} else {
+                        //  is a number
+                        _temp = data[i];
+                    }
 
-						//  is a number
-						_temp = data[i];
-					}
+                    if (isOne) {
+                        _array_min = _temp;
+                        isOne = false;
 
-					if (isOne) {
-						_array_min = _temp;
-						isOne = false;
+                    } else {
+                        // set value number
+                        if (_temp < _array_min) {
+                            _array_min = _temp;
+                        }
 
-					} else {
-						// set value number
-						if (_temp < _array_min) {
-							_array_min = _temp;
-						}
+                    }
 
-					}
+                }
+                return _array_min;
+            }
 
-				}
-				return _array_min;
-			}
+            if (arguments.length === 2 && typeof fn === "function") {
+                var minVal = 0;
+                for (var i2 = 0; i2 < data.length; i2++) {
+                    var _temp2 = 0;
+                    var item = data[i2];
+                    var v = fn(item);
+                    if (typeof v !== "number") {
 
-			if (arguments.length === 2 && typeof fn === "function") {
-				var minVal = 0;
-				for (var i2 = 0; i2 < data.length; i2++) {
-					var _temp2 = 0;
-					var item = data[i2];
-					var v = fn(item);
-					if (typeof v !== "number") {
+                        //  is not a number
+                        var _num2 = parseFloat(v);
+                        if (isNaN(_num2)) {
+                            continue;
+                        }
+                        _temp2 = _num2;
 
-						//  is not a number
-						var _num2 = parseFloat(v);
-						if (isNaN(_num2)) {
-							continue;
-						}
-						_temp2 = _num2;
+                    } else {
 
-					} else {
+                        //  is a number
+                        _temp2 = v;
+                    }
 
-						//  is a number
-						_temp2 = v;
-					}
+                    if (isOne) {
+                        minVal = _temp2;
+                        _array_min = item;
+                        isOne = false;
 
-					if (isOne) {
-						minVal = _temp2;
-						_array_min = item;
-						isOne = false;
+                    } else {
+                        // set value number
+                        if (_temp2 < minVal) {
+                            minVal = _temp;
+                            _array_min = item;
+                        }
 
-					} else {
-						// set value number
-						if (_temp2 < minVal) {
-							minVal = _temp;
-							_array_min = item;
-						}
+                    }
 
-					}
+                }
+                return _array_min;
 
-				}
-				return _array_min;
+            }
 
-			}
+        },
 
-		},
 
 	});
 
@@ -805,12 +803,63 @@
 	];
 
 	// 扩展实例方法
-	Mobile.fn.extend({
+    Mobile.fn.extend({
 
-		//each
-		each: function(fn) {
-			Mobile.each(this, fn);
-		},
+        //each
+        each: function (fn) {
+            Mobile.each(this, fn);
+        },
+
+        // data
+        data: function () {
+
+            var arg1 = arguments[0];
+
+            // get 空值返回{}对象
+            if (arguments.length === 0) {
+                var o;
+                Mobile.each(this, function () {
+                   
+                     o = this.vdata = this.vdata || {};
+                  
+                    return false;
+                });
+
+                return o;
+
+            }
+
+            // get
+            if(arguments.length === 1 && typeof arguments[0] === "string") {
+                var v;
+                Mobile.each(this, function () {
+
+                    var o = this.vdata = this.vdata || {};
+                  
+                    v = o[arg1];
+                   
+                    return false;
+                });
+
+                return v;
+
+            }
+
+            // set
+            if (arguments.length === 2 && typeof arguments[0] === "string") {
+                var arg2 = arguments[1];
+                Mobile.each(this, function () {
+
+                    var o =this.vdata= this.vdata || {};
+                    v = o[arg1] = arg2;
+                
+                });
+
+                return this;
+
+            }
+
+        },
 
 		// css
 		css: function(attr, value) {

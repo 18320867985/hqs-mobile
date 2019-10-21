@@ -109,10 +109,10 @@
 
 		</div>
 
-	<script src="../mobile.js" type="text/javascript" charset="utf-8"></script>
-		<!-- <script src="js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script> -->
+		<script src="../mobile.js" type="text/javascript" charset="utf-8"></script>
+<!-- 		<script src="js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script> -->
 		<script type="text/javascript">
-
+			//jQuery.support.cors = true;
 			var url="http://localhost:3000/test"
 			$(".get").click(function() {
 					$.get(url,{
@@ -185,7 +185,7 @@
 							],
 							arrs2:[1,2,4,{pp:"99"},[1,2,5]]
 					},function(data){
-						console.log("data",data.data)
+						console.log("data",data)
 					},function(){
 						alert("网络加载失败！")
 					})

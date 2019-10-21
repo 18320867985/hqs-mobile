@@ -1,6 +1,8 @@
-/* 
+
+/*
 ajax
 */
+
 +function (Mobile) {
 	// init xhr
 	var _xhrCORS;
@@ -185,11 +187,17 @@ ajax
 			opt.success = opt.success || function () { };
 			opt.error = opt.error || function () { };
 			opt.contentType = opt.contentType || "application/x-www-form-urlencoded;charset=utf-8";
-			opt.timeout = typeof opt.timeout === "number" ? opt.timeout : 30000;
+			opt.timeout = typeof opt.timeout === "number" ? opt.timeout : 30*1000;
 			opt.progress = opt.progress || {};
 
 			var xhr = Mobile.createXHR();
-			xhr.timeout = opt.timeout;
+			try{
+				// IE
+				xhr.timeout = opt.timeout;
+            } catch{
+                console.log("ie");
+			}
+		
 			xhr.xhrFields = opt.xhrFields || {};
 
 			// 连接参数

@@ -111,7 +111,7 @@ gulp.task("gulp-dev-watch", function () {
 gulp.task("gulp-watch", ["gulp-dev","connect"], function () {
 
 	watch(gulpJsFile, function () {
-		gulp.start("gulp-dev-watch")
+        gulp.start("gulp-dev-watch");
 	});
 
 
