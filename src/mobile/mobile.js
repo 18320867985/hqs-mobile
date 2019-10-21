@@ -2650,15 +2650,15 @@ ajax
 		},
 
 		/* 封装ajax函数
-  @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE 
-  @param {string}opt.url 发送请求的url
-  @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
-  @param {object}opt.data 发送的参数，格式为对象类型
-  @param {function}opt.contentType   内容类型
-  @param{function}opt.success ajax发送并接收成功调用的回调函数
-  @param {function}opt.error ajax发送并接收error调用的回调函数
-  @param {function}opt.getXHR 获取xhr对象
-  @param {number}opt.timeout // 超时
+		  @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE 
+		  @param {string}opt.url 发送请求的url
+		  @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
+		  @param {object}opt.data 发送的参数，格式为对象类型
+		  @param {function}opt.contentType   内容类型
+		  @param{function}opt.success ajax发送并接收成功调用的回调函数
+		  @param {function}opt.error ajax发送并接收error调用的回调函数
+		  @param {function}opt.getXHR 获取xhr对象
+		  @param {number}opt.timeout // 超时
    */
 		ajax: function ajax(opt) {
 
@@ -2675,7 +2675,14 @@ ajax
 			opt.progress = opt.progress || {};
 
 			var xhr = Mobile.createXHR();
-			xhr.timeout = opt.timeout;
+		
+			try{
+				// IE
+				xhr.timeout = opt.timeout;
+			}catch(e){
+				
+			}
+			
 			xhr.xhrFields = opt.xhrFields || {};
 
 			// 连接参数
