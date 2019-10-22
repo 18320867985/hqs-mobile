@@ -2498,12 +2498,38 @@ css3 transition
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*
-ajax
+    ajax
+    hqs
 */
 
 +function (Mobile) {
+
 	// init xhr
 	var _xhrCORS;
+
+	/* 封装ajax函数
+     @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE
+     @param {string}opt.url 发送请求的url
+     @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
+     @param {object}opt.data 发送的参数，格式为对象类型
+     @param {function}opt.contentType   内容类型
+     @param{function}opt.success ajax发送并接收成功调用的回调函数
+     @param {function}opt.error ajax发送并接收error调用的回调函数
+     @param {function}opt.getXHR 获取xhr对象
+     @param {number}opt.timeout // 超时
+  */
+	var _ajaxSetup = {
+		type: "GET",
+		url: '',
+		async: true,
+		data: {},
+		success: function success() {},
+		error: function error() {},
+		dataType: "text",
+		contentType: "application/x-www-form-urlencoded;charset=utf-8",
+		timeout: 20 * 1000,
+		progress: {}
+	};
 
 	// ajax type
 	function _ajaxFun(url, type, data, _arguments) {
@@ -2649,44 +2675,34 @@ ajax
 			return this.createXHR();
 		},
 
-		/* 封装ajax函数
-		  @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE 
-		  @param {string}opt.url 发送请求的url
-		  @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
-		  @param {object}opt.data 发送的参数，格式为对象类型
-		  @param {function}opt.contentType   内容类型
-		  @param{function}opt.success ajax发送并接收成功调用的回调函数
-		  @param {function}opt.error ajax发送并接收error调用的回调函数
-		  @param {function}opt.getXHR 获取xhr对象
-		  @param {number}opt.timeout // 超时
-   */
-		ajax: function ajax(opt) {
+		ajaxSetup: function ajaxSetup(options) {
 
-			// 参数object对象
-			opt = opt || {};
-			opt.type = typeof opt.type === "string" ? opt.type.toUpperCase() : "GET";
-			opt.url = typeof opt.url === "string" ? opt.url : '';
-			opt.async = typeof opt.async === "boolean" ? opt.async : true;
-			opt.data = _typeof(opt.data) === "object" ? opt.data : {};
-			opt.success = opt.success || function () {};
-			opt.error = opt.error || function () {};
-			opt.contentType = opt.contentType || "application/x-www-form-urlencoded;charset=utf-8";
-			opt.timeout = typeof opt.timeout === "number" ? opt.timeout : 30000;
-			opt.progress = opt.progress || {};
+			options = (typeof options === "undefined" ? "undefined" : _typeof(options)) === "object" ? options : {};
+			$.extend(_ajaxSetup, options);
+			return _ajaxSetup;
+		},
+		ajax: function ajax(options) {
+
+			options = (typeof options === "undefined" ? "undefined" : _typeof(options)) === "object" ? options : {};
+			var opt = $.extend({}, _ajaxSetup, options);
 
 			var xhr = Mobile.createXHR();
-		
-			try{
+			try {
 				// IE
 				xhr.timeout = opt.timeout;
-			}catch(e){
-				
+			} catch (ex) {
+				console.log("IE");
 			}
-			
+
 			xhr.xhrFields = opt.xhrFields || {};
 
 			// 连接参数
-			var postData = _JoinParams(opt.data);
+			var postData;
+			if (opt.contentType === "application/json" && opt.type.toUpperCase() !== "GET") {
+				postData = JSON.stringify(opt.data);
+			} else {
+				postData = _JoinParams(opt.data);
+			}
 
 			if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {
 				opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() : opt.url + "&_=" + Math.random();

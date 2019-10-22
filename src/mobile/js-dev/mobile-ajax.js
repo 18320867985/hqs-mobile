@@ -208,14 +208,21 @@
 			try{
 				// IE
 				xhr.timeout = opt.timeout;
-            } catch{
+            } catch(ex){
                 console.log("IE");
 			}
 		
 			xhr.xhrFields = opt.xhrFields || {};
 
 			// 连接参数
-			var postData = _JoinParams(opt.data); 
+			var postData;
+			var reg=/application\/json/;
+            if (reg.test(opt.contentType) && opt.type.toUpperCase() !== "GET") {
+                postData = JSON.stringify(opt.data);
+            } else {
+                postData = _JoinParams(opt.data); 
+			}
+			
 			
 			if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {
 				opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() : opt.url + "&_=" + Math.random();

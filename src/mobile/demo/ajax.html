@@ -114,8 +114,11 @@
 		<script type="text/javascript">
 			//jQuery.support.cors = true;
 			var url="http://localhost:3000/test"
+			$.ajaxSetup({
+				contentType:"application/json"
+			});
 			$(".get").click(function() {
-					$.get(url,{
+					$.get(url+"/data",{
 						name:"12345",
 						null:null,
 						undefined:undefined,
@@ -146,7 +149,7 @@
 							],
 							arrs2:[1,2,4,{pp:"99"},[1,2,5]]
 					},function(data){
-						console.log("data",data.data)
+						console.log("data",data)
 					},function(){
 						alert("网络加载失败！")
 					})
@@ -154,7 +157,7 @@
 			});
 					
 			$(".post").click(function() {
-					$.post(url,{
+					$.post(url, {
 						name:"admin",
 						null:null,
 						undefined:undefined,
