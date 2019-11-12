@@ -540,7 +540,7 @@
 		  /Date(1492048799952)/ 或 1492048799952
 		  fmt=("yyyy-MM-dd HH:mm:ss.S") ==> 2006-07-02 08:09:04.423 
 		  */
-        jsonToDate: function (value, fmt) {
+        toDate: function (value, fmt) {
             fmt = typeof fmt !== "string" ? "yyyy-MM-dd HH:mm:ss" : fmt;
             var txts = value.toString().replace("/Date(", "").replace(")/", "");
             var times = Number(txts);
