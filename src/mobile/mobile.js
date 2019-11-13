@@ -205,74 +205,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	Mobile.fn.init.prototype = Mobile.fn;
 
 	// 添加静态和实例的扩展方法
-	Mobile.extend = Mobile.fn.extend = function (obj) {
+	Mobile.extend = Mobile.fn.extend = function (deep, obj) {
+
+		if (deep instanceof Object) {
+			obj = deep;
+			deep = false;
+		}
 
 		// 简单扩展方法
-		// 		if (typeof obj === "object") {
-		// 			for (var i in obj) {
-		// 				this[i] = obj[i];
-		// 			}
-		// 		}
-		// 
-		// 		return this;
-
-		// 兼容扩展方法
-		var src,
-		    copyIsArray,
-		    copy,
-		    name,
-		    options,
-		    clone,
-		    target = arguments[0] || {},
-		    i = 1,
-		    length = arguments.length,
-		    deep = false;
-
-		if (typeof target === "boolean") {
-			deep = target;
-
-			target = arguments[i] || {};
-			i++;
-		}
-
-		if ((typeof target === "undefined" ? "undefined" : _typeof(target)) !== "object" && !Mobile.isFunction(target)) {
-			target = {};
-		}
-
-		if (i === length) {
-			target = this;
-			i--;
-		}
-
-		for (; i < length; i++) {
-
-			if ((options = arguments[i]) !== null) {
-
-				for (name in options) {
-					src = target[name];
-					copy = options[name];
-
-					if (target === copy) {
-						continue;
-					}
-
-					if (deep && copy && (Mobile.isPlainObject(copy) || (copyIsArray = Mobile.isArray(copy)))) {
-						if (copyIsArray) {
-							copyIsArray = false;
-							clone = src && Mobile.isArray(src) ? src : [];
-						} else {
-							clone = src && Mobile.isPlainObject(src) ? src : {};
-						}
-
-						target[name] = Mobile.extend(deep, clone, copy);
-					} else if (copy !== undefined) {
-						target[name] = copy;
-					}
-				}
+		if ((typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object") {
+			for (var i in obj) {
+				this[i] = obj[i];
 			}
 		}
 
-		return target;
+		return this;
 	};
 
 	// 扩展静态方法
@@ -517,7 +464,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     /Date(1492048799952)/ 或 1492048799952
     fmt=("yyyy-MM-dd HH:mm:ss.S") ==> 2006-07-02 08:09:04.423 
     */
-		jsonToDate: function jsonToDate(value, fmt) {
+		toDate: function toDate(value, fmt) {
 			fmt = typeof fmt !== "string" ? "yyyy-MM-dd HH:mm:ss" : fmt;
 			var txts = value.toString().replace("/Date(", "").replace(")/", "");
 			var times = Number(txts);
@@ -2698,7 +2645,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			// 连接参数
 			var postData;
-			if (opt.contentType === "application/json" && opt.type.toUpperCase() !== "GET") {
+			var reg = /application\/json/;
+			if (reg.test(opt.contentType) && opt.type.toUpperCase() !== "GET") {
 				postData = JSON.stringify(opt.data);
 			} else {
 				postData = _JoinParams(opt.data);

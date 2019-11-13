@@ -212,76 +212,22 @@
 	Mobile.fn.init.prototype = Mobile.fn;
 
 	// 添加静态和实例的扩展方法
-	Mobile.extend = Mobile.fn.extend = function(obj) {
+	Mobile.extend = Mobile.fn.extend = function(deep,obj) {
 
-		// 简单扩展方法
-		// 		if (typeof obj === "object") {
-		// 			for (var i in obj) {
-		// 				this[i] = obj[i];
-		// 			}
-		// 		}
-		// 
-		// 		return this;
+            if (deep instanceof Object) {
+                obj = deep;
+                deep = false;
+            }
+         
+            // 简单扩展方法
+            if (typeof obj === "object") {
+                for (var i in obj) {
+                    this[i] = obj[i];
+                }
+            }
 
-		// 兼容扩展方法
-		var src, copyIsArray, copy, name, options, clone,
-			target = arguments[0] || {},
-			i = 1,
-			length = arguments.length,
-			deep = false;
-
-		if (typeof target === "boolean") {
-			deep = target;
-
-			target = arguments[i] || {};
-			i++;
-		}
-
-
-		if (typeof target !== "object" && !Mobile.isFunction(target)) {
-			target = {};
-		}
-
-		if (i === length) {
-			target = this;
-			i--;
-		}
-
-		for (; i < length; i++) {
-
-			if ((options = arguments[i]) !== null) {
-
-				for (name in options) {
-					src = target[name];
-					copy = options[name];
-
-
-					if (target === copy) {
-						continue;
-					}
-
-					if (deep && copy && (Mobile.isPlainObject(copy) || (copyIsArray = Mobile.isArray(copy)))) {
-						if (copyIsArray) {
-							copyIsArray = false;
-							clone = src && Mobile.isArray(src) ? src : [];
-
-						} else {
-							clone = src && Mobile.isPlainObject(src) ? src : {};
-						}
-
-
-						target[name] = Mobile.extend(deep, clone, copy);
-
-
-					} else if (copy !== undefined) {
-						target[name] = copy;
-					}
-				}
-			}
-		}
-
-
-		return target;
+            return this;
+        	
 	};
 
 	// 扩展静态方法
