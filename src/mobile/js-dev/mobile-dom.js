@@ -118,117 +118,182 @@
 				}
 			}, fx);
 		}
-	}
+    }
+
+    // 浅复制 parentObj 父元素 childObj子元素
+    function _extend(parentObj, childObj) {
+
+        childObj = childObj || {};
+
+        for (var prop in parentObj) {
+            childObj[prop] = parentObj[prop];
+        }
+        return childObj;
+    }
+
+    // 深复制 parentObj 父元素 childObj子元素
+    function _extendDeep(parentObj, childObj) {
+
+        childObj = childObj || {};
+
+        for (var prop in parentObj) {
+
+            if (typeof parentObj[prop] === "object") {
+
+                childObj[prop] = parentObj[prop].constructor === Array ? [] : {};
+                _extendDeep(parentObj[prop], childObj[prop]);
+
+            } else {
+                childObj[prop] = parentObj[prop];
+            }
+        }
+        return childObj;
+    };
 
 	// 原型-prototype
-	Mobile.fn = Mobile.prototype = {
+    Mobile.fn = Mobile.prototype = {
 
-		init: function(selector, content) {
+        init: function (selector, content) {
 
-			var arrs = [];
-			this.length = 0;
-			if (!content) {
+            var arrs = [];
+            this.length = 0;
+            if (!content) {
 
-				// 字符串
-				if (typeof selector === "string") {
-					if (selector.trim().length === 0) {
-						return this;
-					}
-					var els = document.querySelectorAll(selector);
-					Array.prototype.push.apply(this, els);
-				} else if (typeof selector === "object") {
+                // 字符串
+                if (typeof selector === "string") {
+                    if (selector.trim().length === 0) {
+                        return this;
+                    }
+                    var els = document.querySelectorAll(selector);
+                    Array.prototype.push.apply(this, els);
+                } else if (typeof selector === "object") {
 
-					// Nodelist, HTMLCollection 对象
-					if (selector.constructor && (selector.constructor === NodeList || selector.constructor === HTMLCollection)) {
-						Mobile.each(selector, function(i, v) {
-							arrs.push(v);
-						});
-					}
-					// Mobile 对象
-					else if (selector.hasOwnProperty("length") && selector.length > 0) {
-						Mobile.each(selector, function(i, v) {
-							arrs.push(v);
-						});
-					} else if (selector.nodeType === Node.ELEMENT_NODE || selector.nodeType === Node.DOCUMENT_NODE || selector ===
-						window) {
-						// element 单例对象 
-						arrs.push(selector);
-					}
+                    // Nodelist, HTMLCollection 对象
+                    if (selector.constructor && (selector.constructor === NodeList || selector.constructor === HTMLCollection)) {
+                        Mobile.each(selector, function (i, v) {
+                            arrs.push(v);
+                        });
+                    }
+                    // Mobile 对象
+                    else if (selector.hasOwnProperty("length") && selector.length > 0) {
+                        Mobile.each(selector, function (i, v) {
+                            arrs.push(v);
+                        });
+                    } else if (selector.nodeType === Node.ELEMENT_NODE || selector.nodeType === Node.DOCUMENT_NODE || selector ===
+                        window) {
+                        // element 单例对象 
+                        arrs.push(selector);
+                    }
 
-					Array.prototype.push.apply(this, arrs);
+                    Array.prototype.push.apply(this, arrs);
 
-				}
+                }
 
-			} else {
+            } else {
 
-				if (typeof content === "string" && typeof selector === "string") {
+                if (typeof content === "string" && typeof selector === "string") {
 
-					if (content.trim().length === 0) {
-						return this;
-					}
-					if (selector.trim().length === 0) {
-						return this;
-					}
+                    if (content.trim().length === 0) {
+                        return this;
+                    }
+                    if (selector.trim().length === 0) {
+                        return this;
+                    }
 
-					var p = document.querySelectorAll(content);
-					Mobile.each(p, function() {
-						var childElements = this.querySelectorAll(selector);
-						for (var i = 0; i < childElements.length; i++) {
-							arrs.push(childElements[i])
-						}
-					});
-					Array.prototype.push.apply(this, arrs);
+                    var p = document.querySelectorAll(content);
+                    Mobile.each(p, function () {
+                        var childElements = this.querySelectorAll(selector);
+                        for (var i = 0; i < childElements.length; i++) {
+                            arrs.push(childElements[i]);
+                        }
+                    });
+                    Array.prototype.push.apply(this, arrs);
 
-				} else if (typeof content === "object" && typeof selector === "string") {
-					if (selector.trim().length === 0) {
-						return this;
-					}
-					// 遍历数组型对象
-					if (content.hasOwnProperty("length") && content.length > 0) {
+                } else if (typeof content === "object" && typeof selector === "string") {
+                    if (selector.trim().length === 0) {
+                        return this;
+                    }
+                    // 遍历数组型对象
+                    if (content.hasOwnProperty("length") && content.length > 0) {
 
-						Mobile.each(content, function() {
-							var childElements = this.querySelectorAll(selector);
-							for (var i = 0; i < childElements.length; i++) {
-								arrs.push(childElements[i]);
-							}
+                        Mobile.each(content, function () {
+                            var childElements = this.querySelectorAll(selector);
+                            for (var i = 0; i < childElements.length; i++) {
+                                arrs.push(childElements[i]);
+                            }
 
-						});
-						Array.prototype.push.apply(this, arrs);
+                        });
+                        Array.prototype.push.apply(this, arrs);
 
-					} else if (content.nodeType === Node.ELEMENT_NODE || content.nodeType === Node.DOCUMENT_NODE) {
-						var childElements = content.querySelectorAll(selector);
-						Array.prototype.push.apply(this, childElements);
-					}
+                    } else if (content.nodeType === Node.ELEMENT_NODE || content.nodeType === Node.DOCUMENT_NODE) {
+                        var childElements = content.querySelectorAll(selector);
+                        Array.prototype.push.apply(this, childElements);
+                    }
 
-				}
+                }
 
-			}
-			return this;
-		}
+            }
+            return this;
+        }
 
-	};
+    };
 
 	// 将init函数作为实例化的mobile原型。 
 	Mobile.fn.init.prototype = Mobile.fn;
 
 	// 添加静态和实例的扩展方法
-	Mobile.extend = Mobile.fn.extend = function(deep,obj) {
+    Mobile.extend = Mobile.fn.extend = function (deep,obj) {
 
-            if (deep instanceof Object) {
-                obj = deep;
-                deep = false;
-            }
-         
-            // 简单扩展方法
-            if (typeof obj === "object") {
-                for (var i in obj) {
-                    this[i] = obj[i];
-                }
-            }
-
+         // mobile extend
+        if (deep.constructor === Object&&arguments.length === 1) {
+            _extend(deep, this);
             return this;
-        	
-	};
+        }
+         // mobile extend deeply
+        if (deep.constructor === Boolean && obj.constructor === Object && arguments.length === 2) {
+            if (deep) { _extendDeep(obj, this); } else { _extend(deep, this); }
+            return this;
+        }
+
+
+        //  Object extend
+        var i, item,deeply;
+        if (deep.constructor === Object && arguments.length >=2) {
+
+            for (i = 1; i < arguments.length; i++) {
+                
+                item = arguments[i];
+                if (typeof item === "object") {
+                    _extend(item,deep);
+                }
+
+            }
+
+            return deep;
+
+        }
+
+        //  Object extend deeply
+        if (deep.constructor === Boolean && arguments.length >= 2 && typeof arguments[1] === "object") {
+            deeply = arguments[1];
+            for (i = 2; i < arguments.length; i++) {
+               
+                item = arguments[i];
+             
+                if (typeof item === "object") {
+                    if (deep === true) {
+                        _extendDeep(item, deeply);
+                    }
+                    else { _extend(item, deeply); }
+                   
+                }
+
+            }
+
+            return deeply;
+
+        }
+    };
 
 	// 扩展静态方法
     Mobile.extend({
@@ -2142,7 +2207,6 @@
 
 				m(this).touchendcancel(function(event) {
 					try {
-
 
 						var touches = event.changedTouches;
 						var touches2 = event.touches;

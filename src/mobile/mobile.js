@@ -121,6 +121,35 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	}
 
+	// 浅复制 parentObj 父元素 childObj子元素
+	function _extend(parentObj, childObj) {
+
+		childObj = childObj || {};
+
+		for (var prop in parentObj) {
+			childObj[prop] = parentObj[prop];
+		}
+		return childObj;
+	}
+
+	// 深复制 parentObj 父元素 childObj子元素
+	function _extendDeep(parentObj, childObj) {
+
+		childObj = childObj || {};
+
+		for (var prop in parentObj) {
+
+			if (_typeof(parentObj[prop]) === "object") {
+
+				childObj[prop] = parentObj[prop].constructor === Array ? [] : {};
+				_extendDeep(parentObj[prop], childObj[prop]);
+			} else {
+				childObj[prop] = parentObj[prop];
+			}
+		}
+		return childObj;
+	};
+
 	// 原型-prototype
 	Mobile.fn = Mobile.prototype = {
 
@@ -207,19 +236,54 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	// 添加静态和实例的扩展方法
 	Mobile.extend = Mobile.fn.extend = function (deep, obj) {
 
-		if (deep instanceof Object) {
-			obj = deep;
-			deep = false;
+		// mobile extend
+		if (deep.constructor === Object && arguments.length === 1) {
+			_extend(deep, this);
+			return this;
 		}
-
-		// 简单扩展方法
-		if ((typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object") {
-			for (var i in obj) {
-				this[i] = obj[i];
+		// mobile extend deeply
+		if (deep.constructor === Boolean && obj.constructor === Object && arguments.length === 2) {
+			if (deep) {
+				_extendDeep(obj, this);
+			} else {
+				_extend(deep, this);
 			}
+			return this;
 		}
 
-		return this;
+		//  Object extend
+		var i, item, deeply;
+		if (deep.constructor === Object && arguments.length >= 2) {
+
+			for (i = 1; i < arguments.length; i++) {
+
+				item = arguments[i];
+				if ((typeof item === "undefined" ? "undefined" : _typeof(item)) === "object") {
+					_extend(item, deep);
+				}
+			}
+
+			return deep;
+		}
+
+		//  Object extend deeply
+		if (deep.constructor === Boolean && arguments.length >= 2 && _typeof(arguments[1]) === "object") {
+			deeply = arguments[1];
+			for (i = 2; i < arguments.length; i++) {
+
+				item = arguments[i];
+
+				if ((typeof item === "undefined" ? "undefined" : _typeof(item)) === "object") {
+					if (deep === true) {
+						_extendDeep(item, deeply);
+					} else {
+						_extend(item, deeply);
+					}
+				}
+			}
+
+			return deeply;
+		}
 	};
 
 	// 扩展静态方法
@@ -491,16 +555,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		isFunction: function isFunction(obj) {
-			return Mobile.type(obj) === "function";
+			return typeof obj === "function";
 		},
 
-		isArray: Array.isArray || function (obj) {
-			return Mobile.type(obj) === "array";
-		},
-
-		isWindow: function isWindow(obj) {
-
-			return obj !== null && obj === obj.window;
+		isArray: function isArray(obj) {
+			return obj.constructor === Array;
 		},
 
 		isEmptyObject: function isEmptyObject(obj) {
@@ -509,38 +568,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return false;
 			}
 			return true;
-		},
-
-		isPlainObject: function isPlainObject(obj) {
-			var key;
-
-			// Must be an Object
-			if (!obj || Mobile.type(obj) !== "object" || obj.nodeType || Mobile.isWindow(obj)) {
-				return false;
-			}
-
-			try {
-				// Not own constructor property must be Object
-				if (obj.constructor && !{}.hasOwnProperty.call(obj, "constructor") && !{}.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf")) {
-					return false;
-				}
-			} catch (e) {
-				// IE8,9 Will throw exceptions on certain host objects
-				return false;
-			}
-
-			//for (key in obj) { }
-
-			return key === undefined || {}.hasOwnProperty.call(obj, key);
-		},
-
-		type: function type(obj) {
-			var class2type = {};
-			var toString = class2type.toString;
-			if (obj === null) {
-				return obj + "";
-			}
-			return (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" || typeof obj === "function" ? class2type[toString.call(obj)] || "object" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
 		},
 
 		max: function max(data, fn) {
@@ -690,6 +717,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					}
 				}
 				return _array_min;
+			}
+		},
+
+		proxy: function proxy(fn, obj) {
+
+			if (typeof fn === "function") {
+				fn.apply(obj);
 			}
 		}
 
