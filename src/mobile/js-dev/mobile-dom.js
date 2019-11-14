@@ -534,41 +534,6 @@
             return true;
         },
 
-        isPlainObject: function (obj) {
-            var key;
-
-            // Must be an Object
-            if (!obj || Mobile.type(obj) !== "object" || obj.nodeType || Mobile.isWindow(obj)) {
-                return false;
-            }
-
-            try {
-                // Not own constructor property must be Object
-                if (obj.constructor &&
-                    !{}.hasOwnProperty.call(obj, "constructor") &&
-                    !{}.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf")) {
-                    return false;
-                }
-            } catch (e) {
-                // IE8,9 Will throw exceptions on certain host objects
-                return false;
-            }
-
-            //for (key in obj) { }
-
-            return key === undefined || {}.hasOwnProperty.call(obj, key);
-        },
-
-        type: function (obj) {
-            var class2type = {};
-            var toString = class2type.toString;
-            if (obj === null) {
-                return obj + "";
-            }
-            return typeof obj === "object" || typeof obj === "function" ?
-                class2type[toString.call(obj)] || "object" :
-                typeof obj;
-        },
 
         max: function (data, fn) {
             data = data || [];
@@ -739,6 +704,14 @@
             }
 
         },
+
+        proxy: function (fn,obj) {
+
+            if (typeof fn === "function") {
+                fn.apply(obj);
+            }
+
+        }
 
 
 	});
