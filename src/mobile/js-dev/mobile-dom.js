@@ -2004,7 +2004,7 @@
 					elX: 0,
 					elY: 0,
 					isX: false,
-					isY: false,
+					isY: false
 
 				};
 
