@@ -514,16 +514,11 @@
         },
 
         isFunction: function (obj) {
-            return Mobile.type(obj) === "function";
+            return typeof obj=== "function";
         },
 
-        isArray: Array.isArray || function (obj) {
-            return Mobile.type(obj) === "array";
-        },
-
-        isWindow: function (obj) {
-
-            return obj !== null && obj === obj.window;
+        isArray: function (obj) {
+            return obj.constructor === Array; 
         },
 
         isEmptyObject: function (obj) {
@@ -533,7 +528,6 @@
             }
             return true;
         },
-
 
         max: function (data, fn) {
             data = data || [];
