@@ -770,8 +770,21 @@
                 fn.apply(obj);
             }
 
-        }
+        },
 
+         // 把文本转换成html
+        deHtml :function (txt) {
+            txt = txt.replace(/&lt;/img, "<").replace(/&gt;/img, ">").replace(/&nbsp/img, " ");
+            return txt;
+
+        },
+
+         // 把html换成文本
+        enHtml :function (txt) {
+            txt = txt.replace(/</img, "&lt;").replace(/>/img, "&gt;").replace(/\s+/img, "&nbsp");
+            return txt;
+
+        } 
 
 	});
 
