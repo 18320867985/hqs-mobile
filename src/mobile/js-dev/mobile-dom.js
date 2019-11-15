@@ -250,7 +250,7 @@
             return this;
         }
          // mobile extend deeply
-        if (deep.constructor === Boolean && obj.constructor === Object && arguments.length === 2) {
+        if (deep.constructor === Boolean && arguments.length === 2 && obj.constructor === Object ) {
             if (deep) { _extendDeep(obj, this); } else { _extend(deep, this); }
             return this;
         }
@@ -274,23 +274,23 @@
         }
 
         //  Object extend deeply
-        if (deep.constructor === Boolean && arguments.length >= 2 && typeof arguments[1] === "object") {
-            deeply = arguments[1];
+        if (deep.constructor === Boolean && arguments.length >= 3 && obj.constructor === Object) {
+           
             for (i = 2; i < arguments.length; i++) {
                
                 item = arguments[i];
              
                 if (typeof item === "object") {
-                    if (deep === true) {
-                        _extendDeep(item, deeply);
+                    if (deep) {
+                        _extendDeep(item, obj);
                     }
-                    else { _extend(item, deeply); }
+                    else { _extend(item, obj); }
                    
                 }
 
             }
 
-            return deeply;
+            return obj;
 
         }
     };

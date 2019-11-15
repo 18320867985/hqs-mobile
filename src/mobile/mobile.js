@@ -242,7 +242,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this;
 		}
 		// mobile extend deeply
-		if (deep.constructor === Boolean && obj.constructor === Object && arguments.length === 2) {
+		if (deep.constructor === Boolean && arguments.length === 2 && obj.constructor === Object) {
 			if (deep) {
 				_extendDeep(obj, this);
 			} else {
@@ -267,22 +267,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 
 		//  Object extend deeply
-		if (deep.constructor === Boolean && arguments.length >= 2 && _typeof(arguments[1]) === "object") {
-			deeply = arguments[1];
+		if (deep.constructor === Boolean && arguments.length >= 3 && obj.constructor === Object) {
+
 			for (i = 2; i < arguments.length; i++) {
 
 				item = arguments[i];
 
 				if ((typeof item === "undefined" ? "undefined" : _typeof(item)) === "object") {
-					if (deep === true) {
-						_extendDeep(item, deeply);
+					if (deep) {
+						_extendDeep(item, obj);
 					} else {
-						_extend(item, deeply);
+						_extend(item, obj);
 					}
 				}
 			}
 
-			return deeply;
+			return obj;
 		}
 	};
 
