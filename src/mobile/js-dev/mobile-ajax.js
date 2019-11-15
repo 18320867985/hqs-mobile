@@ -1,11 +1,37 @@
 
 /*
-ajax
+    ajax
+    hqs
 */
 
 +function (Mobile) {
+
 	// init xhr
-	var _xhrCORS;
+    var _xhrCORS;
+
+    /* 封装ajax函数
+        @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE
+        @param {string}opt.url 发送请求的url
+        @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
+        @param {object}opt.data 发送的参数，格式为对象类型
+        @param {function}opt.contentType   内容类型
+        @param{function}opt.success ajax发送并接收成功调用的回调函数
+        @param {function}opt.error ajax发送并接收error调用的回调函数
+        @param {function}opt.getXHR 获取xhr对象
+        @param {number}opt.timeout // 超时
+     */
+    var _ajaxSetup = {
+      type : "GET",
+      url : '',
+      async : true,
+      data : {},
+      success : function () { },
+      error: function () { },
+      dataType:"text",
+      contentType : "application/x-www-form-urlencoded;charset=utf-8",
+      timeout : 20 * 1000,
+      progress : {}
+    };
 
 	// ajax type
 	function _ajaxFun(url, type, data, _arguments) {
@@ -130,78 +156,73 @@ ajax
 		}
 	}
 
-	Mobile.extend({
+    Mobile.extend({
 
-		// create XHR Object
-		createXHR: function () {
+        // create XHR Object
+        createXHR: function () {
 
-			if (_xhrCORS) {
-				return _xhrCORS;
-			}
+            if (_xhrCORS) {
+                return _xhrCORS;
+            }
 
-			if (window.XMLHttpRequest) {
+            if (window.XMLHttpRequest) {
 
-				//IE7+、Firefox、Opera、Chrome 和Safari
-				return _xhrCORS = new XMLHttpRequest();
-			} else if (window.ActiveXObject) {
+                //IE7+、Firefox、Opera、Chrome 和Safari
+                return _xhrCORS = new XMLHttpRequest();
+            } else if (window.ActiveXObject) {
 
-				//IE6 及以下
-				var versions = ['MSXML2.XMLHttp', 'Microsoft.XMLHTTP'];
-				for (var i = 0, len = versions.length; i < len; i++) {
-					try {
-						return _xhrCORS = new ActiveXObject(version[i]);
-						
-					} catch (e) {
-						//跳过
-					}
-				}
-			} else {
-				throw new Error('浏览器不支持XHR对象！');
-			}
+                //IE6 及以下
+                var versions = ['MSXML2.XMLHttp', 'Microsoft.XMLHTTP'];
+                for (var i = 0, len = versions.length; i < len; i++) {
+                    try {
+                        return _xhrCORS = new ActiveXObject(version[i]);
 
-		},
+                    } catch (e) {
+                        //跳过
+                    }
+                }
+            } else {
+                throw new Error('浏览器不支持XHR对象！');
+            }
 
-		getXhr: function () {
-			return this.createXHR();
-		},
+        },
 
-		/* 封装ajax函数
-		@param {string}opt.type http连接的方式，包括POST,GET PUT DELETE 
-		@param {string}opt.url 发送请求的url
-		@param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
-		@param {object}opt.data 发送的参数，格式为对象类型
-		@param {function}opt.contentType   内容类型
-		@param{function}opt.success ajax发送并接收成功调用的回调函数
-		@param {function}opt.error ajax发送并接收error调用的回调函数
-		@param {function}opt.getXHR 获取xhr对象
-		@param {number}opt.timeout // 超时
-		 */
-		ajax: function (opt) {
+        getXhr: function () {
+            return this.createXHR();
+        },
 
-			// 参数object对象
-			opt = opt || {};
-			opt.type = typeof opt.type === "string" ? opt.type.toUpperCase() : "GET";
-			opt.url = typeof opt.url === "string" ? opt.url : '';
-			opt.async = typeof opt.async === "boolean" ? opt.async : true;
-			opt.data = typeof opt.data === "object" ? opt.data : {};
-			opt.success = opt.success || function () { };
-			opt.error = opt.error || function () { };
-			opt.contentType = opt.contentType || "application/x-www-form-urlencoded;charset=utf-8";
-			opt.timeout = typeof opt.timeout === "number" ? opt.timeout : 30*1000;
-			opt.progress = opt.progress || {};
+		
+        ajaxSetup: function (options) {
+        
+            options = typeof options === "object" ? options : {};
+             $.extend( _ajaxSetup, options);
+            return _ajaxSetup;
+
+        },
+        ajax: function (options) {
+
+            options = typeof options === "object" ? options : {};
+            var opt = $.extend({}, _ajaxSetup, options);
 
 			var xhr = Mobile.createXHR();
 			try{
 				// IE
 				xhr.timeout = opt.timeout;
-            } catch{
-                console.log("ie");
+            } catch(ex){
+                console.log("IE");
 			}
 		
 			xhr.xhrFields = opt.xhrFields || {};
 
 			// 连接参数
-			var postData = _JoinParams(opt.data); 
+			var postData;
+			var reg=/application\/json/;
+            if (reg.test(opt.contentType) && opt.type.toUpperCase() !== "GET") {
+                postData = JSON.stringify(opt.data);
+            } else {
+                postData = _JoinParams(opt.data); 
+			}
+			
 			
 			if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {
 				opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() : opt.url + "&_=" + Math.random();

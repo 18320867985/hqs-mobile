@@ -3,7 +3,7 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*
- *	移动端 公共类库
+ *	移动端 公共类库 IE10+
  * 作者：hqs
  */
 
@@ -121,6 +121,35 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	}
 
+	// 浅复制 parentObj 父元素 childObj子元素
+	function _extend(parentObj, childObj) {
+
+		childObj = childObj || {};
+
+		for (var prop in parentObj) {
+			childObj[prop] = parentObj[prop];
+		}
+		return childObj;
+	}
+
+	// 深复制 parentObj 父元素 childObj子元素
+	function _extendDeep(parentObj, childObj) {
+
+		childObj = childObj || {};
+
+		for (var prop in parentObj) {
+
+			if (_typeof(parentObj[prop]) === "object") {
+
+				childObj[prop] = parentObj[prop].constructor === Array ? [] : {};
+				_extendDeep(parentObj[prop], childObj[prop]);
+			} else {
+				childObj[prop] = parentObj[prop];
+			}
+		}
+		return childObj;
+	};
+
 	// 原型-prototype
 	Mobile.fn = Mobile.prototype = {
 
@@ -205,74 +234,56 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	Mobile.fn.init.prototype = Mobile.fn;
 
 	// 添加静态和实例的扩展方法
-	Mobile.extend = Mobile.fn.extend = function (obj) {
+	Mobile.extend = Mobile.fn.extend = function (deep, obj) {
 
-		// 简单扩展方法
-		// 		if (typeof obj === "object") {
-		// 			for (var i in obj) {
-		// 				this[i] = obj[i];
-		// 			}
-		// 		}
-		// 
-		// 		return this;
-
-		// 兼容扩展方法
-		var src,
-		    copyIsArray,
-		    copy,
-		    name,
-		    options,
-		    clone,
-		    target = arguments[0] || {},
-		    i = 1,
-		    length = arguments.length,
-		    deep = false;
-
-		if (typeof target === "boolean") {
-			deep = target;
-
-			target = arguments[i] || {};
-			i++;
+		// mobile extend
+		if (deep.constructor === Object && arguments.length === 1) {
+			_extend(deep, this);
+			return this;
+		}
+		// mobile extend deeply
+		if (deep.constructor === Boolean && arguments.length === 2 && obj.constructor === Object) {
+			if (deep) {
+				_extendDeep(obj, this);
+			} else {
+				_extend(deep, this);
+			}
+			return this;
 		}
 
-		if ((typeof target === "undefined" ? "undefined" : _typeof(target)) !== "object" && !Mobile.isFunction(target)) {
-			target = {};
+		//  Object extend
+		var i, item, deeply;
+		if (deep.constructor === Object && arguments.length >= 2) {
+
+			for (i = 1; i < arguments.length; i++) {
+
+				item = arguments[i];
+				if ((typeof item === "undefined" ? "undefined" : _typeof(item)) === "object") {
+					_extend(item, deep);
+				}
+			}
+
+			return deep;
 		}
 
-		if (i === length) {
-			target = this;
-			i--;
-		}
+		//  Object extend deeply
+		if (deep.constructor === Boolean && arguments.length >= 3 && obj.constructor === Object) {
 
-		for (; i < length; i++) {
+			for (i = 2; i < arguments.length; i++) {
 
-			if ((options = arguments[i]) !== null) {
+				item = arguments[i];
 
-				for (name in options) {
-					src = target[name];
-					copy = options[name];
-
-					if (target === copy) {
-						continue;
-					}
-
-					if (deep && copy && (Mobile.isPlainObject(copy) || (copyIsArray = Mobile.isArray(copy)))) {
-						if (copyIsArray) {
-							copyIsArray = false;
-							clone = src && Mobile.isArray(src) ? src : [];
-						} else {
-							clone = src && Mobile.isPlainObject(src) ? src : {};
-						}
-
-						target[name] = Mobile.extend(deep, clone, copy);
-					} else if (copy !== undefined) {
-						target[name] = copy;
+				if ((typeof item === "undefined" ? "undefined" : _typeof(item)) === "object") {
+					if (deep) {
+						_extendDeep(item, obj);
+					} else {
+						_extend(item, obj);
 					}
 				}
 			}
-		}
 
-		return target;
+			return obj;
+		}
 	};
 
 	// 扩展静态方法
@@ -517,7 +528,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     /Date(1492048799952)/ 或 1492048799952
     fmt=("yyyy-MM-dd HH:mm:ss.S") ==> 2006-07-02 08:09:04.423 
     */
-		jsonToDate: function jsonToDate(value, fmt) {
+		toDate: function toDate(value, fmt) {
 			fmt = typeof fmt !== "string" ? "yyyy-MM-dd HH:mm:ss" : fmt;
 			var txts = value.toString().replace("/Date(", "").replace(")/", "");
 			var times = Number(txts);
@@ -544,16 +555,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		isFunction: function isFunction(obj) {
-			return Mobile.type(obj) === "function";
+			return typeof obj === "function";
 		},
 
-		isArray: Array.isArray || function (obj) {
-			return Mobile.type(obj) === "array";
-		},
-
-		isWindow: function isWindow(obj) {
-
-			return obj !== null && obj === obj.window;
+		isArray: function isArray(obj) {
+			return obj.constructor === Array;
 		},
 
 		isEmptyObject: function isEmptyObject(obj) {
@@ -562,38 +568,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return false;
 			}
 			return true;
-		},
-
-		isPlainObject: function isPlainObject(obj) {
-			var key;
-
-			// Must be an Object
-			if (!obj || Mobile.type(obj) !== "object" || obj.nodeType || Mobile.isWindow(obj)) {
-				return false;
-			}
-
-			try {
-				// Not own constructor property must be Object
-				if (obj.constructor && !{}.hasOwnProperty.call(obj, "constructor") && !{}.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf")) {
-					return false;
-				}
-			} catch (e) {
-				// IE8,9 Will throw exceptions on certain host objects
-				return false;
-			}
-
-			//for (key in obj) { }
-
-			return key === undefined || {}.hasOwnProperty.call(obj, key);
-		},
-
-		type: function type(obj) {
-			var class2type = {};
-			var toString = class2type.toString;
-			if (obj === null) {
-				return obj + "";
-			}
-			return (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" || typeof obj === "function" ? class2type[toString.call(obj)] || "object" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
 		},
 
 		max: function max(data, fn) {
@@ -743,6 +717,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					}
 				}
 				return _array_min;
+			}
+		},
+
+		proxy: function proxy(fn, obj) {
+
+			if (typeof fn === "function") {
+				fn.apply(obj);
 			}
 		}
 
@@ -2498,12 +2479,38 @@ css3 transition
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*
-ajax
+    ajax
+    hqs
 */
 
 +function (Mobile) {
+
 	// init xhr
 	var _xhrCORS;
+
+	/* 封装ajax函数
+     @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE
+     @param {string}opt.url 发送请求的url
+     @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
+     @param {object}opt.data 发送的参数，格式为对象类型
+     @param {function}opt.contentType   内容类型
+     @param{function}opt.success ajax发送并接收成功调用的回调函数
+     @param {function}opt.error ajax发送并接收error调用的回调函数
+     @param {function}opt.getXHR 获取xhr对象
+     @param {number}opt.timeout // 超时
+  */
+	var _ajaxSetup = {
+		type: "GET",
+		url: '',
+		async: true,
+		data: {},
+		success: function success() {},
+		error: function error() {},
+		dataType: "text",
+		contentType: "application/x-www-form-urlencoded;charset=utf-8",
+		timeout: 20 * 1000,
+		progress: {}
+	};
 
 	// ajax type
 	function _ajaxFun(url, type, data, _arguments) {
@@ -2649,44 +2656,35 @@ ajax
 			return this.createXHR();
 		},
 
-		/* 封装ajax函数
-		  @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE 
-		  @param {string}opt.url 发送请求的url
-		  @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
-		  @param {object}opt.data 发送的参数，格式为对象类型
-		  @param {function}opt.contentType   内容类型
-		  @param{function}opt.success ajax发送并接收成功调用的回调函数
-		  @param {function}opt.error ajax发送并接收error调用的回调函数
-		  @param {function}opt.getXHR 获取xhr对象
-		  @param {number}opt.timeout // 超时
-   */
-		ajax: function ajax(opt) {
+		ajaxSetup: function ajaxSetup(options) {
 
-			// 参数object对象
-			opt = opt || {};
-			opt.type = typeof opt.type === "string" ? opt.type.toUpperCase() : "GET";
-			opt.url = typeof opt.url === "string" ? opt.url : '';
-			opt.async = typeof opt.async === "boolean" ? opt.async : true;
-			opt.data = _typeof(opt.data) === "object" ? opt.data : {};
-			opt.success = opt.success || function () {};
-			opt.error = opt.error || function () {};
-			opt.contentType = opt.contentType || "application/x-www-form-urlencoded;charset=utf-8";
-			opt.timeout = typeof opt.timeout === "number" ? opt.timeout : 30000;
-			opt.progress = opt.progress || {};
+			options = (typeof options === "undefined" ? "undefined" : _typeof(options)) === "object" ? options : {};
+			$.extend(_ajaxSetup, options);
+			return _ajaxSetup;
+		},
+		ajax: function ajax(options) {
+
+			options = (typeof options === "undefined" ? "undefined" : _typeof(options)) === "object" ? options : {};
+			var opt = $.extend({}, _ajaxSetup, options);
 
 			var xhr = Mobile.createXHR();
-		
-			try{
+			try {
 				// IE
 				xhr.timeout = opt.timeout;
-			}catch(e){
-				
+			} catch (ex) {
+				console.log("IE");
 			}
-			
+
 			xhr.xhrFields = opt.xhrFields || {};
 
 			// 连接参数
-			var postData = _JoinParams(opt.data);
+			var postData;
+			var reg = /application\/json/;
+			if (reg.test(opt.contentType) && opt.type.toUpperCase() !== "GET") {
+				postData = JSON.stringify(opt.data);
+			} else {
+				postData = _JoinParams(opt.data);
+			}
 
 			if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {
 				opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() : opt.url + "&_=" + Math.random();
