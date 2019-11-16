@@ -2,9 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\mobile",
     "\\src\\mobile\\js-dev"
   ],
-  "SelectedNode": "\\src\\mobile\\js-dev\\moblie-transform.js",
+  "SelectedNode": "\\src\\mobile",
   "PreviewInSolutionExplorer": false
 }
