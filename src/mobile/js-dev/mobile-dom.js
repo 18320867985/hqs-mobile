@@ -766,9 +766,13 @@
 
         proxy: function (fn,obj) {
 
-            if (typeof fn === "function") {
-                fn.apply(obj);
-            }
+            return function () {
+                if (typeof fn === "function") {
+                    fn.apply(obj, arguments);
+                }
+
+            };
+           
 
         },
 
