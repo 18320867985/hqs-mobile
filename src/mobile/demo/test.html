@@ -71,8 +71,11 @@
 
             var p = {
 
+                fnamev:"888",
                 home: {
-                name:"hqs"}
+                    name: "hqs"
+
+                }
             }
 
             var p2 = {
@@ -80,8 +83,37 @@
                 home2: {
                 name:"hqs2"}
             }
-          var pp=  $.extend(true,p,p2);
+            var pp = $.extend(true, p, p2);
 
+            function ff() {
+                this.name = "000";
+                console.log(this)
+            }
+
+            //$(".span").on("click",$.proxy( ff,p));
+
+            var f = $.proxy(ff,p);
+            f();
+            f()
+
+
+            Object.defineProperties(p, {
+                fname: {
+                    get() { return this.fnamev },
+                    set() { },
+                   
+                    
+
+                },
+                t: {
+                   
+                    value   :1000
+                }
+            })
+
+            console.log(Object.getOwnPropertyDescriptor(p,"t"))
+
+            
         </script>
 	</body>
 

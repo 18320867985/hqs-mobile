@@ -722,9 +722,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		proxy: function proxy(fn, obj) {
 
-			if (typeof fn === "function") {
-				fn.apply(obj);
-			}
+			return function () {
+				if (typeof fn === "function") {
+					fn.apply(obj, arguments);
+				}
+			};
+		},
+
+		// 把文本转换成html
+		deHtml: function deHtml(txt) {
+			txt = txt.replace(/&lt;/img, "<").replace(/&gt;/img, ">").replace(/&nbsp/img, " ");
+			return txt;
+		},
+
+		// 把html换成文本
+		enHtml: function enHtml(txt) {
+			txt = txt.replace(/</img, "&lt;").replace(/>/img, "&gt;").replace(/\s+/img, "&nbsp");
+			return txt;
 		}
 
 	});
