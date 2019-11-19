@@ -53,9 +53,10 @@
         }
 
         // dataType
+        var _dataType = "text";
         var lastArg = _arguments[_arguments.length - 1];
         if (typeof lastArg === "string") {
-            _ajaxSetup.dataType = lastArg;
+            _dataType = lastArg;
         }
 
 
@@ -63,7 +64,7 @@
 			type: type,
 			url: url,
             data: typeof data === "object" ? data : null,
-            dataType: _ajaxSetup.dataType,
+            dataType: _dataType,
 			success: success,
 			error: error,
 			progress: progress
@@ -255,10 +256,10 @@
 						if (typeof opt.success === "function") {
                             try {
                                 var res;
-                                if (_ajaxSetup.dataType === "json") {
+                                if (opt.dataType === "json") {
                                     res = JSON.parse(xhr.responseText);
                                 }
-                                if (_ajaxSetup.dataType === "javascript") {
+                                if (opt.dataType === "javascript") {
                                     res = xhr.responseText;
                                     window.eval(xhr.responseText);
                                 }
