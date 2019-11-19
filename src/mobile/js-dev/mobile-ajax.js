@@ -50,12 +50,20 @@
 				error = _arguments[2];
 				progress = _arguments[3] || null;
 			}
-		}
+        }
+
+        // dataType
+        var lastArg = _arguments[_arguments.length - 1];
+        if (typeof lastArg === "string") {
+            _ajaxSetup.dataType = lastArg;
+        }
+
 
 		Mobile.ajax({
 			type: type,
 			url: url,
-			data: typeof data === "object" ? data : null,
+            data: typeof data === "object" ? data : null,
+            dataType: _ajaxSetup.dataType,
 			success: success,
 			error: error,
 			progress: progress
@@ -245,8 +253,16 @@
 				if (xhr.readyState === 4) {
 					if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
 						if (typeof opt.success === "function") {
-							try {
-								opt.success(JSON.parse(xhr.responseText), xhr.status, xhr.statusText);
+                            try {
+                                var res;
+                                if (_ajaxSetup.dataType === "json") {
+                                    res = JSON.parse(xhr.responseText);
+                                }
+                                if (_ajaxSetup.dataType === "javascript") {
+                                    res = xhr.responseText;
+                                    window.eval(xhr.responseText);
+                                }
+								opt.success(res, xhr.status, xhr.statusText);
 							} catch (e) {
 								// handle the exception
 								opt.success(xhr.responseText, xhr.status, xhr.statusText);
