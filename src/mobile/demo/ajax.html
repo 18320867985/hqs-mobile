@@ -119,24 +119,24 @@
 			});
 			$(".get").click(function() {
 					$.get(url+"/data",{
-						name:"12345",
-						null:null,
-						undefined:undefined,
-						temp:"",
-						dt:new Date(),
-						pwd:"123456",
-						obj:{
-							a:1,
-							age:20,
-
-							obj2:{
-								c:11,
-								age:22,
-								null:null,
-						undefined:undefined,
-							},
-							
-						},
+// 						name:"12345",
+// 						null:null,
+// 						undefined:undefined,
+// 						temp:"",
+// 						dt:new Date(),
+// 						pwd:"123456",
+// 						obj:{
+// 							a:1,
+// 							age:20,
+// 
+// 							obj2:{
+// 								c:11,
+// 								age:22,
+// 								null:null,
+// 						undefined:undefined,
+// 							},
+// 							
+// 						},
 						arrs:[
 								{
 									c:1,age:22
@@ -147,7 +147,7 @@
 								
 								},
 							],
-							arrs2:[1,2,4,{pp:"99"},[1,2,5]]
+							arrs2:[1,2,3,4]
 					},function(data){
 						console.log("data",data)
 					},function(){
@@ -158,34 +158,34 @@
 					
 			$(".post").click(function() {
 					$.post(url, {
-						name:"admin",
-						null:null,
-						undefined:undefined,
-						temp:"",
-						dt:new Date(),
-						pwd:"123456",
-						obj:{
-							a:1,
-							age:20,
-
-							obj2:{
-								c:11,
-								age:22,
-								null:null,
-						undefined:undefined,
-							},
-							
-						},
-						arrs:[
-								{
-									c:1,age:22
-								},
-								{
-									c:222,
-									age:222,
-								
-								},
-							],
+// 						name:"admin",
+// 						null:null,
+// 						undefined:undefined,
+// 						temp:"",
+// 						dt:new Date(),
+// 						pwd:"123456",
+// 						obj:{
+// 							a:1,
+// 							age:20,
+// 
+// 							obj2:{
+// 								c:11,
+// 								age:22,
+// 								null:null,
+// 						undefined:undefined,
+// 							},
+// 							
+// 						},
+// 						arrs:[
+// 								{
+// 									c:1,age:22
+// 								},
+// 								{
+// 									c:222,
+// 									age:222,
+// 								
+// 								},
+// 					],
 							arrs2:[1,2,4,{pp:"99"},[1,2,5]]
 					},function(data){
 						console.log("data",data)

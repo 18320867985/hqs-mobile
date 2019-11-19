@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\src"
+    "\\src\\mobile",
+    "\\src\\mobile\\js-dev"
   ],
-  "SelectedNode": "\\src\\mobile",
+  "SelectedNode": "\\src",
   "PreviewInSolutionExplorer": false
 }
