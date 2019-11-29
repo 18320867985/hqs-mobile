@@ -229,6 +229,8 @@
 			var reg=/application\/x-www-form-urlencoded/;
             if (reg.test(opt.contentType) ) {
                 postData = _JoinParams(opt.data); 
+			}else{
+				postData = opt.data; 
 			}
 			
 			if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {
