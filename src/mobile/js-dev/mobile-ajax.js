@@ -226,13 +226,10 @@
 
 			// 连接参数
 			var postData;
-			var reg=/application\/json/;
-            if (reg.test(opt.contentType) && opt.type.toUpperCase() !== "GET") {
-                postData = opt.data;
-            } else {
+			var reg=/application\/x-www-form-urlencoded/;
+            if (reg.test(opt.contentType) ) {
                 postData = _JoinParams(opt.data); 
 			}
-			
 			
 			if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {
 				opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() : opt.url + "&_=" + Math.random();
