@@ -2511,7 +2511,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      @param{function}opt.success ajax发送并接收成功调用的回调函数
      @param {function}opt.error ajax发送并接收error调用的回调函数
      @param {function}opt.getXHR 获取xhr对象
-     @param {number}opt.timeout // 超时
+     @param {number}opt.timeout // 超时  默认20ms
+     @param {string}opt.dataType // 回调结果处理模式 默认text
   */
 	var _ajaxSetup = {
 		type: "GET",
@@ -2545,10 +2546,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 		}
 
+		// 最后的参数是字符类型赋值给 dataType
+		var _dataType = "text";
+		var lastArg = _arguments[_arguments.length - 1];
+		if (typeof lastArg === "string") {
+			_dataType = lastArg;
+		}
+
 		Mobile.ajax({
 			type: type,
 			url: url,
 			data: (typeof data === "undefined" ? "undefined" : _typeof(data)) === "object" ? data : null,
+			dataType: _dataType,
 			success: success,
 			error: error,
 			progress: progress
@@ -2721,7 +2730,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
 						if (typeof opt.success === "function") {
 							try {
-								opt.success(JSON.parse(xhr.responseText), xhr.status, xhr.statusText);
+								var res;
+								if (opt.dataType === "json") {
+									res = JSON.parse(xhr.responseText);
+								}
+								if (opt.dataType === "javascript") {
+									res = xhr.responseText;
+									window.eval(xhr.responseText);
+								}
+								opt.success(res, xhr.status, xhr.statusText);
 							} catch (e) {
 								// handle the exception
 								opt.success(xhr.responseText, xhr.status, xhr.statusText);

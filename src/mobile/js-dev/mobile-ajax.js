@@ -228,7 +228,7 @@
 			var postData;
 			var reg=/application\/json/;
             if (reg.test(opt.contentType) && opt.type.toUpperCase() !== "GET") {
-                postData = JSON.stringify(opt.data);
+                postData = opt.data;
             } else {
                 postData = _JoinParams(opt.data); 
 			}
