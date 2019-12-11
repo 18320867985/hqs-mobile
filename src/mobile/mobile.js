@@ -530,8 +530,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     */
 		toDate: function toDate(value, fmt) {
 			fmt = typeof fmt !== "string" ? "yyyy-MM-dd HH:mm:ss" : fmt;
-			var txts = value.toString().replace("/Date(", "").replace(")/", "");
-			var times = Number(txts);
+			var txt = value.toString().replace("/Date(", "").replace(")/", "");
+			var times = Number(txt);
 			times = isNaN(times) ? new Date(value).getTime() : times;
 			var dt = new Date(Number(times.toString()));
 			var o = {
@@ -731,13 +731,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		// 把文本转换成html
 		deHtml: function deHtml(txt) {
-			txt = txt.replace(/&lt;/img, "<").replace(/&gt;/img, ">").replace(/&nbsp/img, " ");
+			txt = txt.replace(/&lt;/img, "<").replace(/&gt;/img, ">").replace(/&nbsp;/img, " ");
 			return txt;
 		},
 
 		// 把html换成文本
 		enHtml: function enHtml(txt) {
-			txt = txt.replace(/</img, "&lt;").replace(/>/img, "&gt;").replace(/\s+/img, "&nbsp");
+			txt = txt.replace(/</img, "&lt;").replace(/>/img, "&gt;").replace(/\s+/img, "&nbsp;");
 			return txt;
 		}
 
@@ -1674,7 +1674,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 					event.data = obj;
 				}
-				handler.call(this, event);
+
+				var props = [];
+				var detail = event.detail;
+				props.push(event);
+
+				if (detail.length) {
+					for (var i = 0; i < detail.length; i++) {
+						props.push(detail[i]);
+					};
+				} else {
+					props.push(detail);
+				}
+
+				handler.apply(event.target, props);
 
 				// m(el).one()只绑定一次事件
 				if (isonebind) {
@@ -1702,7 +1715,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						event.data = obj;
 					}
 
-					handler.call(event.target, event);
+					var props = [];
+					var detail = event.detail;
+					props.push(event);
+
+					if (detail.length) {
+						for (var i = 0; i < detail.length; i++) {
+							props.push(detail[i]);
+						};
+					} else {
+						props.push(detail);
+					}
+					handler.apply(event.target, props);
 
 					// m(el).one()只绑定一次事件
 					if (isonebind) {
@@ -1819,7 +1843,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		trigger: function trigger(type, obj) {
 
 			Mobile.each(this, function () {
-				obj = obj || {};
 				var btnEvent = document.createEvent("CustomEvent");
 				btnEvent.initCustomEvent(type, true, false, obj);
 				this.dispatchEvent(btnEvent);
@@ -2702,11 +2725,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			// 连接参数
 			var postData;
-			var reg = /application\/json/;
-			if (reg.test(opt.contentType) && opt.type.toUpperCase() !== "GET") {
-				postData = JSON.stringify(opt.data);
-			} else {
+			var reg = /application\/x-www-form-urlencoded/;
+			if (reg.test(opt.contentType)) {
 				postData = _JoinParams(opt.data);
+			} else {
+				postData = opt.data;
 			}
 
 			if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {

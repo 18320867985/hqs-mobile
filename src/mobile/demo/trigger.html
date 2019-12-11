@@ -45,6 +45,12 @@
 				
 				
 			}
+
+			.trigger-pwr{
+				padding: 100px;
+				border: 1px solid red;
+
+			}
 		</style>
 
 	</head>
@@ -53,26 +59,32 @@
 		<script type="text/javascript">
 			
 		</script>
-		
+		<div class="trigger-pwr" data-val="trigger">
+
 			<button class="btn" type="button">show</button>
-
 			<button class="btn2" type="button">status</button>
-			<input id="file" type="file" >
-			
-			<input type="text" name="" id="txt" value="" />
+	
+		</div>
+		
 		
 
-	
 		<script src="../mobile.js" type="text/javascript" charset="utf-8"></script>
 		<!--<script src="js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>-->
 		<script type="text/javascript">
 		
 		$(function(){
-            $(".btn").on("click",function (e) {
+
+			$(".trigger-pwr").on("test.trigger",function(e,v,v2){
+				console.log("trigger:",e,v);
+				console.log("v",v,v2);
+			});
+
+            $(document).on("click",".btn",function (e) {
                 console.log(e)
-					alert("1")
+					//alert("1")
 					//$("#file").click();
 					//$(".btn2").click();
+					$(this).trigger("test.trigger",[{a:"122"},"====="])
 
 				})
 				//$(".btn2").on("dblclick",function(){
@@ -89,11 +101,7 @@
 // 					$(this).css("color","red")
 // 				});
 				
-				$("#file").on("dblclick",function(){
-					alert("file2")
-					
-				});
-				$("#txt").focus().blur();
+			
 		});
 
 
