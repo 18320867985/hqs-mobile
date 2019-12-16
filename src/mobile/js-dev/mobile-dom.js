@@ -1167,7 +1167,7 @@
 
 		// parents 
 		parents: function(selector) {
-			selector = typeof selector === "string" ? selector : "";
+			selector = typeof selector === "string" ? $.trim( selector) : "";
 			var arr = [];
 			var obj = m(this);
 			for (var i = 0; i < obj.length; i++) {
@@ -1190,7 +1190,7 @@
 
 		// closest 
 		closest: function(selector) {
-			selector = typeof selector === "string" ? selector : "";
+			selector = typeof selector === "string" ? $.trim( selector)  : "";
 			var arr = [];
 			var obj = m(this);
 			for (var i = 0; i < obj.length; i++) {
@@ -1705,6 +1705,50 @@
 	// 动画
 	Mobile.fn.extend({
 
+		// show
+		show: function(_showType) {
+
+			Mobile.each(this, function(i, el) {
+				
+				var _showType = _showType?_showType:"block";
+				$(this).data("display-type",true);
+				this.style.display = _showType;
+			
+
+			});
+			return this;
+
+		},
+
+		// hide
+		hide: function(_showType) {
+
+			Mobile.each(this, function(i, el) {
+				
+				var _showType = _showType?_showType:"none";
+				$(this).data("display-type",false);
+				this.style.display = _showType;
+			
+
+			});
+			return this;
+		},
+
+		// toggle
+		toggle: function() {
+
+			Mobile.each(this, function() {
+
+				var displayType=$(this).data("display-type");
+				if (displayType) {
+					$(this).hide();
+				} else {
+					$(this).show();
+				}
+			});
+			return this;
+		},
+
 		//  windowTop
 		windowTop: function(y, time) {
 
@@ -1782,7 +1826,7 @@
 				}
 
 				var props=[];
-				var detail=event.detail;
+				var detail=typeof event.detail ==="undefined"?{}:event.detail;
 				props.push(event);
 
 				if(detail.length){
