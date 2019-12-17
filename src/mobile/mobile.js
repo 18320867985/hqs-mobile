@@ -47,7 +47,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	};
 
 	// 版本号
-	Mobile.version = "1.1.3";
+	Mobile.version = "1.1.5";
 
 	// 查找父元素
 	function _searchParents(el, fn) {
@@ -1089,7 +1089,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		// parents 
 		parents: function parents(selector) {
-			selector = typeof selector === "string" ? selector : "";
+			selector = typeof selector === "string" ? $.trim(selector) : "";
 			var arr = [];
 			var obj = m(this);
 			for (var i = 0; i < obj.length; i++) {
@@ -1110,7 +1110,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		// closest 
 		closest: function closest(selector) {
-			selector = typeof selector === "string" ? selector : "";
+			selector = typeof selector === "string" ? $.trim(selector) : "";
 			var arr = [];
 			var obj = m(this);
 			for (var i = 0; i < obj.length; i++) {
@@ -1601,6 +1601,45 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	// 动画
 	Mobile.fn.extend({
 
+		// show
+		show: function show(_showType) {
+
+			Mobile.each(this, function (i, el) {
+
+				var _showType = _showType ? _showType : "block";
+				$(this).data("display-type", true);
+				this.style.display = _showType;
+			});
+			return this;
+		},
+
+		// hide
+		hide: function hide(_showType) {
+
+			Mobile.each(this, function (i, el) {
+
+				var _showType = _showType ? _showType : "none";
+				$(this).data("display-type", false);
+				this.style.display = _showType;
+			});
+			return this;
+		},
+
+		// toggle
+		toggle: function toggle() {
+
+			Mobile.each(this, function () {
+
+				var displayType = $(this).data("display-type");
+				if (displayType) {
+					$(this).hide();
+				} else {
+					$(this).show();
+				}
+			});
+			return this;
+		},
+
 		//  windowTop
 		windowTop: function windowTop(y, time) {
 
@@ -1676,7 +1715,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				}
 
 				var props = [];
-				var detail = event.detail;
+				var detail = typeof event.detail === "undefined" ? {} : event.detail;
 				props.push(event);
 
 				if (detail.length) {
@@ -1971,221 +2010,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			});
 		},
 
-		// 支持多指触摸 touchstart touchmove touchend touchcell 合并封装
-		move: function move(startfn, movefn, endfn, bl) {
-
-			Mobile.each(this, function () {
-
-				bl = !!bl;
-				var isAddMoveEventFirst = true; // 判断是否第一次拖动
-				var startX = 0;
-				var startY = 0;
-				var guid = this;
-
-				var obj = {
-					x: 0,
-					y: 0,
-					elX: 0,
-					elY: 0,
-					isX: false,
-					isY: false
-
-				};
-
-				/* 变化touchList的identifier和时间戳的集合
-    	{
-    		id,
-    		timestamp
-    	}
-    */
-				var tempObj = [];
-				m(this).touchstart(function (event) {
-					try {
-
-						var touches = event.targetTouches;
-						var len = touches.length;
-						Object.keys(touches).forEach(function (name) {
-
-							if (!tempObj.some(function (item) {
-								return touches[name].identifier === item.id;
-							})) {
-								tempObj.push({
-									id: touches[name].identifier,
-									timestamp: new Date().getTime(),
-									guid: guid
-								});
-							}
-						});
-
-						var _index = 0;
-						tempObj = tempObj.filter(function (item) {
-							return item.guid === guid;
-						});
-						var maxCh = m.max(tempObj, function (item) {
-							return item.timestamp;
-						});
-						if (maxCh) {
-
-							var i = 0;
-							Object.keys(touches).forEach(function (name) {
-								var ch = touches[name];
-								if (ch.identifier === maxCh.id) {
-									_index = i;
-								}
-								i++;
-							});
-						} else {
-							_index = len - 1;
-						}
-
-						var touch = touches[_index];
-						obj.x = startX = touch.clientX;
-						obj.y = startY = touch.clientY;
-
-						if (typeof startfn === "function") {
-							//event.obj=obj;
-							startfn.call(this, event, obj);
-						}
-
-						// 异常处理
-					} catch (e) {
-
-						//TODO handle the exception
-						tempObj = [];
-						isAddMoveEventFirst = true; // 判断是否第一次拖动
-						if (typeof endfn === "function") {
-							//event.obj=obj;
-							endfn.call(this, event, obj);
-						}
-					}
-				}, bl);
-
-				m(this).touchmove(function (event) {
-
-					try {
-
-						var touches = event.touches;
-						var len = touches.length;
-						var _index = 0;
-						tempObj = tempObj.filter(function (item) {
-							return item.guid === guid;
-						});
-						var maxCh = m.max(tempObj, function (item) {
-							return item.timestamp;
-						});
-						if (maxCh) {
-							var i = 0;
-							Object.keys(touches).forEach(function (name) {
-								var ch = touches[name];
-								if (ch.identifier === maxCh.id) {
-									_index = i;
-								}
-
-								i++;
-							});
-						} else {
-							_index = len - 1;
-						}
-
-						var touch = touches[_index];
-						var nowX = touch.clientX;
-						var nowY = touch.clientY;
-
-						var _x = Math.abs(nowX - startX);
-						var _y = Math.abs(nowY - startY);
-						obj.x = nowX - startX;
-						obj.y = nowY - startY;
-
-						// 检查是否向上下或左右移动
-						if (isAddMoveEventFirst && _x !== _y) {
-							isAddMoveEventFirst = false;
-							if (_y > _x) {
-
-								obj.isY = true;
-								obj.isX = false;
-							} else {
-
-								obj.isY = false;
-								obj.isX = true;
-							}
-						}
-
-						if (typeof movefn === "function") {
-							//event.obj=obj;
-							movefn.call(this, event, obj);
-						}
-
-						// 异常处理
-					} catch (e) {
-						//TODO handle the exception
-						tempObj = [];
-						isAddMoveEventFirst = true; // 判断是否第一次拖动
-						if (typeof endfn === "function") {
-							//event.obj=obj;
-							endfn.call(this, event, obj);
-						}
-					}
-				}, bl);
-
-				m(this).touchendcancel(function (event) {
-					try {
-
-						var touches = event.changedTouches;
-						var touches2 = event.touches;
-						var len = touches.length;
-
-						tempObj = tempObj.filter(function (item) {
-							return item.guid === guid;
-						});
-						tempObj = tempObj.filter(function (item) {
-							return item.id !== touches[0].identifier;
-						});
-						var _index = 0;
-						var maxCh = m.max(tempObj, function (item) {
-							return item.timestamp;
-						});
-						if (maxCh) {
-							var i = 0;
-							Object.keys(touches2).forEach(function (name) {
-								var ch = touches2[name];
-								if (ch.identifier === maxCh.id) {
-									_index = i;
-								}
-								i++;
-							});
-						} else {
-							_index = touches2.length - 1;
-						}
-
-						if (touches2.length > 0) {
-							var touch = touches2[_index];
-							startX = touch.clientX - obj.x;
-							startY = touch.clientY - obj.y;
-						}
-
-						if (tempObj.length === 0) {
-							tempObj = [];
-							isAddMoveEventFirst = true; // 判断是否第一次拖动
-							if (typeof endfn === "function") {
-								//event.obj=obj;
-								endfn.call(this, event, obj);
-							}
-						}
-
-						// 异常处理
-					} catch (e) {
-						//TODO handle the exception
-						tempObj = [];
-						isAddMoveEventFirst = true; // 判断是否第一次拖动
-						if (typeof endfn === "function") {
-							//event.obj=obj;
-							endfn.call(this, event, obj);
-						}
-					}
-				}, bl);
-			});
-		},
-
 		// tap
 		tap: function tap() {
 			var args = arguments;
@@ -2368,6 +2192,580 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 "use strict";
 
+/*
+    hqs-move
+
+    支持多指触摸 touchstart touchmove touchend  合并封装
+    $(el).move(touchstart=function(event,obj){},touchmove=function(event,obj){},touchend=function(event,obj){});
+
+    // event 是事件对象
+    // obj 是touch 移动对象
+        obj = {
+        x: 0,       // 手指移动的X坐标的值
+        y: 0,       // 手指移动的Y坐标的值
+        elX: 0,     // 元素移动的X坐标的值
+        elY: 0,     // 元素移动的Y坐标的值
+        isX: false, // 是否为X方向移动
+        isY: false  // 是否为Y方向移动
+        };
+
+*/
+
++function (Mobile) {
+
+    Mobile.extend({
+
+        move: function move(startfn, movefn, endfn, bl) {
+
+            Mobile.each(this, function () {
+
+                bl = !!bl;
+                var isAddMoveEventFirst = true; // 判断是否第一次拖动
+                var startX = 0;
+                var startY = 0;
+                var guid = this;
+
+                var obj = {
+                    x: 0, // 手指移动的X坐标的值
+                    y: 0, // 手指移动的Y坐标的值
+                    elX: 0, // 元素移动的X坐标的值
+                    elY: 0, // 元素移动的Y坐标的值
+                    isX: false, // 是否为X方向移动
+                    isY: false // 是否为Y方向移动
+
+                };
+
+                /* 变化touchList的identifier和时间戳的集合
+                    {
+                        id,
+                        timestamp
+                    }
+                */
+                var tempObj = [];
+                m(this).touchstart(function (event) {
+                    try {
+
+                        var touches = event.targetTouches;
+                        var len = touches.length;
+                        Object.keys(touches).forEach(function (name) {
+
+                            if (!tempObj.some(function (item) {
+                                return touches[name].identifier === item.id;
+                            })) {
+                                tempObj.push({
+                                    id: touches[name].identifier,
+                                    timestamp: new Date().getTime(),
+                                    guid: guid
+                                });
+                            }
+                        });
+
+                        var _index = 0;
+                        tempObj = tempObj.filter(function (item) {
+                            return item.guid === guid;
+                        });
+                        var maxCh = m.max(tempObj, function (item) {
+                            return item.timestamp;
+                        });
+                        if (maxCh) {
+
+                            var i = 0;
+                            Object.keys(touches).forEach(function (name) {
+                                var ch = touches[name];
+                                if (ch.identifier === maxCh.id) {
+                                    _index = i;
+                                }
+                                i++;
+                            });
+                        } else {
+                            _index = len - 1;
+                        }
+
+                        var touch = touches[_index];
+                        obj.x = startX = touch.clientX;
+                        obj.y = startY = touch.clientY;
+
+                        if (typeof startfn === "function") {
+                            //event.obj=obj;
+                            startfn.call(this, event, obj);
+                        }
+
+                        // 异常处理
+                    } catch (e) {
+
+                        //TODO handle the exception
+                        tempObj = [];
+                        isAddMoveEventFirst = true; // 判断是否第一次拖动
+                        if (typeof endfn === "function") {
+                            //event.obj=obj;
+                            endfn.call(this, event, obj);
+                        }
+                    }
+                }, bl);
+
+                m(this).touchmove(function (event) {
+
+                    try {
+
+                        var touches = event.touches;
+                        var len = touches.length;
+                        var _index = 0;
+                        tempObj = tempObj.filter(function (item) {
+                            return item.guid === guid;
+                        });
+                        var maxCh = m.max(tempObj, function (item) {
+                            return item.timestamp;
+                        });
+                        if (maxCh) {
+                            var i = 0;
+                            Object.keys(touches).forEach(function (name) {
+                                var ch = touches[name];
+                                if (ch.identifier === maxCh.id) {
+                                    _index = i;
+                                }
+
+                                i++;
+                            });
+                        } else {
+                            _index = len - 1;
+                        }
+
+                        var touch = touches[_index];
+                        var nowX = touch.clientX;
+                        var nowY = touch.clientY;
+
+                        var _x = Math.abs(nowX - startX);
+                        var _y = Math.abs(nowY - startY);
+                        obj.x = nowX - startX;
+                        obj.y = nowY - startY;
+
+                        // 检查是否向上下或左右移动
+                        if (isAddMoveEventFirst && _x !== _y) {
+                            isAddMoveEventFirst = false;
+                            if (_y > _x) {
+
+                                obj.isY = true;
+                                obj.isX = false;
+                            } else {
+
+                                obj.isY = false;
+                                obj.isX = true;
+                            }
+                        }
+
+                        if (typeof movefn === "function") {
+                            //event.obj=obj;
+                            movefn.call(this, event, obj);
+                        }
+
+                        // 异常处理
+                    } catch (e) {
+                        //TODO handle the exception
+                        tempObj = [];
+                        isAddMoveEventFirst = true; // 判断是否第一次拖动
+                        if (typeof endfn === "function") {
+                            //event.obj=obj;
+                            endfn.call(this, event, obj);
+                        }
+                    }
+                }, bl);
+
+                m(this).touchendcancel(function (event) {
+                    try {
+
+                        var touches = event.changedTouches;
+                        var touches2 = event.touches;
+
+                        tempObj = tempObj.filter(function (item) {
+                            return item.guid === guid;
+                        });
+                        tempObj = tempObj.filter(function (item) {
+                            return item.id !== touches[0].identifier;
+                        });
+                        var _index = 0;
+                        var maxCh = m.max(tempObj, function (item) {
+                            return item.timestamp;
+                        });
+                        if (maxCh) {
+                            var i = 0;
+                            Object.keys(touches2).forEach(function (name) {
+                                var ch = touches2[name];
+                                if (ch.identifier === maxCh.id) {
+                                    _index = i;
+                                }
+                                i++;
+                            });
+                        } else {
+                            _index = touches2.length - 1;
+                        }
+
+                        if (touches2.length > 0) {
+                            var touch = touches2[_index];
+                            startX = touch.clientX - obj.x;
+                            startY = touch.clientY - obj.y;
+                        }
+
+                        if (tempObj.length === 0) {
+                            tempObj = [];
+                            isAddMoveEventFirst = true; // 判断是否第一次拖动
+                            if (typeof endfn === "function") {
+                                //event.obj=obj;
+                                endfn.call(this, event, obj);
+                            }
+                        }
+
+                        // 异常处理
+                    } catch (e) {
+                        //TODO handle the exception
+                        tempObj = [];
+                        isAddMoveEventFirst = true; // 判断是否第一次拖动
+                        if (typeof endfn === "function") {
+                            //event.obj=obj;
+                            endfn.call(this, event, obj);
+                        }
+                    }
+                }, bl);
+            });
+        }
+
+    });
+}(Mobile);
+"use strict";
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+/*
+      hqs-ajax
+*/
+
++function (Mobile) {
+
+	/* 封装ajax函数
+     @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE
+     @param {string}opt.url 发送请求的url
+     @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
+     @param {object}opt.data 发送的参数，格式为对象类型
+     @param {function}opt.contentType   内容类型
+     @param{function}opt.success ajax发送并接收成功调用的回调函数
+     @param {function}opt.error ajax发送并接收error调用的回调函数
+     @param {function}opt.xhr 获取xhr对象
+     @param {number}opt.timeout // 超时  默认0
+ 	@param {string}opt.dataType // 回调结果处理模式 默认text
+ 	@param {string}opt.headers  // headers 默认值是{},
+  */
+
+	var _ajaxSetup = Mobile.ajaxSettings = {
+		type: "GET",
+		url: '',
+		async: true,
+		data: {},
+		success: function success() {},
+		error: function error() {},
+		dataType: "text",
+		contentType: "application/x-www-form-urlencoded; charset=utf-8",
+		timeout: 0,
+		//progress: {},
+		headers: {},
+		xhr: function xhr() {
+			return Mobile.createXHR();
+		}
+	};
+
+	// ajax type
+	function _ajaxFun(url, type, data, _arguments) {
+		var success;
+		var error;
+		//var progress;
+		if ((typeof data === "undefined" ? "undefined" : _typeof(data)) === "object" && _arguments.length > 2) {
+			success = _arguments[2];
+			if (_arguments.length >= 3) {
+				error = _arguments[3];
+				//	progress = _arguments[4] || null;
+			}
+		} else if (typeof data === "function") {
+			success = data;
+			if (_arguments.length > 2) {
+				error = _arguments[2];
+				//progress = _arguments[3] || null;
+			}
+		}
+
+		// 最后的参数是字符类型赋值给 dataType
+		var _dataType = "text";
+		var lastArg = _arguments[_arguments.length - 1];
+		if (typeof lastArg === "string") {
+			_dataType = lastArg;
+		}
+
+		Mobile.ajax({
+			type: type,
+			url: url,
+			data: (typeof data === "undefined" ? "undefined" : _typeof(data)) === "object" ? data : null,
+			dataType: _dataType,
+			success: success,
+			error: error
+			//progress: progress
+		});
+	}
+
+	// 链接ajax发送的参数数据
+	function _JoinParams(data) {
+
+		var params = [];
+		if (data instanceof Object) {
+			_compilerparams(params, data, "");
+		}
+		return params.join("&") || "";
+	}
+
+	function _compilerparams(params, data, preKey) {
+		preKey = preKey || "";
+
+		for (var key in data) {
+			var data2 = data[key];
+
+			if (data2 === undefined) {
+				continue;
+			} else if (data2 !== null && data2.constructor === Object) {
+				for (var key2 in data2) {
+
+					var _key = "";
+					var _key2 = "[" + key2 + "]";
+					if (preKey === "") {
+						_key = preKey + key + _key2;
+					} else {
+						_key = preKey + "[" + key + "]" + _key2;
+					}
+
+					var _value = data2[key2];
+
+					if (_value.constructor === Array || _value.constructor === Object) {
+
+						_compilerparams(params, _value, _key);
+					} else {
+						params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
+					}
+				}
+			} else if (data2 !== null && data2.constructor === Array) {
+
+				for (var key2_ in data2) {
+					var data3 = data2[key2_];
+					if ((typeof data3 === "undefined" ? "undefined" : _typeof(data3)) === "object") {
+						for (var key3 in data3) {
+
+							var _key_ = "";
+							var _key2_ = "[" + key2_ + "]" + "[" + key3 + "]";
+							if (preKey === "") {
+								_key_ = preKey + key + _key2_;
+							} else {
+								_key_ = preKey + "[" + key + "]" + _key2_;
+							}
+
+							var _value_ = data3[key3];
+
+							if (_value_.constructor === Array || _value_.constructor === Object) {
+
+								_compilerparams(params, _value_, _key_);
+							} else {
+								params.push(encodeURIComponent(_key_) + '=' + encodeURIComponent(_value_));
+							}
+						}
+					} else {
+						var _key_2 = preKey + key + "[]";
+						var _value_2 = data3;
+						params.push(encodeURIComponent(_key_2) + '=' + encodeURIComponent(_value_2));
+					}
+				}
+			} else {
+				var _key_3 = "";
+				if (preKey === "") {
+					_key_3 = preKey + key;
+				} else {
+					_key_3 = preKey + "[" + key + "]";
+				}
+				var dataVal = data[key];
+				dataVal = dataVal === null ? "" : dataVal;
+				params.push(encodeURIComponent(_key_3) + '=' + encodeURIComponent(dataVal));
+			}
+		}
+	}
+
+	Mobile.extend({
+
+		// create XHR Object
+		createXHR: function createXHR() {
+
+			if (window.XMLHttpRequest) {
+				//IE7+、Firefox、Opera、Chrome 和Safari
+				return new window.XMLHttpRequest();
+			}
+		},
+
+		ajaxSetup: function ajaxSetup(options) {
+
+			options = (typeof options === "undefined" ? "undefined" : _typeof(options)) === "object" ? options : {};
+			$.extend(_ajaxSetup, options);
+			return _ajaxSetup;
+		},
+		ajax: function ajax(options) {
+
+			options = (typeof options === "undefined" ? "undefined" : _typeof(options)) === "object" ? options : {};
+			var opt = $.extend({}, _ajaxSetup, options);
+
+			// setting timeout
+			var abortTimeoutId = 0;
+			var abort = function abort() {
+				if (opt.timeout > 0) {
+					abortTimeoutId = setTimeout(function () {
+						xhr.onreadystatechange = function () {};
+						xhr.abort();
+						opt.error("timeout");
+					}, opt.timeout);
+				};
+			};
+
+			var xhr = null;
+			var _xhrObj = opt.xhr();
+			if ((typeof _xhrObj === "undefined" ? "undefined" : _typeof(_xhrObj)) === "object") {
+				xhr = _xhrObj;
+			}
+			xhr.xhrFields = opt.xhrFields || {};
+
+			// 连接参数
+			var postData;
+			var reg = /application\/x-www-form-urlencoded/;
+
+			if (reg.test(opt.contentType)) {
+				postData = _JoinParams(opt.data);
+			} else {
+				postData = opt.data;
+			}
+
+			// xhr.setRequestHeader
+			for (var propName in opt.headers) {
+				xhr.setRequestHeader(propName, opt.headers[propName]);
+			}
+
+			// setting contentType
+			if (opt.contentType !== false) {
+				xhr.setRequestHeader('Content-Type', opt.contentType);
+			}
+
+			if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {
+				opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() : opt.url + "&_=" + Math.random();
+
+				xhr.open(opt.type, opt.url, opt.async);
+				abort();
+				xhr.send(postData);
+			} else if (opt.type.toUpperCase() === 'GET') {
+				if (postData.length > 0) {
+					postData = "&" + postData;
+				}
+				opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() + postData : opt.url + "&_=" + Math.random() + postData;
+
+				xhr.open(opt.type, opt.url, opt.async);
+				abort();
+				xhr.send(null);
+			}
+			xhr.onreadystatechange = function () {
+
+				if (xhr.readyState === 4) {
+					//xhr.onreadystatechange = function(){};
+					clearTimeout(abortTimeoutId);
+					if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
+						if (typeof opt.success === "function") {
+							try {
+								var res;
+								if (opt.dataType === "json") {
+									res = JSON.parse(xhr.responseText);
+								} else if (opt.dataType === "javascript") {
+									res = xhr.responseText;
+									window.eval(xhr.responseText);
+								} else {
+									res = xhr.responseText;
+								}
+								opt.success(res, xhr.status, xhr.statusText);
+							} catch (e) {
+								// handle the exception
+								opt.success(xhr.responseText, xhr.status, xhr.statusText);
+							}
+						}
+					} else {
+						if (typeof opt.error === "function") {
+							opt.error(xhr.status, xhr.statusText);
+						}
+					}
+				}
+			};
+		},
+
+		// get
+		get: function get(url, data) {
+			_ajaxFun(url, "get", data, arguments);
+		},
+
+		// post
+		post: function post(url, data) {
+			_ajaxFun(url, "post", data, arguments);
+		},
+
+		// put
+		put: function put(url, data) {
+			_ajaxFun(url, "put", data, arguments);
+		},
+
+		// delete
+		delete: function _delete(url, data) {
+			_ajaxFun(url, "delete", data, arguments);
+		}
+
+		// jsonp
+		// jsonp: function (url, data) {
+
+		// 	var callback;
+		// 	if (typeof data === "function") {
+		// 		callback = data;
+		// 	} else if (arguments.length >= 3) {
+		// 		callback = arguments[2];
+		// 	}
+
+		// 	// 创建一个几乎唯一的id
+		// 	var callbackName = "mobile" + (new Date()).getTime().toString().trim();
+		// 	window[callbackName] = function (result) {
+
+		// 		// 创建一个全局回调处理函数
+		// 		if (typeof callback === "function") {
+		// 			callback(result);
+		// 		}
+		// 	};
+
+		// 	// 参数data对象字符
+		// 	var params = [];
+		// 	var postData = "";
+		// 	if (typeof data === "object") {
+
+		// 		postData = _JoinParams(data);
+		// 	}
+
+		// 	if (postData.length > 0) {
+		// 		postData = "&" + postData;
+		// 	}
+		// 	url = url.indexOf("?") === -1 ? url + "?" + "callback=" + callbackName + postData : url + "&callback=" +
+		// 		callbackName + postData;
+
+		// 	// 创建Script标签并执行window[id]函数
+		// 	var script = document.createElement("script");
+		// 	script.setAttribute("id", callbackName);
+		// 	script.setAttribute("src", url);
+		// 	script.setAttribute("type", "text/javascript");
+		// 	document.body.appendChild(script);
+
+		// }
+
+	});
+}(Mobile);
+"use strict";
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*
@@ -2510,332 +2908,4 @@ css3 transition
         }
 
     });
-}(Mobile);
-"use strict";
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-/*
-    ajax
-    hqs
-*/
-
-+function (Mobile) {
-
-	// init xhr
-	var _xhrCORS;
-
-	/* 封装ajax函数
-     @param {string}opt.type http连接的方式，包括POST,GET PUT DELETE
-     @param {string}opt.url 发送请求的url
-     @param {boolean}opt.async 是否为异步请求，true为异步的，false为同步的
-     @param {object}opt.data 发送的参数，格式为对象类型
-     @param {function}opt.contentType   内容类型
-     @param{function}opt.success ajax发送并接收成功调用的回调函数
-     @param {function}opt.error ajax发送并接收error调用的回调函数
-     @param {function}opt.getXHR 获取xhr对象
-     @param {number}opt.timeout // 超时  默认20ms
-     @param {string}opt.dataType // 回调结果处理模式 默认text
-  */
-	var _ajaxSetup = {
-		type: "GET",
-		url: '',
-		async: true,
-		data: {},
-		success: function success() {},
-		error: function error() {},
-		dataType: "text",
-		contentType: "application/x-www-form-urlencoded;charset=utf-8",
-		timeout: 20 * 1000,
-		progress: {}
-	};
-
-	// ajax type
-	function _ajaxFun(url, type, data, _arguments) {
-		var success;
-		var error;
-		var progress;
-		if ((typeof data === "undefined" ? "undefined" : _typeof(data)) === "object" && _arguments.length > 2) {
-			success = _arguments[2];
-			if (_arguments.length >= 3) {
-				error = _arguments[3];
-				progress = _arguments[4] || null;
-			}
-		} else if (typeof data === "function") {
-			success = data;
-			if (_arguments.length > 2) {
-				error = _arguments[2];
-				progress = _arguments[3] || null;
-			}
-		}
-
-		// 最后的参数是字符类型赋值给 dataType
-		var _dataType = "text";
-		var lastArg = _arguments[_arguments.length - 1];
-		if (typeof lastArg === "string") {
-			_dataType = lastArg;
-		}
-
-		Mobile.ajax({
-			type: type,
-			url: url,
-			data: (typeof data === "undefined" ? "undefined" : _typeof(data)) === "object" ? data : null,
-			dataType: _dataType,
-			success: success,
-			error: error,
-			progress: progress
-		});
-	}
-
-	// 链接ajax发送的参数数据
-	function _JoinParams(data) {
-
-		var params = [];
-		if (data instanceof Object) {
-			_compilerparams(params, data, "");
-		}
-		return params.join("&") || "";
-	}
-
-	function _compilerparams(params, data, preKey) {
-		preKey = preKey || "";
-
-		for (var key in data) {
-			var data2 = data[key];
-
-			if (data2 === undefined) {
-				continue;
-			} else if (data2 !== null && data2.constructor === Object) {
-				for (var key2 in data2) {
-
-					var _key = "";
-					var _key2 = "[" + key2 + "]";
-					if (preKey === "") {
-						_key = preKey + key + _key2;
-					} else {
-						_key = preKey + "[" + key + "]" + _key2;
-					}
-
-					var _value = data2[key2];
-
-					if (_value.constructor === Array || _value.constructor === Object) {
-
-						_compilerparams(params, _value, _key);
-					} else {
-						params.push(encodeURIComponent(_key) + '=' + encodeURIComponent(_value));
-					}
-				}
-			} else if (data2 !== null && data2.constructor === Array) {
-
-				for (var key2_ in data2) {
-					var data3 = data2[key2_];
-					if ((typeof data3 === "undefined" ? "undefined" : _typeof(data3)) === "object") {
-						for (var key3 in data3) {
-
-							var _key_ = "";
-							var _key2_ = "[" + key2_ + "]" + "[" + key3 + "]";
-							if (preKey === "") {
-								_key_ = preKey + key + _key2_;
-							} else {
-								_key_ = preKey + "[" + key + "]" + _key2_;
-							}
-
-							var _value_ = data3[key3];
-
-							if (_value_.constructor === Array || _value_.constructor === Object) {
-
-								_compilerparams(params, _value_, _key_);
-							} else {
-								params.push(encodeURIComponent(_key_) + '=' + encodeURIComponent(_value_));
-							}
-						}
-					} else {
-						var _key_2 = preKey + key + "[]";
-						var _value_2 = data3;
-						params.push(encodeURIComponent(_key_2) + '=' + encodeURIComponent(_value_2));
-					}
-				}
-			} else {
-				var _key_3 = "";
-				if (preKey === "") {
-					_key_3 = preKey + key;
-				} else {
-					_key_3 = preKey + "[" + key + "]";
-				}
-				var dataVal = data[key];
-				dataVal = dataVal === null ? "" : dataVal;
-				params.push(encodeURIComponent(_key_3) + '=' + encodeURIComponent(dataVal));
-			}
-		}
-	}
-
-	Mobile.extend({
-
-		// create XHR Object
-		createXHR: function createXHR() {
-
-			if (_xhrCORS) {
-				return _xhrCORS;
-			}
-
-			if (window.XMLHttpRequest) {
-
-				//IE7+、Firefox、Opera、Chrome 和Safari
-				return _xhrCORS = new XMLHttpRequest();
-			} else if (window.ActiveXObject) {
-
-				//IE6 及以下
-				var versions = ['MSXML2.XMLHttp', 'Microsoft.XMLHTTP'];
-				for (var i = 0, len = versions.length; i < len; i++) {
-					try {
-						return _xhrCORS = new ActiveXObject(version[i]);
-					} catch (e) {
-						//跳过
-					}
-				}
-			} else {
-				throw new Error('浏览器不支持XHR对象！');
-			}
-		},
-
-		getXhr: function getXhr() {
-			return this.createXHR();
-		},
-
-		ajaxSetup: function ajaxSetup(options) {
-
-			options = (typeof options === "undefined" ? "undefined" : _typeof(options)) === "object" ? options : {};
-			$.extend(_ajaxSetup, options);
-			return _ajaxSetup;
-		},
-		ajax: function ajax(options) {
-
-			options = (typeof options === "undefined" ? "undefined" : _typeof(options)) === "object" ? options : {};
-			var opt = $.extend({}, _ajaxSetup, options);
-
-			var xhr = Mobile.createXHR();
-			try {
-				// IE
-				xhr.timeout = opt.timeout;
-			} catch (ex) {
-				console.log("IE");
-			}
-
-			xhr.xhrFields = opt.xhrFields || {};
-
-			// 连接参数
-			var postData;
-			var reg = /application\/x-www-form-urlencoded/;
-			if (reg.test(opt.contentType)) {
-				postData = _JoinParams(opt.data);
-			} else {
-				postData = opt.data;
-			}
-
-			if (opt.type.toUpperCase() === 'POST' || opt.type.toUpperCase() === 'PUT' || opt.type.toUpperCase() === 'DELETE') {
-				opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() : opt.url + "&_=" + Math.random();
-
-				xhr.open(opt.type, opt.url, opt.async);
-				xhr.setRequestHeader('Content-Type', opt.contentType);
-				xhr.send(postData);
-			} else if (opt.type.toUpperCase() === 'GET') {
-				if (postData.length > 0) {
-					postData = "&" + postData;
-				}
-				opt.url = opt.url.indexOf("?") === -1 ? opt.url + "?" + "_=" + Math.random() + postData : opt.url + "&_=" + Math.random() + postData;
-
-				xhr.open(opt.type, opt.url, opt.async);
-				xhr.send(null);
-			}
-			xhr.onreadystatechange = function () {
-
-				if (xhr.readyState === 4) {
-					if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
-						if (typeof opt.success === "function") {
-							try {
-								var res;
-								if (opt.dataType === "json") {
-									res = JSON.parse(xhr.responseText);
-								}
-								if (opt.dataType === "javascript") {
-									res = xhr.responseText;
-									window.eval(xhr.responseText);
-								}
-								opt.success(res, xhr.status, xhr.statusText);
-							} catch (e) {
-								// handle the exception
-								opt.success(xhr.responseText, xhr.status, xhr.statusText);
-							}
-						}
-					} else {
-						if (typeof opt.error === "function") {
-							opt.error(xhr.status, xhr.statusText);
-						}
-					}
-				}
-			};
-		},
-
-		// get
-		get: function get(url, data) {
-			_ajaxFun(url, "get", data, arguments);
-		},
-
-		// post
-		post: function post(url, data) {
-			_ajaxFun(url, "post", data, arguments);
-		},
-
-		// put
-		put: function put(url, data) {
-			_ajaxFun(url, "put", data, arguments);
-		},
-
-		// delete
-		delete: function _delete(url, data) {
-			_ajaxFun(url, "delete", data, arguments);
-		},
-
-		// jsonp
-		jsonp: function jsonp(url, data) {
-
-			var callback;
-			if (typeof data === "function") {
-				callback = data;
-			} else if (arguments.length >= 3) {
-				callback = arguments[2];
-			}
-
-			// 创建一个几乎唯一的id
-			var callbackName = "mobile" + new Date().getTime().toString().trim();
-			window[callbackName] = function (result) {
-
-				// 创建一个全局回调处理函数
-				if (typeof callback === "function") {
-					callback(result);
-				}
-			};
-
-			// 参数data对象字符
-			var params = [];
-			var postData = "";
-			if ((typeof data === "undefined" ? "undefined" : _typeof(data)) === "object") {
-
-				postData = _JoinParams(data);
-			}
-
-			if (postData.length > 0) {
-				postData = "&" + postData;
-			}
-			url = url.indexOf("?") === -1 ? url + "?" + "callback=" + callbackName + postData : url + "&callback=" + callbackName + postData;
-
-			// 创建Script标签并执行window[id]函数
-			var script = document.createElement("script");
-			script.setAttribute("id", callbackName);
-			script.setAttribute("src", url);
-			script.setAttribute("type", "text/javascript");
-			document.body.appendChild(script);
-		}
-
-	});
 }(Mobile);
