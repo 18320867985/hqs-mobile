@@ -19,7 +19,7 @@
 
 + function (Mobile) {
 
-    Mobile.extend({
+    Mobile.fn.extend({
 
         move: function (startfn, movefn, endfn, bl) {
 
