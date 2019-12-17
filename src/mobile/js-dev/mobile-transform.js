@@ -1,3 +1,8 @@
+
+/*
+ hqs-transform
+*/
+
 +function (m) {
 
     function getTransformArrayByCss($this) {
