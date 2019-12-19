@@ -7,12 +7,10 @@
     // event 是事件对象
     // obj 是touch 移动对象
         obj = {
-        x: 0,       // 手指移动的X坐标的值
-        y: 0,       // 手指移动的Y坐标的值
-        elX: 0,     // 元素移动的X坐标的值
-        elY: 0,     // 元素移动的Y坐标的值
-        isX: false, // 是否为X方向移动
-        isY: false  // 是否为Y方向移动
+         x: 0, // 手指移动的X坐标的值
+         y: 0, // 手指移动的Y坐标的值
+         isX: false, // 是否为X方向移动
+         isY: false // 是否为Y方向移动
         };
 
 */
@@ -23,24 +21,20 @@
 
         move: function (startfn, movefn, endfn, bl) {
 
-            Mobile.each(this, function () {
-
+                var $self = this;
                 bl = !!bl;
-                var isAddMoveEventFirst = true; // 判断是否第一次拖动
-                var startX = 0;
-                var startY = 0;
-                var guid = this;
+                this.isAddMoveEventFirst = true; // 判断是否第一次拖动
+                this.startX = 0;
+                this.startY = 0;
 
-                var obj = {
+                this.obj = {
                     x: 0, // 手指移动的X坐标的值
                     y: 0, // 手指移动的Y坐标的值
-                    elX: 0, // 元素移动的X坐标的值
-                    elY: 0, // 元素移动的Y坐标的值
                     isX: false, // 是否为X方向移动
                     isY: false // 是否为Y方向移动
 
                 };
-
+         
                 /* 变化touchList的identifier和时间戳的集合
                     {
                         id,
@@ -49,6 +43,7 @@
                 */
                 var tempObj = [];
                 m(this).touchstart(function (event) {
+                   
                     try {
 
                         var touches = event.targetTouches;
@@ -58,16 +53,13 @@
                             if (!tempObj.some(item => touches[name].identifier === item.id)) {
                                 tempObj.push({
                                     id: touches[name].identifier,
-                                    timestamp: new Date().getTime(),
-                                    guid
+                                    timestamp: new Date().getTime()
                                 });
                             }
                         });
 
                         var _index = 0;
-                        tempObj = tempObj.filter(function (item) {
-                            return item.guid === guid;
-                        });
+                        
                         var maxCh = m.max(tempObj, function (item) {
                             return item.timestamp;
                         });
@@ -89,39 +81,37 @@
                         }
 
                         var touch = touches[_index];
-                        obj.x = startX = touch.clientX;
-                        obj.y = startY = touch.clientY;
+                        $self.obj.x = $self.startX = touch.clientX;
+                        $self.obj.y = $self.startY = touch.clientY;
 
                         if (typeof startfn === "function") {
                             //event.obj=obj;
-                            startfn.call(this, event, obj);
+                            startfn.call($self, event, $self.obj);
                         }
 
+                      
                         // 异常处理
                     } catch (e) {
 
                         //TODO handle the exception
                         tempObj = [];
-                        isAddMoveEventFirst = true; // 判断是否第一次拖动
+                        $self.isAddMoveEventFirst = true; // 判断是否第一次拖动
                         if (typeof endfn === "function") {
                             //event.obj=obj;
-                            endfn.call(this, event, obj);
+                            endfn.call($self, event, $self.obj);
                         }
                     }
 
                 }, bl);
 
-
                 m(this).touchmove(function (event) {
-
-                    try {
+                 
+                   try {
 
                         var touches = event.touches;
                         var len = touches.length;
                         var _index = 0;
-                        tempObj = tempObj.filter(function (item) {
-                            return item.guid === guid;
-                        });
+                      
                         var maxCh = m.max(tempObj, function (item) {
                             return item.timestamp;
                         });
@@ -144,52 +134,50 @@
                         var nowX = touch.clientX;
                         var nowY = touch.clientY;
 
-                        var _x = Math.abs(nowX - startX);
-                        var _y = Math.abs(nowY - startY);
-                        obj.x = nowX - startX;
-                        obj.y = nowY - startY;
+                       var _x = Math.abs(nowX - $self.startX);
+                       var _y = Math.abs(nowY - $self.startY);
+                       $self.obj.x = nowX - $self.startX;
+                       $self.obj.y = nowY - $self.startY;
 
                         // 检查是否向上下或左右移动
-                        if (isAddMoveEventFirst && (_x !== _y)) {
-                            isAddMoveEventFirst = false;
+                       if ($self.isAddMoveEventFirst && (_x !== _y)) {
+                            $self.isAddMoveEventFirst = false;
                             if (_y > _x) {
 
-                                obj.isY = true;
-                                obj.isX = false;
+                                $self.obj.isY = true;
+                                $self.obj.isX = false;
                             } else {
 
-                                obj.isY = false;
-                                obj.isX = true;
+                                $self.obj.isY = false;
+                                $self.obj.isX = true;
                             }
                         }
 
                         if (typeof movefn === "function") {
                             //event.obj=obj;
-                            movefn.call(this, event, obj);
+                            movefn.call($self, event, $self.obj);
                         }
 
                         // 异常处理
                     } catch (e) {
                         //TODO handle the exception
                         tempObj = [];
-                        isAddMoveEventFirst = true; // 判断是否第一次拖动
+                        $self.isAddMoveEventFirst = true; // 判断是否第一次拖动
                         if (typeof endfn === "function") {
                             //event.obj=obj;
-                            endfn.call(this, event, obj);
+                            endfn.call($self, event, $self.obj);
                         }
                     }
 
                 }, bl);
 
                 m(this).touchendcancel(function (event) {
+                   
                     try {
 
                         var touches = event.changedTouches;
                         var touches2 = event.touches;
 
-                        tempObj = tempObj.filter(function (item) {
-                            return item.guid === guid
-                        });
                         tempObj = tempObj.filter(function (item) {
                             return item.id !== touches[0].identifier;
                         });
@@ -211,35 +199,35 @@
 
                         if (touches2.length > 0) {
                             var touch = touches2[_index];
-                            startX = touch.clientX - obj.x;
-                            startY = touch.clientY - obj.y;
+                            $self.startX = touch.clientX - $self.obj.x;
+                            $self.startY = touch.clientY - $self.obj.y;
                         }
 
                         if (tempObj.length === 0) {
                             tempObj = [];
-                            isAddMoveEventFirst = true; // 判断是否第一次拖动
+                            $self.isAddMoveEventFirst = true; // 判断是否第一次拖动
                             if (typeof endfn === "function") {
                                 //event.obj=obj;
-                                endfn.call(this, event, obj);
+                                endfn.call($self, event, $self.obj);
                             }
                         }
 
-                        // 异常处理
+                         //异常处理
                     } catch (e) {
                         //TODO handle the exception
                         tempObj = [];
-                        isAddMoveEventFirst = true; // 判断是否第一次拖动
+                        $self.isAddMoveEventFirst = true; // 判断是否第一次拖动
                         if (typeof endfn === "function") {
                             //event.obj=obj;
-                            endfn.call(this, event, obj);
+                            endfn.call($self, event, $self.obj);
+                           
                         }
                     }
 
                 }, bl);
 
-            });
-
-        },
+     
+        }
 
     });
 

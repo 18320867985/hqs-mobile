@@ -12,13 +12,13 @@
 # Visual Studio  Dependency directory
 /.vs
 
-*.suo
-*.slnx.sqlite
+/**/*.suo
+/**/*.sqlite
+
 
 # ==============自定义 ==============
 # multiModuleSetting
-multiModuleSetting.js
+#multiModuleSetting.js
 
 # static view css and js
-src/static/css/view/*.css
-src/static/js/view/*.js
+#src/static/css/view/*.css
