@@ -3,7 +3,7 @@
  * 作者：hqs
  */
 
-(function(global, factory) {
+(function (global, factory){
 
 	//  cmd commonjs
 	if (typeof module === "object" && typeof module.exports === "object") {
@@ -1187,7 +1187,7 @@
 			return obj;
 		},
 
-		// closest 
+		// closest
 		closest: function(selector) {
 			selector = typeof selector === "string" ? $.trim( selector)  : "";
 			var arr = [];
@@ -1798,7 +1798,21 @@
 	// 绑定事件
 	Mobile.fn.extend({
 
-		on: function(type) {
+        on: function (type) {
+
+            // tap是tuochstart,tuochmove,tuochend 集合封装
+            if (type === "tap") {
+                var tapAarrs = [];
+                for (var i = 0; i < arguments.length; i++) {
+                    if (i !== 0) {
+                        tapAarrs.push(arguments[i]);
+                    }
+                }
+             
+                this.tap.apply(this, tapAarrs);
+                return;
+            }
+
 			var $this = this;
 			var isonebind = $this.length > 0 && $this.bindOneElementEvent ? true : false; // m(el).one()只绑定一次事件
 			var handler = function() {};
@@ -1831,13 +1845,13 @@
 				if(detail.length){
 					for(var i=0;i<detail.length;i++){
 						props.push(detail[i]);
-					};
+					}
 
 				}else{
 					props.push(detail);
 				}
 
-				handler.apply(event.target, props);
+				handler.apply(this, props);
 
 				// m(el).one()只绑定一次事件
 				if (isonebind) {
@@ -1873,12 +1887,12 @@
 					if(detail.length){
 						for(var i=0;i<detail.length;i++){
 							props.push(detail[i]);
-						};
+						}
 	
 					}else{
 						props.push(detail);
 					}
-					handler.apply(event.target, props);
+					handler.apply(this, props);
 
 					// m(el).one()只绑定一次事件
 					if (isonebind) {
@@ -1896,14 +1910,14 @@
 
 				Mobile.each(this, function() {
 					if (this.addEventListener) {
-						this.addEventListener(type, f, bl);
+						this.addEventListener(type, m.proxy(f,this), bl);
 					}
 					//ie8
-					//					else if(this.attachEvent) {
-					//						this.attachEvent("on" + type, f, bl)
-					//					} else {
-					//						this["on" + type] =f /*直接赋给事件*/
-					//					}
+					//else if(this.attachEvent) {
+					//	this.attachEvent("on" + type, f, bl)
+					//} else {
+					//	this["on" + type] =f /*直接赋给事件*/
+					//}
 				});
 
 				m.events.on(type, f);
@@ -1917,14 +1931,13 @@
 
 				Mobile.each(this, function() {
 					if (this.addEventListener) {
-						this.addEventListener(type, f, bl);
+                        this.addEventListener(type, m.proxy(f, this), bl);
 					}
 
 				});
 
 				m.events.on(type, f);
 			}
-
 
 			// 委托绑定事件
 			if (arguments.length >= 3 && typeof arguments[1] === "string" && typeof arguments[2] === "function") {
@@ -1934,7 +1947,7 @@
 
 				Mobile.each(this, function() {
 					if (this.addEventListener) {
-						this.addEventListener(type, f2, bl);
+                        this.addEventListener(type, m.proxy(f2, this), bl);
 					}
 				});
 
@@ -1952,7 +1965,7 @@
 
 				Mobile.each(this, function() {
 					if (this.addEventListener) {
-						this.addEventListener(type, f2, bl);
+                        this.addEventListener(type, m.proxy(f2, this), bl);
 					}
 				});
 
