@@ -52,14 +52,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	// 查找父元素
 	function _searchParents(el, fn) {
 
-		if (el.parentElement) {
-			if (fn(el.parentElement)) {
-				return el.parentElement;
+		try {
+			if (el.parentElement) {
+				if (fn(el.parentElement)) {
+					return el.parentElement;
+				}
 			}
-		}
 
-		if ((el.nodeName || "").toLowerCase() === "html") {
-			return;
+			if ((el.nodeName || "").toLowerCase() === "html") {
+				return;
+			}
+		} catch (ex) {
+			return null;
 		}
 
 		return _searchParents(el.parentElement, fn);
@@ -72,7 +76,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		y = typeof y === "number" ? y : parseFloat(y);
 		y = isNaN(y) ? 0 : y;
 		var fx = 20;
-		var speed = 20;
+		var speed = 100;
 
 		self.clearTimeId = self.clearTimeId || 0;
 		clearInterval(self.clearTimeId);
@@ -84,11 +88,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			isElement = true;
 		}
 
-		var speed1 = time / fx;
 		var windowStartTop = (isElement ? self.scrollTop : parseFloat(window.pageYOffset)) || 0;
-
 		var speed2 = Math.abs(windowStartTop - y);
-		speed = speed2 / speed1;
+		speed = speed2 / time * fx;
 
 		if (windowStartTop > y) {
 
@@ -121,6 +123,59 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	}
 
+	// scrollLeft 动画
+	function _scrollLeft(self, x, time) {
+
+		time = typeof time === "number" ? time : 400;
+		x = typeof x === "number" ? x : parseFloat(x);
+		x = isNaN(x) ? 0 : x;
+		var fx = 10;
+		var speed = 100;
+
+		self.clearTimeId = self.clearTimeId || 0;
+		clearInterval(self.clearTimeId);
+
+		var isElement = true;
+		if (self === window || self === document) {
+			isElement = false;
+		} else {
+			isElement = true;
+		}
+
+		var windowStartLeft = (isElement ? self.scrollLeft : parseFloat(window.pageXOffset)) || 0;
+		var speed2 = Math.abs(windowStartLeft - x);
+		speed = speed2 / time * fx;
+
+		if (windowStartLeft > x) {
+
+			self.clearTimeId = setInterval(function () {
+				windowStartLeft = windowStartLeft - speed;
+				isElement ? self.scrollLeft = windowStartLeft : window.scrollTo(windowStartLeft, 0);
+				//	console.log("scrolltop")
+				if (windowStartLeft - speed <= x) {
+					// stop
+					isElement ? self.scrollLeft = x : window.scrollTo(x, 0);
+					clearInterval(self.clearTimeId);
+				}
+			}, fx);
+		} else {
+			if (windowStartLeft === x) {
+				// stop
+				clearInterval(self.clearTimeId);
+				return;
+			}
+			self.clearTimeId = setInterval(function () {
+				windowStartLeft = windowStartLeft + speed;
+				isElement ? self.scrollLeft = windowStartLeft : window.scrollTo(windowStartLeft, 0);
+				//console.log("scrolltop");
+				if (windowStartLeft + speed > x) {
+					// stop
+					isElement ? self.scrollLeft = x : window.scrollTo(x, 0);
+					clearInterval(self.clearTimeId);
+				}
+			}, fx);
+		}
+	}
 	// 浅复制 parentObj 父元素 childObj子元素
 	function _extend(parentObj, childObj) {
 
@@ -352,13 +407,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		checkSelector: function checkSelector(el, txt) {
+			if (!el) {
+				return false;
+			}
 			txt = typeof txt === "string" ? txt : "";
 			if (txt.trim() === "") {
 				return false;
 			}
 			var regId = /\#[a-zA-Z_][\w|-]*[^\.|^#|\[]{0,}/g;
 			var regClass = /\.[a-zA-Z_][\w|-]*[^\.|^#|\[]{0,}/g;
-			var regTag = /^[a-zA-Z][\w|-]*[^\.|^#|\[]{0,}|[\]][a-zA-Z][\w|-]*[^\.|^#|\[]{0,}/g;
+			var regTag = /^[a-zA-Z_][\w|-]*[^\.|^#|\[]{0,}|[\]][a-zA-Z_][\w|-]*[^\.|^#|\[]{0,}/g;
 			var regAttr = /\[[a-zA-Z][\w-=]*\]/g;
 
 			var idList = txt.match(regId) || [];
@@ -428,9 +486,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			function istag(el, idList, searchTxt) {
-				if (searchTxt.search(/^[a-zA-Z]|[\]][a-zA-Z]/) === -1) {
+				if (searchTxt.search(/^[a-zA-Z_]*|[\]][a-zA-Z_]/) === -1) {
 					return true;
-				} else if (searchTxt.search(/^[a-zA-Z]|[\]][a-zA-Z]/) !== -1 && idList.length === 0) {
+				} else if (searchTxt.search(/^[a-zA-Z_]|[\]][a-zA-Z_]/) !== -1 && idList.length === 0) {
 					return false;
 				}
 
@@ -1102,13 +1160,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				if (p) {
 					arr.push(p);
 				}
-			};
+			}
 			delete obj.length;
 			Array.prototype.push.apply(obj, arr);
 			return obj;
 		},
 
-		// closest 
+		// closest
 		closest: function closest(selector) {
 			selector = typeof selector === "string" ? $.trim(selector) : "";
 			var arr = [];
@@ -1126,7 +1184,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				if (p) {
 					arr.push(p);
 				}
-			};
+			}
+
 			delete obj.length;
 			Array.prototype.push.apply(obj, arr);
 			return obj;
@@ -1139,7 +1198,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			if (index >= this.length) {
-				throw Error("number  value max object length ");
+				return undefined;
+				//throw Error("number  value max object length ");
 			}
 
 			return this[index];
@@ -1527,7 +1587,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		//  remove
-		remove: function remove(obj) {
+		remove: function remove() {
 			var arr = [];
 			var $this = this;
 			Mobile.each(this, function (index, v) {
@@ -1536,7 +1596,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					var _indexObj = els.removeChild(this);
 					arr.push(_indexObj);
 				}
-				delete $this[i];
+				delete $this[index];
 			});
 
 			Array.prototype.push.apply(this, arr);
@@ -1682,6 +1742,41 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 				return this;
 			}
+		},
+
+		//  scrollLeft
+		scrollLeft: function scrollLeft(x, time) {
+
+			// get
+			if (arguments.length === 0) {
+				var _size = 0;
+				Mobile.each(this, function () {
+					if (this === window || this === document) {
+						_size = window.pageXOffset || 0;
+					} else {
+						_size = this.scrollLeft;
+					}
+					return false;
+				});
+				return _size;
+			} else {
+				Mobile.each(this, function () {
+					_scrollLeft(this, x, time);
+				});
+
+				return this;
+			}
+		},
+
+		// stop 
+
+		stop: function stop() {
+			Mobile.each(this, function () {
+				var clearTimeId = this.clearTimeId || 0;
+				clearInterval(clearTimeId);
+			});
+
+			return this;
 		}
 
 	});
@@ -1690,6 +1785,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	Mobile.fn.extend({
 
 		on: function on(type) {
+
+			// tap是tuochstart,tuochmove,tuochend 集合封装
+			if (type === "tap") {
+				var tapAarrs = [];
+				for (var i = 0; i < arguments.length; i++) {
+					if (i !== 0) {
+						tapAarrs.push(arguments[i]);
+					}
+				}
+
+				this.tap.apply(this, tapAarrs);
+				return;
+			}
+
 			var $this = this;
 			var isonebind = $this.length > 0 && $this.bindOneElementEvent ? true : false; // m(el).one()只绑定一次事件
 			var handler = function handler() {};
@@ -1721,12 +1830,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				if (detail.length) {
 					for (var i = 0; i < detail.length; i++) {
 						props.push(detail[i]);
-					};
+					}
 				} else {
 					props.push(detail);
 				}
 
-				handler.apply(event.target, props);
+				handler.apply(this, props);
 
 				// m(el).one()只绑定一次事件
 				if (isonebind) {
@@ -1739,7 +1848,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			// 委托事件绑定
 			function f2(event) {
 
-				if (Mobile.checkSelector(event.target, el)) {
+				var entrustObj = m(event.target).closest(el).get(0); //委托对象
+				if (entrustObj) {
 
 					if (type === "input") {
 						//delete event.data;
@@ -1761,11 +1871,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					if (detail.length) {
 						for (var i = 0; i < detail.length; i++) {
 							props.push(detail[i]);
-						};
+						}
 					} else {
 						props.push(detail);
 					}
-					handler.apply(event.target, props);
+
+					handler.apply(entrustObj, props);
 
 					// m(el).one()只绑定一次事件
 					if (isonebind) {
@@ -1783,14 +1894,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 				Mobile.each(this, function () {
 					if (this.addEventListener) {
-						this.addEventListener(type, f, bl);
+						this.addEventListener(type, m.proxy(f, this), bl);
 					}
 					//ie8
-					//					else if(this.attachEvent) {
-					//						this.attachEvent("on" + type, f, bl)
-					//					} else {
-					//						this["on" + type] =f /*直接赋给事件*/
-					//					}
+					//else if(this.attachEvent) {
+					//	this.attachEvent("on" + type, f, bl)
+					//} else {
+					//	this["on" + type] =f /*直接赋给事件*/
+					//}
 				});
 
 				m.events.on(type, f);
@@ -1804,7 +1915,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 				Mobile.each(this, function () {
 					if (this.addEventListener) {
-						this.addEventListener(type, f, bl);
+						this.addEventListener(type, m.proxy(f, this), bl);
 					}
 				});
 
@@ -1813,13 +1924,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			// 委托绑定事件
 			if (arguments.length >= 3 && typeof arguments[1] === "string" && typeof arguments[2] === "function") {
-				el = arguments[1].toString() || "".trim();
+				el = arguments[1].toString() || "";
 				handler = arguments[2] || function () {};
 				bl = typeof arguments[3] === "boolean" ? arguments[3] : false;
 
 				Mobile.each(this, function () {
 					if (this.addEventListener) {
-						this.addEventListener(type, f2, bl);
+
+						this.addEventListener(type, m.proxy(f2, this), bl);
 					}
 				});
 
@@ -1828,14 +1940,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			// 委托绑定事件传object值
 			if (arguments.length >= 4 && typeof arguments[1] === "string" && _typeof(arguments[2]) === "object" && typeof arguments[3] === "function") {
-				el = arguments[1].toString() || "".trim();
+				el = arguments[1].toString() || "";
 				obj = arguments[2];
 				handler = arguments[3] || function () {};
 				bl = typeof arguments[4] === "boolean" ? arguments[4] : false;
 
 				Mobile.each(this, function () {
 					if (this.addEventListener) {
-						this.addEventListener(type, f2, bl);
+						this.addEventListener(type, m.proxy(f2, this), bl);
 					}
 				});
 
@@ -1882,9 +1994,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		trigger: function trigger(type, obj) {
 
 			Mobile.each(this, function () {
-				var btnEvent = document.createEvent("CustomEvent");
-				btnEvent.initCustomEvent(type, true, false, obj);
-				this.dispatchEvent(btnEvent);
+				try {
+					var btnEvent = document.createEvent("CustomEvent");
+					btnEvent.initCustomEvent(type, true, false, obj);
+					this.dispatchEvent(btnEvent);
+				} catch (ex) {
+					console.log(ex);
+				}
 			});
 		},
 
@@ -2027,16 +2143,24 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				var isDeleDageTarget = true; // 是否是委托事件
 
 				function start(event) {
-					event.preventDefault();
+
 					isMOve = true;
 					isMOveFirst = true;
 					var touch = event.changedTouches[0];
 					startX = touch.clientX;
 					startY = touch.clientY;
+
+					if (event.touches.length > 1) {
+						isMOve = false;
+						isMOveFirst = false;
+					} else {
+						isMOve = true;
+						isMOveFirst = true;
+					}
 				}
 
 				function move(event) {
-					event.preventDefault();
+
 					var touch = event.changedTouches[0];
 					var nowX = touch.clientX;
 					var nowY = touch.clientY;
@@ -2049,13 +2173,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				}
 
 				function end(event) {
-					event.preventDefault();
+
 					var _target;
 					if (isDeleDageTarget) {
 						_target = this;
 					} else {
-						_target = event.target;
+						_target = m(event.target).closest(deletage).get(0); //委托对象
 					}
+
 					if (isMOve) {
 						if (typeof fn === "function") {
 							fn.call(_target, event);
@@ -2092,6 +2217,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 							bl = args[2] || false;
 							var obj = args[0];
 							isDeleDageTarget = true;
+
 							m(this).on("touchstart", obj, start, bl);
 							m(this).on("touchmove", obj, move, bl);
 							m(this).on("touchend", obj, end, bl);
@@ -2195,237 +2321,238 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /*
     hqs-move
 
+    changedTouches 改变后的触摸点集合
+    targetTouches 当前元素的触发点集合
+    touches 页面上所有触发点集合
+
+   changedTouches 每个事件都会记录
+   targetTouches，touches 在离开屏幕的时候无法记录触摸点
+
     支持多指触摸 touchstart touchmove touchend  合并封装
     $(el).move(touchstart=function(event,obj){},touchmove=function(event,obj){},touchend=function(event,obj){});
 
     // event 是事件对象
     // obj 是touch 移动对象
         obj = {
-        x: 0,       // 手指移动的X坐标的值
-        y: 0,       // 手指移动的Y坐标的值
-        elX: 0,     // 元素移动的X坐标的值
-        elY: 0,     // 元素移动的Y坐标的值
-        isX: false, // 是否为X方向移动
-        isY: false  // 是否为Y方向移动
+         x: 0, // 手指移动的X坐标的值
+         y: 0, // 手指移动的Y坐标的值
+         isX: false, // 是否为X方向移动
+         isY: false // 是否为Y方向移动
         };
 
 */
 
 +function (Mobile) {
 
-    Mobile.extend({
+    Mobile.fn.extend({
 
+        // 多指触摸
         move: function move(startfn, movefn, endfn, bl) {
 
-            Mobile.each(this, function () {
+            var $self = this;
+            bl = !!bl;
+            this.isAddMoveEventFirst = true; // 判断是否第一次拖动
+            this.startX = 0;
+            this.startY = 0;
 
-                bl = !!bl;
-                var isAddMoveEventFirst = true; // 判断是否第一次拖动
-                var startX = 0;
-                var startY = 0;
-                var guid = this;
+            this.obj = {
+                x: 0, // 手指移动的X坐标的值
+                y: 0, // 手指移动的Y坐标的值
+                isX: false, // 是否为X方向移动
+                isY: false // 是否为Y方向移动
 
-                var obj = {
-                    x: 0, // 手指移动的X坐标的值
-                    y: 0, // 手指移动的Y坐标的值
-                    elX: 0, // 元素移动的X坐标的值
-                    elY: 0, // 元素移动的Y坐标的值
-                    isX: false, // 是否为X方向移动
-                    isY: false // 是否为Y方向移动
+            };
 
-                };
+            /* 变化touchList的identifier和时间戳的集合
+                {
+                    id,
+                    timestamp
+                }
+            */
+            $self.tempObj = [];
+            m(this).touchstart(function (event) {
 
-                /* 变化touchList的identifier和时间戳的集合
-                    {
-                        id,
-                        timestamp
+                try {
+
+                    //兼容ios的返回键和 window.history.back()
+                    if (event.touches.length === 1) {
+                        $self.tempObj = [];
                     }
-                */
-                var tempObj = [];
-                m(this).touchstart(function (event) {
-                    try {
 
-                        var touches = event.targetTouches;
-                        var len = touches.length;
+                    var touches = event.targetTouches;
+                    var len = touches.length;
+                    Object.keys(touches).forEach(function (name) {
+
+                        if (!$self.tempObj.some(function (item) {
+                            return touches[name].identifier === item.id;
+                        })) {
+                            $self.tempObj.push({
+                                id: touches[name].identifier,
+                                timestamp: new Date().getTime()
+                            });
+                        }
+                    });
+
+                    var _index = 0;
+
+                    var maxCh = m.max($self.tempObj, function (item) {
+                        return item.timestamp;
+                    });
+                    if (maxCh) {
+
+                        var i = 0;
                         Object.keys(touches).forEach(function (name) {
-
-                            if (!tempObj.some(function (item) {
-                                return touches[name].identifier === item.id;
-                            })) {
-                                tempObj.push({
-                                    id: touches[name].identifier,
-                                    timestamp: new Date().getTime(),
-                                    guid: guid
-                                });
+                            var ch = touches[name];
+                            if (ch.identifier === maxCh.id) {
+                                _index = i;
                             }
+                            i++;
                         });
+                    } else {
+                        _index = len - 1;
+                    }
 
-                        var _index = 0;
-                        tempObj = tempObj.filter(function (item) {
-                            return item.guid === guid;
-                        });
-                        var maxCh = m.max(tempObj, function (item) {
-                            return item.timestamp;
-                        });
-                        if (maxCh) {
+                    var touch = touches[_index];
+                    $self.obj.x = $self.startX = touch.clientX;
+                    $self.obj.y = $self.startY = touch.clientY;
 
-                            var i = 0;
-                            Object.keys(touches).forEach(function (name) {
-                                var ch = touches[name];
-                                if (ch.identifier === maxCh.id) {
-                                    _index = i;
-                                }
-                                i++;
-                            });
+                    if (typeof startfn === "function") {
+                        //event.obj=obj;
+                        startfn.call($self, event, $self.obj);
+                    }
+
+                    // 异常处理
+                } catch (e) {
+
+                    //TODO handle the exception
+                    $self.tempObj = [];
+                    $self.isAddMoveEventFirst = true; // 判断是否第一次拖动
+                    if (typeof endfn === "function") {
+                        //event.obj=obj;
+                        endfn.call($self, event, $self.obj);
+                    }
+                }
+            }, bl);
+
+            m(this).touchmove(function (event) {
+
+                try {
+
+                    var touches = event.touches;
+                    var len = touches.length;
+                    var _index = 0;
+
+                    var maxCh = m.max($self.tempObj, function (item) {
+                        return item.timestamp;
+                    });
+                    if (maxCh) {
+                        var i = 0;
+                        Object.keys(touches).forEach(function (name) {
+                            var ch = touches[name];
+                            if (ch.identifier === maxCh.id) {
+                                _index = i;
+                            }
+
+                            i++;
+                        });
+                    } else {
+                        _index = len - 1;
+                    }
+
+                    var touch = touches[_index];
+                    var nowX = touch.clientX;
+                    var nowY = touch.clientY;
+
+                    var _x = Math.abs(nowX - $self.startX);
+                    var _y = Math.abs(nowY - $self.startY);
+                    $self.obj.x = nowX - $self.startX;
+                    $self.obj.y = nowY - $self.startY;
+
+                    // 检查是否向上下或左右移动
+                    if ($self.isAddMoveEventFirst && _x !== _y) {
+                        $self.isAddMoveEventFirst = false;
+                        if (_y > _x) {
+
+                            $self.obj.isY = true;
+                            $self.obj.isX = false;
                         } else {
-                            _index = len - 1;
-                        }
 
-                        var touch = touches[_index];
-                        obj.x = startX = touch.clientX;
-                        obj.y = startY = touch.clientY;
-
-                        if (typeof startfn === "function") {
-                            //event.obj=obj;
-                            startfn.call(this, event, obj);
-                        }
-
-                        // 异常处理
-                    } catch (e) {
-
-                        //TODO handle the exception
-                        tempObj = [];
-                        isAddMoveEventFirst = true; // 判断是否第一次拖动
-                        if (typeof endfn === "function") {
-                            //event.obj=obj;
-                            endfn.call(this, event, obj);
+                            $self.obj.isY = false;
+                            $self.obj.isX = true;
                         }
                     }
-                }, bl);
 
-                m(this).touchmove(function (event) {
+                    if (typeof movefn === "function") {
+                        //event.obj=obj;
+                        movefn.call($self, event, $self.obj);
+                    }
 
-                    try {
+                    // 异常处理
+                } catch (e) {
+                    //TODO handle the exception
+                    $self.tempObj = [];
+                    $self.isAddMoveEventFirst = true; // 判断是否第一次拖动
+                    if (typeof endfn === "function") {
+                        //event.obj=obj;
+                        endfn.call($self, event, $self.obj);
+                    }
+                }
+            }, bl);
 
-                        var touches = event.touches;
-                        var len = touches.length;
-                        var _index = 0;
-                        tempObj = tempObj.filter(function (item) {
-                            return item.guid === guid;
-                        });
-                        var maxCh = m.max(tempObj, function (item) {
-                            return item.timestamp;
-                        });
-                        if (maxCh) {
-                            var i = 0;
-                            Object.keys(touches).forEach(function (name) {
-                                var ch = touches[name];
-                                if (ch.identifier === maxCh.id) {
-                                    _index = i;
-                                }
+            m(this).touchendcancel(function (event) {
 
-                                i++;
-                            });
-                        } else {
-                            _index = len - 1;
-                        }
+                try {
 
-                        var touch = touches[_index];
-                        var nowX = touch.clientX;
-                        var nowY = touch.clientY;
+                    var touches = event.changedTouches;
+                    var touches2 = event.touches;
 
-                        var _x = Math.abs(nowX - startX);
-                        var _y = Math.abs(nowY - startY);
-                        obj.x = nowX - startX;
-                        obj.y = nowY - startY;
-
-                        // 检查是否向上下或左右移动
-                        if (isAddMoveEventFirst && _x !== _y) {
-                            isAddMoveEventFirst = false;
-                            if (_y > _x) {
-
-                                obj.isY = true;
-                                obj.isX = false;
-                            } else {
-
-                                obj.isY = false;
-                                obj.isX = true;
+                    $self.tempObj = $self.tempObj.filter(function (item) {
+                        return item.id !== touches[0].identifier;
+                    });
+                    var _index = 0;
+                    var maxCh = m.max($self.tempObj, function (item) {
+                        return item.timestamp;
+                    });
+                    if (maxCh) {
+                        var i = 0;
+                        Object.keys(touches2).forEach(function (name) {
+                            var ch = touches2[name];
+                            if (ch.identifier === maxCh.id) {
+                                _index = i;
                             }
-                        }
+                            i++;
+                        });
+                    } else {
+                        _index = touches2.length - 1;
+                    }
 
-                        if (typeof movefn === "function") {
-                            //event.obj=obj;
-                            movefn.call(this, event, obj);
-                        }
+                    if (touches2.length > 0) {
+                        var touch = touches2[_index];
+                        $self.startX = touch.clientX - $self.obj.x;
+                        $self.startY = touch.clientY - $self.obj.y;
+                    }
 
-                        // 异常处理
-                    } catch (e) {
-                        //TODO handle the exception
-                        tempObj = [];
-                        isAddMoveEventFirst = true; // 判断是否第一次拖动
+                    if ($self.tempObj.length === 0) {
+                        $self.tempObj = [];
+                        $self.isAddMoveEventFirst = true; // 判断是否第一次拖动                     
                         if (typeof endfn === "function") {
+
                             //event.obj=obj;
-                            endfn.call(this, event, obj);
+                            endfn.call($self, event, $self.obj);
                         }
                     }
-                }, bl);
 
-                m(this).touchendcancel(function (event) {
-                    try {
-
-                        var touches = event.changedTouches;
-                        var touches2 = event.touches;
-
-                        tempObj = tempObj.filter(function (item) {
-                            return item.guid === guid;
-                        });
-                        tempObj = tempObj.filter(function (item) {
-                            return item.id !== touches[0].identifier;
-                        });
-                        var _index = 0;
-                        var maxCh = m.max(tempObj, function (item) {
-                            return item.timestamp;
-                        });
-                        if (maxCh) {
-                            var i = 0;
-                            Object.keys(touches2).forEach(function (name) {
-                                var ch = touches2[name];
-                                if (ch.identifier === maxCh.id) {
-                                    _index = i;
-                                }
-                                i++;
-                            });
-                        } else {
-                            _index = touches2.length - 1;
-                        }
-
-                        if (touches2.length > 0) {
-                            var touch = touches2[_index];
-                            startX = touch.clientX - obj.x;
-                            startY = touch.clientY - obj.y;
-                        }
-
-                        if (tempObj.length === 0) {
-                            tempObj = [];
-                            isAddMoveEventFirst = true; // 判断是否第一次拖动
-                            if (typeof endfn === "function") {
-                                //event.obj=obj;
-                                endfn.call(this, event, obj);
-                            }
-                        }
-
-                        // 异常处理
-                    } catch (e) {
-                        //TODO handle the exception
-                        tempObj = [];
-                        isAddMoveEventFirst = true; // 判断是否第一次拖动
-                        if (typeof endfn === "function") {
-                            //event.obj=obj;
-                            endfn.call(this, event, obj);
-                        }
+                    //异常处理
+                } catch (e) {
+                    //TODO handle the exception
+                    $self.tempObj = [];
+                    $self.isAddMoveEventFirst = true; // 判断是否第一次拖动
+                    if (typeof endfn === "function") {
+                        //event.obj=obj;
+                        endfn.call($self, event, $self.obj);
                     }
-                }, bl);
-            });
+                }
+            }, bl);
         }
 
     });
